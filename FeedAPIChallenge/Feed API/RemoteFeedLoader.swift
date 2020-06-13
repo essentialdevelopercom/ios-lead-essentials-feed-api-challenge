@@ -29,7 +29,7 @@ public final class RemoteFeedLoader: FeedLoader {
                         return
                 }
                 
-                guard JSONSerialization.isValidJSONObject(data)
+                guard let json = try? JSONSerialization.jsonObject(with: data)                    
                     else {
                         completion(.failure(Error.invalidData))
                         return
