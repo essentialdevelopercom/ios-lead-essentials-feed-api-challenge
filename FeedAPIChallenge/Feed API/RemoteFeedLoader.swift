@@ -29,17 +29,34 @@ public final class RemoteFeedLoader: FeedLoader {
                         return
                 }
                 
-                guard let json = try? JSONSerialization.jsonObject(with: data)                    
+                guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                    let items = json["items"] as? [[String: Any]]
                     else {
                         completion(.failure(Error.invalidData))
                         return
                 }
                 
-                //TODO: return proper success
-                completion(.success([]))
+                let images = items.compactMap { $0.feedImage }
+                completion(.success(images))
             case .failure:
                 completion(.failure(Error.connectivity))
             }
         }
+    }
+}
+
+//MARK: - Map from json to FeedImage
+private extension Dictionary where Key == String, Value == Any {
+    var feedImage: FeedImage? {
+        guard let id = self["image_id"] as? String,
+            let uuid = UUID(uuidString: id),
+            let urlString = self["image_url"] as? String,
+            let url = URL(string: urlString)
+            else { return nil }
+        
+        return FeedImage(id: uuid,
+                         description: self["image_desc"] as? String,
+                         location: self["image_loc"] as? String,
+                         url: url)
     }
 }
