@@ -29,6 +29,12 @@ public final class RemoteFeedLoader: FeedLoader {
                         return
                 }
                 
+                guard JSONSerialization.isValidJSONObject(data)
+                    else {
+                        completion(.failure(Error.invalidData))
+                        return
+                }
+                
                 //TODO: return proper success
                 completion(.success([]))
             case .failure:
