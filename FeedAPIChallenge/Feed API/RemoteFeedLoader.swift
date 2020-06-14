@@ -31,15 +31,12 @@ public final class RemoteFeedLoader: FeedLoader {
                         return
                 }
                 
-                guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-                    let items = json["items"] as? [[String: Any]]
+                guard let items = try? JSONDecoder().decode(FeedResponse.self, from: data).items
                     else {
                         completion(.failure(Error.invalidData))
                         return
                 }
-                
-                let images = items.compactMap { $0.feedImage }
-                completion(.success(images))
+                completion(.success(items.compactMap { FeedImageResponseMapper.map(response: $0) }))
             case .failure:
                 completion(.failure(Error.connectivity))
             }
@@ -47,18 +44,38 @@ public final class RemoteFeedLoader: FeedLoader {
     }
 }
 
-//MARK: - Map from json to FeedImage
-private extension Dictionary where Key == String, Value == Any {
-    var feedImage: FeedImage? {
-        guard let id = self["image_id"] as? String,
-            let uuid = UUID(uuidString: id),
-            let urlString = self["image_url"] as? String,
-            let url = URL(string: urlString)
-            else { return nil }
+//MARK: - Response entities
+extension RemoteFeedLoader {
+    private struct FeedResponse: Codable {
+        let items: [FeedImageResponse]
+    }
+    
+    private struct FeedImageResponse: Codable {
+        let id: String
+        let description: String?
+        let location: String?
+        let urlString: String
         
-        return FeedImage(id: uuid,
-                         description: self["image_desc"] as? String,
-                         location: self["image_loc"] as? String,
-                         url: url)
+        enum CodingKeys: String, CodingKey {
+            case id = "image_id"
+            case description = "image_desc"
+            case location = "image_loc"
+            case urlString = "image_url"
+        }
+    }
+}
+
+//MARK: - Mappers
+extension RemoteFeedLoader {
+    private struct FeedImageResponseMapper {
+        static func map(response: FeedImageResponse) -> FeedImage? {
+            guard let uuid = UUID(uuidString: response.id),
+                let url = URL(string: response.urlString)
+                else { return nil }
+            return FeedImage(id: uuid,
+                             description: response.description,
+                             location: response.location,
+                             url: url)
+        }
     }
 }
