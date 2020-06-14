@@ -43,39 +43,3 @@ public final class RemoteFeedLoader: FeedLoader {
         }
     }
 }
-
-//MARK: - Response entities
-extension RemoteFeedLoader {
-    private struct FeedResponse: Codable {
-        let items: [FeedImageResponse]
-    }
-    
-    private struct FeedImageResponse: Codable {
-        let id: String
-        let description: String?
-        let location: String?
-        let urlString: String
-        
-        enum CodingKeys: String, CodingKey {
-            case id = "image_id"
-            case description = "image_desc"
-            case location = "image_loc"
-            case urlString = "image_url"
-        }
-    }
-}
-
-//MARK: - Mappers
-extension RemoteFeedLoader {
-    private struct FeedImageResponseMapper {
-        static func map(response: FeedImageResponse) -> FeedImage? {
-            guard let uuid = UUID(uuidString: response.id),
-                let url = URL(string: response.urlString)
-                else { return nil }
-            return FeedImage(id: uuid,
-                             description: response.description,
-                             location: response.location,
-                             url: url)
-        }
-    }
-}
