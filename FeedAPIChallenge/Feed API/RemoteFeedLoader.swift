@@ -24,18 +24,14 @@ public final class RemoteFeedLoader: FeedLoader {
             guard self != nil else { return }
             
             switch result {
-            case let .success(data, response):
-                guard response.statusCode == RemoteFeedLoader.OK_200
+            case let .success((data, response)):
+                guard response.statusCode == RemoteFeedLoader.OK_200,
+                    let items = try? JSONDecoder().decode(FeedResponse.self, from: data).items
                     else {
                         completion(.failure(Error.invalidData))
                         return
                 }
                 
-                guard let items = try? JSONDecoder().decode(FeedResponse.self, from: data).items
-                    else {
-                        completion(.failure(Error.invalidData))
-                        return
-                }
                 completion(.success(items.compactMap { FeedImageResponseMapper.map(response: $0) }))
             case .failure:
                 completion(.failure(Error.connectivity))
