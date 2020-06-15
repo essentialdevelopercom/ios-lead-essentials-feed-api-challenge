@@ -24,15 +24,19 @@ public final class RemoteFeedLoader: FeedLoader {
             case let .success((_, response)) where response.statusCode != 200 :
                 completion(.failure(Error.invalidData))
             case let .success((data, _)):
-                do {
-                    _ = try JSONSerialization.jsonObject(with: data)
-                    completion(.success([]))
-                } catch {
-                    completion(.failure(Error.invalidData))
-                }
+                completion(RemoteFeedLoader.map(data))
             case .failure:
                 completion(.failure(Error.connectivity))
             }
+        }
+    }
+    
+    static func map(_ data: Data) -> FeedLoader.Result {
+        do {
+            _ = try JSONSerialization.jsonObject(with: data)
+            return .success([])
+        } catch {
+            return .failure(Error.invalidData)
         }
     }
 }
