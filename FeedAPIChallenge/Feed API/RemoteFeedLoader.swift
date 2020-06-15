@@ -26,7 +26,7 @@ public final class RemoteFeedLoader: FeedLoader {
             case let .success((_, response)) where response.statusCode != 200 :
                 completion(.failure(Error.invalidData))
             case let .success((data, _)):
-                completion(RemoteFeedMapper.map(data))
+                completion(FeedImagesMapper.map(data))
             case .failure:
                 completion(.failure(Error.connectivity))
             }
@@ -34,7 +34,7 @@ public final class RemoteFeedLoader: FeedLoader {
     }
 }
 
-class RemoteFeedMapper {
+class FeedImagesMapper {
     static func map(_ data: Data) -> FeedLoader.Result {
         do {
             let root = try JSONDecoder().decode(Root.self, from: data)
