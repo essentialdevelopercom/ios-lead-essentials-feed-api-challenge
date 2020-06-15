@@ -18,6 +18,7 @@ public final class RemoteFeedLoader: FeedLoader {
 		self.client = client
 	}
     
+    // MARK: - Structs
     private struct StatusCodeConstants {
         static var code200 = 200
     }
@@ -31,15 +32,13 @@ public final class RemoteFeedLoader: FeedLoader {
     }
 
     private struct Item: Decodable {
-        let id: UUID
-        let description: String?
-        let location: String?
-        let image: URL
+        let image_id: UUID
+        let image_desc: String?
+        let image_loc: String?
+        let image_url: URL
         
         var item: FeedImage {
-            return FeedImage(id: id,
-                             description: description, location: location,
-                             url: image)
+            return FeedImage(id: image_id, description: image_desc, location: image_loc, url: image_url)
         }
     }
 	
