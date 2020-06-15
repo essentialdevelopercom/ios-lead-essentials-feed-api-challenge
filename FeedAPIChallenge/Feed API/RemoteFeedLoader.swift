@@ -34,7 +34,7 @@ public final class RemoteFeedLoader: FeedLoader {
     }
 }
 
-class FeedImagesMapper {
+final class FeedImagesMapper {
     static func map(_ data: Data) -> FeedLoader.Result {
         do {
             let root = try JSONDecoder().decode(Root.self, from: data)
