@@ -49,11 +49,11 @@ public final class RemoteFeedLoader: FeedLoader {
                 if response.statusCode != StatusCodeConstants.code200 {
                     completion(.failure(Error.invalidData))
                 } else {
-                    guard let _ = try? JSONDecoder().decode(Root.self, from: data) else {
+                    guard let root = try? JSONDecoder().decode(Root.self, from: data) else {
                         completion(.failure(Error.invalidData))
                         return
                     }
-                    completion(.success([]))
+                    completion(.success(root.feed))
                 }
             case .failure:
                 completion(.failure(Error.connectivity))
