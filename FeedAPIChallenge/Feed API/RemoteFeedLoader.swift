@@ -17,12 +17,16 @@ public final class RemoteFeedLoader: FeedLoader {
 		self.url = url
 		self.client = client
 	}
+    
+    private struct StatusCodeConstants {
+        static var code200 = 200
+    }
 	
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
         client.get(from: url) { (result) in
             switch result {
             case let .success((_, response)):
-                if response.statusCode != 200 {
+                if response.statusCode != StatusCodeConstants.code200 {
                     completion(.failure(Error.invalidData))
                 }
             case .failure:
