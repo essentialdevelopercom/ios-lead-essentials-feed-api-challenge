@@ -8,8 +8,7 @@
 
 import Foundation
 
-class FeedImagesMapper {
-
+internal final class FeedImagesMapper {
     // MARK: - Structs
     private struct StatusCodeConstants {
         static var code200 = 200
@@ -35,8 +34,7 @@ class FeedImagesMapper {
     }
     
     // MARK: - Functions
-    
-    static func map(data: Data, response: HTTPURLResponse) -> FeedLoader.Result {
+    internal static func map(data: Data, response: HTTPURLResponse) -> FeedLoader.Result {
         guard response.statusCode == StatusCodeConstants.code200, let root = try? JSONDecoder().decode(Root.self, from: data) else {
             return .failure(RemoteFeedLoader.Error.invalidData)
         }
