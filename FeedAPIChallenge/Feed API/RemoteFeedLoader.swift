@@ -44,7 +44,7 @@ class RemoteFeedMapper {
         }
     }
     
-    private struct RemoteFeedImage: Decodable {
+    private struct Item: Decodable {
         let id: UUID
         let description: String?
         let location: String?
@@ -59,7 +59,7 @@ class RemoteFeedMapper {
     }
     
     private struct Root: Decodable {
-        private let items: [RemoteFeedImage]
+        private let items: [Item]
         
         var feed: [FeedImage] {
             return items.map {
