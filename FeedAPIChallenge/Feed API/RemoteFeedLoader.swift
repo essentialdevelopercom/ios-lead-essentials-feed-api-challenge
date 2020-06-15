@@ -26,43 +26,45 @@ public final class RemoteFeedLoader: FeedLoader {
             case let .success((_, response)) where response.statusCode != 200 :
                 completion(.failure(Error.invalidData))
             case let .success((data, _)):
-                completion(RemoteFeedLoader.map(data))
+                completion(RemoteFeedMapper.map(data))
             case .failure:
                 completion(.failure(Error.connectivity))
             }
         }
     }
-    
+}
+
+class RemoteFeedMapper {
     static func map(_ data: Data) -> FeedLoader.Result {
         do {
             let root = try JSONDecoder().decode(Root.self, from: data)
             return .success(root.feed)
         } catch {
-            return .failure(Error.invalidData)
+            return .failure(RemoteFeedLoader.Error.invalidData)
         }
     }
-}
-
-struct Root: Decodable {
-    private let items: [RemoteFeedImage]
-
-    var feed: [FeedImage] {
-        return items.map {
-            FeedImage(id: $0.id, description: $0.description, location: $0.location, url: $0.url)
+    
+    struct RemoteFeedImage: Decodable {
+        let id: UUID
+        let description: String?
+        let location: String?
+        let url: URL
+        
+        private enum CodingKeys: String, CodingKey {
+            case id = "image_id"
+            case description = "image_desc"
+            case location = "image_loc"
+            case url = "image_url"
         }
     }
-}
-
-struct RemoteFeedImage: Decodable {
-    let id: UUID
-    let description: String?
-    let location: String?
-    let url: URL
-
-    private enum CodingKeys: String, CodingKey {
-        case id = "image_id"
-        case description = "image_desc"
-        case location = "image_loc"
-        case url = "image_url"
+    
+    struct Root: Decodable {
+        private let items: [RemoteFeedImage]
+        
+        var feed: [FeedImage] {
+            return items.map {
+                FeedImage(id: $0.id, description: $0.description, location: $0.location, url: $0.url)
+            }
+        }
     }
 }
