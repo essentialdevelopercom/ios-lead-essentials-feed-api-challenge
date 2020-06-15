@@ -26,6 +26,7 @@ public final class RemoteFeedLoader: FeedLoader {
             case let .success((data, _)):
                 do {
                     _ = try JSONSerialization.jsonObject(with: data)
+                    completion(.success([]))
                 } catch {
                     completion(.failure(Error.invalidData))
                 }
