@@ -44,19 +44,19 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
 		})
 	}
 
-//	func test_load_deliversInvalidDataErrorOnNon200HTTPResponse() {
-//		let (sut, client) = makeSUT()
-//
-//		let samples = [199, 201, 300, 400, 500]
-//
-//		samples.enumerated().forEach { index, code in
-//            expect(sut, toCompleteWith: .failure(.invalidData), when: {
-//				let json = makeItemsJSON([])
-//				client.complete(withStatusCode: code, data: json, at: index)
-//			})
-//		}
-//	}
-//
+	func test_load_deliversInvalidDataErrorOnNon200HTTPResponse() {
+		let (sut, client) = makeSUT()
+
+		let samples = [199, 201, 300, 400, 500]
+
+		samples.enumerated().forEach { index, code in
+            expect(sut, toCompleteWith: .failure(.invalidData), when: {
+				let json = makeItemsJSON([])
+				client.complete(withStatusCode: code, data: json, at: index)
+			})
+		}
+	}
+
 //	func test_load_deliversInvalidDataErrorOn200HTTPResponseWithInvalidJSON() {
 //		let (sut, client) = makeSUT()
 //
@@ -137,5 +137,4 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
 		let json = ["items": items]
 		return try! JSONSerialization.data(withJSONObject: json)
 	}
-
 }
