@@ -27,7 +27,7 @@ extension LoadFeedFromRemoteUseCaseTests {
         
         action()
         
-        waitForExpectations(timeout: 0.1)
+        waitForExpectations(timeout: 0.5)
     }
     
 }
