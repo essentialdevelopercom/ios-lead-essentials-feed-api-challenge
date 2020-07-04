@@ -26,7 +26,7 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
 	}
     
 	func test_loadTwice_requestsDataFromURLTwice() {
-		let url = URL(string: "https://a-given-url.com")!
+        let url = self.anyURL()
 		let (sut, client) = makeSUT(url: url)
 
 		sut.load { _ in }
@@ -97,9 +97,8 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
 	}
 
 	func test_load_doesNotDeliverResultAfterSUTInstanceHasBeenDeallocated() {
-		let url = URL(string: "http://any-url.com")!
 		let client = HTTPClientSpy()
-		var sut: RemoteFeedLoader? = RemoteFeedLoader(url: url, client: client)
+        var sut: RemoteFeedLoader? = RemoteFeedLoader(url: self.anyURL(), client: client)
 
 		var capturedResults = [RemoteFeedLoader.Result]()
 		sut?.load { capturedResults.append($0) }
@@ -111,6 +110,8 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
 	}
 	
 	// MARK: - Helpers
+
+    private func anyURL() -> URL { URL(string: "https://any-url.com")! }
 	
 	private func makeSUT(url: URL = URL(string: "https://a-url.com")!, file: StaticString = #file, line: UInt = #line) -> (sut: RemoteFeedLoader, client: HTTPClientSpy) {
 		let client = HTTPClientSpy()
