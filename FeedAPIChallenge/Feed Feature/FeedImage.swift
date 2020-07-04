@@ -5,6 +5,7 @@
 import Foundation
 
 public struct FeedImage: Hashable {
+
 	public let id: UUID
 	public let description: String?
 	public let location: String?
@@ -16,4 +17,5 @@ public struct FeedImage: Hashable {
 		self.location = location
 		self.url = url
 	}
+
 }
