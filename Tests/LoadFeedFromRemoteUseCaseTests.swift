@@ -20,14 +20,14 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
     //  ***********************
     
 	func test_init_doesNotRequestDataFromURL() {
-		let (_, client) = makeSUT()
+        let (_, client) = self.makeSUT()
 		
 		XCTAssertTrue(client.requestedURLs.isEmpty)
 	}
     
 	func test_loadTwice_requestsDataFromURLTwice() {
         let url = self.anyURL()
-		let (sut, client) = makeSUT(url: url)
+        let (sut, client) = self.makeSUT(url: url)
 
 		sut.load { _ in }
 		sut.load { _ in }
@@ -36,53 +36,53 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
 	}
 
 	func test_load_deliversConnectivityErrorOnClientError() {
-		let (sut, client) = makeSUT()
+        let (sut, client) = self.makeSUT()
 
-        expect(sut, toCompleteWith: .failure(.connectivity), when: {
+        self.expect(sut, toCompleteWith: .failure(.connectivity), when: {
 			let clientError = NSError(domain: "Test", code: 0)
 			client.complete(with: clientError)
 		})
 	}
 
 	func test_load_deliversInvalidDataErrorOnNon200HTTPResponse() {
-		let (sut, client) = makeSUT()
+        let (sut, client) = self.makeSUT()
 
 		let samples = [199, 201, 300, 400, 500]
 
 		samples.enumerated().forEach { index, code in
-            expect(sut, toCompleteWith: .failure(.invalidData), when: {
-				let json = makeItemsJSON([])
+            self.expect(sut, toCompleteWith: .failure(.invalidData), when: {
+                let json = self.makeItemsJSON([])
 				client.complete(withStatusCode: code, data: json, at: index)
 			})
 		}
 	}
 
 	func test_load_deliversInvalidDataErrorOn200HTTPResponseWithInvalidJSON() {
-		let (sut, client) = makeSUT()
+        let (sut, client) = self.makeSUT()
 
-        expect(sut, toCompleteWith: .failure(.invalidData), when: {
+        self.expect(sut, toCompleteWith: .failure(.invalidData), when: {
 			let invalidJSON = Data("invalid json".utf8)
 			client.complete(withStatusCode: 200, data: invalidJSON)
 		})
 	}
 
 	func test_load_deliversSuccessWithNoItemsOn200HTTPResponseWithEmptyJSONList() {
-		let (sut, client) = makeSUT()
+        let (sut, client) = self.makeSUT()
 
-		expect(sut, toCompleteWith: .success([]), when: {
-			let emptyListJSON = makeItemsJSON([])
+        self.expect(sut, toCompleteWith: .success([]), when: {
+            let emptyListJSON = self.makeItemsJSON([])
 			client.complete(withStatusCode: 200, data: emptyListJSON)
 		})
 	}
 
 	func test_load_deliversSuccessWithItemsOn200HTTPResponseWithJSONItems() {
-		let (sut, client) = makeSUT()
+        let (sut, client) = self.makeSUT()
 
-		let item1 = makeItem(
+        let item1 = self.makeItem(
 			id: UUID(),
 			imageURL: URL(string: "http://a-url.com")!)
 
-		let item2 = makeItem(
+        let item2 = self.makeItem(
 			id: UUID(),
 			description: "a description",
 			location: "a location",
@@ -90,8 +90,8 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
 
 		let items = [item1.model, item2.model]
 
-		expect(sut, toCompleteWith: .success(items), when: {
-			let json = makeItemsJSON([item1.json, item2.json])
+        self.expect(sut, toCompleteWith: .success(items), when: {
+            let json = self.makeItemsJSON([item1.json, item2.json])
 			client.complete(withStatusCode: 200, data: json)
 		})
 	}
@@ -104,7 +104,7 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
 		sut?.load { capturedResults.append($0) }
 
 		sut = nil
-		client.complete(withStatusCode: 200, data: makeItemsJSON([]))
+        client.complete(withStatusCode: 200, data: self.makeItemsJSON([]))
 
 		XCTAssertTrue(capturedResults.isEmpty)
 	}
@@ -116,8 +116,8 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
 	private func makeSUT(url: URL = URL(string: "https://a-url.com")!, file: StaticString = #file, line: UInt = #line) -> (sut: RemoteFeedLoader, client: HTTPClientSpy) {
 		let client = HTTPClientSpy()
 		let sut = RemoteFeedLoader(url: url, client: client)
-		trackForMemoryLeaks(sut, file: file, line: line)
-		trackForMemoryLeaks(client, file: file, line: line)
+        self.trackForMemoryLeaks(sut, file: file, line: line)
+        self.trackForMemoryLeaks(client, file: file, line: line)
 		return (sut, client)
 	}
 
