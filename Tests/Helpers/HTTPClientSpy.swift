@@ -7,6 +7,7 @@ import Foundation
 import FeedAPIChallenge
 
 class HTTPClientSpy: HTTPClient {
+
 	private var messages = [(url: URL, completion: (HTTPClient.Result) -> Void)]()
 	
 	var requestedURLs: [URL] {
@@ -39,4 +40,5 @@ class HTTPClientSpy: HTTPClient {
         
         self.messages[index].completion(.success((data, response)))
 	}
+
 }
