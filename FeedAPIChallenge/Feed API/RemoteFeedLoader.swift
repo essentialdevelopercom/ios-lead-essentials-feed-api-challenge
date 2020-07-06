@@ -21,11 +21,16 @@ public final class RemoteFeedLoader: FeedLoader {
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
         client.get(from: url) { (result) in
             switch (result) {
+                case let .success((data, response)):
+                    switch response.statusCode {
+                        case 200:
+                            fatalError("Unhandled case with data: \(data)")
+                            
+                        default:
+                            completion(.failure(Error.invalidData))
+                }
                 case .failure(_):
-                    print("Fail")
                     completion(.failure(Error.connectivity))
-                default:
-                    fatalError("Unhandled case error")
             }
         }
     }
