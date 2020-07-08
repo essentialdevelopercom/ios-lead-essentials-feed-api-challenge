@@ -24,7 +24,7 @@ public final class RemoteFeedLoader: FeedLoader {
                 case let .success((data, response)):
                     switch response.statusCode {
                         case 200:
-                            fatalError("Unhandled case with data: \(data)")
+                            completion(.failure(Error.invalidData))
                             
                         default:
                             completion(.failure(Error.invalidData))
