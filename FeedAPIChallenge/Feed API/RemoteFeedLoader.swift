@@ -24,15 +24,22 @@ public final class RemoteFeedLoader: FeedLoader {
                 case .failure(_):
                     completion(.failure(Error.connectivity))
                 case let .success((data, response)):
-                    guard response.statusCode != 200 else {
+                    guard response.statusCode == 200 else {
                         return completion(.failure(Error.invalidData))
                     }
-                    let decoder = JSONDecoder()
-                    guard let _ = try? decoder.decode([String].self, from: data) else {
+                    guard let _ = try? JSONDecoder().decode(Root.self, from: data) else {
                         return completion(.failure(Error.invalidData))
-                }
-
+                    }
+                    completion(.success([]))
             }
         }
+    }
+
+    private struct Root: Decodable {
+        let items: [RemoteItem]
+    }
+
+    private struct RemoteItem: Decodable {
+        
     }
 }
