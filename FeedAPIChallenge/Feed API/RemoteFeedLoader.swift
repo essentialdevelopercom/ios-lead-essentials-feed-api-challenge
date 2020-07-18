@@ -27,7 +27,12 @@ public final class RemoteFeedLoader: FeedLoader {
         }
 
         do {
-          try JSONDecoder().decode([FeedImageResponse].self, from: data)
+          let images = (try JSONDecoder().decode(FeedImagesResponse.self, from: data)).items
+          
+          if images.isEmpty {
+            return completion(.success([]))
+          }
+          
         } catch {
           return completion(.failure(Error.invalidData))
         }
@@ -50,5 +55,9 @@ public final class RemoteFeedLoader: FeedLoader {
       case imageLOC = "image_loc"
       case imageURL = "image_url"
     }
+  }
+  
+  struct FeedImagesResponse: Codable {
+    let items: [FeedImageResponse]
   }
 }
