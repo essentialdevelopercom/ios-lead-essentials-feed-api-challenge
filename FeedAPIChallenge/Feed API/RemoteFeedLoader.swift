@@ -18,16 +18,37 @@ public final class RemoteFeedLoader: FeedLoader {
 		self.client = client
 	}
 	
-	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
+  public func load(completion: @escaping (FeedLoader.Result) -> Void) {
     self.client.get(from: self.url) { result in
       switch result {
       case .success(let (data, response)):
         guard response.statusCode == 200 else {
           return completion(.failure(Error.invalidData))
         }
-      case .failure(let error):
+
+        do {
+          try JSONDecoder().decode([FeedImageResponse].self, from: data)
+        } catch {
+          return completion(.failure(Error.invalidData))
+        }
+
+      case .failure:
         completion(.failure(Error.connectivity))
       }
+    }
+  }
+
+  struct FeedImageResponse: Codable {
+    let imageID: String
+    let imageDesc: String?
+    let imageLOC: String?
+    let imageURL: URL
+
+    enum CodingKeys: String, CodingKey {
+      case imageID = "image_id"
+      case imageDesc = "image_desc"
+      case imageLOC = "image_loc"
+      case imageURL = "image_url"
     }
   }
 }
