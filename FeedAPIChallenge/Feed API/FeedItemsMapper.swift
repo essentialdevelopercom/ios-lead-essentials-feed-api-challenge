@@ -10,6 +10,8 @@ import Foundation
 
 final class FeedItemsMapper {
 
+    private static var CODE_200: Int { return 200 }
+
     private struct Root: Decodable {
         let items: [Item]
 
@@ -35,7 +37,7 @@ final class FeedItemsMapper {
     }
 
     static func map(data: Data, response: HTTPURLResponse) -> FeedLoader.Result {
-        if response.statusCode == 200, let root = try? JSONDecoder().decode(Root.self, from: data) {
+        if response.statusCode == CODE_200, let root = try? JSONDecoder().decode(Root.self, from: data) {
             return .success(root.feed)
         }
 
