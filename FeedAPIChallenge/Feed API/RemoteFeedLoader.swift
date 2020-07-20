@@ -22,7 +22,17 @@ public final class RemoteFeedLoader: FeedLoader {
         client.get(from: url) { result in
             switch result {
             case let .success(data, response):
-                completion(.failure(Error.invalidData))
+                
+                guard response.statusCode == 200 else {
+                    completion(.failure(Error.invalidData))
+                    return
+                }
+                
+                if let _ = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) {
+                    completion(.success([]))
+                } else {
+                    completion(.failure(Error.invalidData))
+                }
                 
                 
             case let .failure(error):
