@@ -24,10 +24,10 @@ final class FeedImageMapper {
         let url: URL
         
         private enum CodingKeys: String, CodingKey {
-            case id
-            case description
-            case location
-            case url
+            case id = "image_id"
+            case description = "image_desc"
+            case location = "image_loc"
+            case url = "image_url"
         }
         
         var item: FeedImage {
@@ -39,10 +39,11 @@ final class FeedImageMapper {
     static var OK_200: Int { return 200 }
     
     static func map(_ data: Data, response: HTTPURLResponse) -> FeedLoader.Result {
-        guard let _ = try? JSONSerialization.jsonObject(with: data, options: .allowFragments), response.statusCode == OK_200 else {
+        guard response.statusCode == OK_200 , let root = try? JSONDecoder().decode(Root.self, from: data) else {
             
             return .failure(RemoteFeedLoader.Error.invalidData)
         }
-         return .success([])
+        
+        return .success(root.images)
     }
 }
