@@ -23,6 +23,8 @@ public final class RemoteFeedLoader: FeedLoader {
             switch result {
             case let .success(data, response):
                 completion(.failure(Error.invalidData))
+                
+                
             case let .failure(error):
                 completion(.failure(Error.connectivity))
             }
