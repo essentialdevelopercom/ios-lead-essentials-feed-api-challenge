@@ -30,9 +30,7 @@ public final class RemoteFeedLoader: FeedLoader {
                     return completion(.failure(Error.invalidData))
                 }
                 
-                let root: Root = try! JSONDecoder().decode(Root.self, from: data)
-                let feedImages = root.items.map { FeedImageMapper.map(from: $0) }
-                return completion(.success(feedImages))
+                return completion(FeedImageMapper.map(from: data, response: response))
             }
         }
     }
@@ -57,7 +55,16 @@ struct FeedImageDto: Decodable {
 }
 
 struct FeedImageMapper {
-    static func map(from dto: FeedImageDto) -> FeedImage {
-        return FeedImage(id: dto.id, description: dto.description, location: dto.location, url: dto.url)
+    static func map(from data: Data, response: HTTPURLResponse) -> FeedLoader.Result {
+        guard response.statusCode == 200,
+              let root: Root = try? JSONDecoder().decode(Root.self, from: data) else {
+            return .failure(RemoteFeedLoader.Error.invalidData)
+        }
+        
+        let feedImages = root.items.map { dto in
+            FeedImage(id: dto.id, description: dto.description, location: dto.location, url: dto.url)
+        }
+
+        return .success(feedImages)
     }
 }
