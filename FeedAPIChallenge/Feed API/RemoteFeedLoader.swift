@@ -28,6 +28,7 @@ public final class RemoteFeedLoader: FeedLoader {
 				guard response.statusCode == RemoteFeedLoader.OK_200, let _ = try? JSONSerialization.jsonObject(with: data) else {
 					return completion(.failure(RemoteFeedLoader.Error.invalidData))
 				}
+				completion(.success([]))
 			}
 		}
     }
