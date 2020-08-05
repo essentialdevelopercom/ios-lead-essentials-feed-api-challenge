@@ -9,7 +9,7 @@
 import Foundation
 
 struct RemoteFeedImageMapper {
-    struct Root: Decodable {
+    private struct Root: Decodable {
         var items: [FeedImage]
     }
     
