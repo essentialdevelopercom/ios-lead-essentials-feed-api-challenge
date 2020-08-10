@@ -22,15 +22,10 @@ public final class RemoteFeedLoader: FeedLoader {
         client.get(from: url) { result in
             switch result {
             case let .success((data, response)):
-                if response.statusCode != 200 {
-                    completion(.failure(Error.invalidData))
-                } else {
-                    if let _ = try? JSONDecoder().decode([FeedImage].self, from: data) {
-                        
-                    } else {
-                        completion(.failure(Error.invalidData))
-                    }
-                }
+                guard
+                    response.statusCode == 200,
+                    let _ = try? JSONDecoder().decode([FeedImage].self, from: data)
+                else { completion(.failure(Error.invalidData)); return }
             default:
                 completion(.failure(Error.connectivity))
             }
