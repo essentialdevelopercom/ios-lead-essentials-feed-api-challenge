@@ -8,6 +8,8 @@ public final class RemoteFeedLoader: FeedLoader {
 	private let url: URL
 	private let client: HTTPClient
 	
+    static var OK_200: Int { return 200 }
+    
 	public enum Error: Swift.Error {
 		case connectivity
 		case invalidData
@@ -24,7 +26,7 @@ public final class RemoteFeedLoader: FeedLoader {
             case .failure:
                 completion(.failure(Error.connectivity))
             case let .success((data, response)):
-                if response.statusCode == 200,
+                if response.statusCode == RemoteFeedLoader.OK_200,
                     let _ = try? JSONSerialization.jsonObject(with: data, options: []) {
                     completion(.success([]))
                 } else {
