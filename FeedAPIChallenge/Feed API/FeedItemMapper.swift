@@ -11,10 +11,10 @@ import Foundation
 final class FeedItemMapper {
     
     private struct Root: Decodable {
-        let root: [Item]
+        let items: [Item]
         
         var feed: [FeedImage] {
-            root.map { $0.item }
+            items.map { $0.item }
         }
     }
     
