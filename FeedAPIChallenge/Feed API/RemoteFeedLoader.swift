@@ -8,14 +8,35 @@ public final class RemoteFeedLoader: FeedLoader {
 	private let url: URL
 	private let client: HTTPClient
 	
-    static var OK_200: Int { return 200 }
-    
-	public enum Error: Swift.Error {
+    public enum Error: Swift.Error {
 		case connectivity
 		case invalidData
 	}
     
+    public init(url: URL, client: HTTPClient) {
+		self.url = url
+		self.client = client
+	}
+	
+	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
+        client.get(from: url) { [weak self] result in
+            guard self != nil else { return }
+            
+            switch result {
+            case .failure:
+                completion(.failure(Error.connectivity))
+            case let .success((data, response)):
+                completion(FeedImagesMapper.map(data, from: response))
+            }
+        }
+    }
+}
+
+internal final class FeedImagesMapper {
+    static var OK_200: Int { return 200 }
+    
     private struct FeedImagesResponse: Decodable {
+        
         struct FeedImageResponse: Decodable {
             var image_id: UUID
             var image_desc: String?
@@ -29,32 +50,17 @@ public final class RemoteFeedLoader: FeedLoader {
                                  url: image_url)
             }
         }
+        
         let items: [FeedImageResponse]
-    }
-		
-	public init(url: URL, client: HTTPClient) {
-		self.url = url
-		self.client = client
-	}
-	
-	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
-        client.get(from: url) { [weak self] result in
-            guard self != nil else { return }
-            
-            switch result {
-            case .failure:
-                completion(.failure(Error.connectivity))
-            case let .success((data, response)):
-                if response.statusCode == RemoteFeedLoader.OK_200,
-                    let root = try? JSONDecoder().decode(FeedImagesResponse.self, from: data) {
-                    let feedImages = root.items.map { $0.item }
-                    completion(.success(feedImages))
-                } else {
-                    completion(.failure(Error.invalidData))
-                }
-            }
+        var feedImages: [FeedImage] {
+            return items.map { $0.item }
         }
     }
+    
+    internal static func map(_ data: Data, from response: HTTPURLResponse) -> RemoteFeedLoader.Result {
+        guard response.statusCode == OK_200, let root = try? JSONDecoder().decode(FeedImagesResponse.self, from: data) else {
+            return .failure(RemoteFeedLoader.Error.invalidData)
+        }
+        return .success(root.feedImages)
+    }
 }
-
-
