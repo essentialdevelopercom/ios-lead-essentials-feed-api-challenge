@@ -13,13 +13,13 @@ extension LoadFeedFromRemoteUseCaseTests {
         sut.load { receivedResult in
             switch (receivedResult, expectedResult) {
             case let (.success(receivedItems), .success(expectedItems)):
-                XCTAssertEqual(receivedItems, expectedItems, file: file, line: line)
+                XCTAssertEqual(receivedItems, expectedItems, file: (file), line: line)
                 
             case let (.failure(receivedError as RemoteFeedLoader.Error), .failure(expectedError)):
-                XCTAssertEqual(receivedError, expectedError, file: file, line: line)
+                XCTAssertEqual(receivedError, expectedError, file: (file), line: line)
                 
             default:
-                XCTFail("Expected result \(expectedResult) got \(receivedResult) instead", file: file, line: line)
+                XCTFail("Expected result \(expectedResult) got \(receivedResult) instead", file: (file), line: line)
             }
             
             exp.fulfill()
