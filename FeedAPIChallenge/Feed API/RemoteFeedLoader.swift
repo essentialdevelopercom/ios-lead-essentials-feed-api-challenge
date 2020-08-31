@@ -25,7 +25,7 @@ public final class RemoteFeedLoader: FeedLoader {
                 if response.statusCode != 200 {
                     completion(.failure(Error.invalidData))
                 } else {
-                    completion(.failure(Error.connectivity))
+                    completion(.failure(Error.invalidData))
                 }
             case .failure:
                 completion(.failure(Error.connectivity))
