@@ -9,14 +9,13 @@
 import Foundation
 
 internal struct FeedImageMapper {
-    static func map(_ data: Data, _ response: HTTPURLResponse) throws -> [FeedImage] {
+    static func map(_ data: Data, _ response: HTTPURLResponse) -> RemoteFeedLoader.Result {
         
-        guard response.statusCode == OK_200 else {
-            throw RemoteFeedLoader.Error.invalidData
+        guard response.statusCode == OK_200, let root = try? JSONDecoder().decode(Root.self, from: data) else {
+            return .failure(RemoteFeedLoader.Error.invalidData)
         }
         
-        let items = try JSONDecoder().decode(Root.self, from: data).items.map{ $0.feedImage }
-        return items
+        return .success(root.images)
     }
     
     static var OK_200: Int {
@@ -26,6 +25,12 @@ internal struct FeedImageMapper {
 
 private struct Root: Codable {
     let items: [RemoteFeedImage]
+    
+    var images: [FeedImage] {
+        return items.map {
+            $0.feedImage
+        }
+    }
 }
 
 private struct RemoteFeedImage {
