@@ -23,12 +23,8 @@ public final class RemoteFeedLoader: FeedLoader {
             switch result {
             case let .success((data, response)):
                 do {
-                    if response.statusCode != 200 {
-                        completion(.failure(Error.invalidData))
-                    } else {
-                        let images = try FeedRemoteImageMapper.map(data)
-                        completion(.success(images))
-                    }
+                    let images = try FeedRemoteImageMapper.map(data, response)
+                    completion(.success(images))
                 } catch {
                     completion(.failure(Error.invalidData))
                 }
@@ -58,7 +54,10 @@ private class FeedRemoteImageMapper {
         }
     }
     
-    static func map(_ data: Data) throws -> [FeedImage] {
+    static func map(_ data: Data, _ response: HTTPURLResponse) throws -> [FeedImage] {
+        guard response.statusCode == 200 else {
+            throw RemoteFeedLoader.Error.invalidData
+        }
         return try JSONDecoder().decode(RootItem.self, from: data)
             .items
             .map{ $0.image }
