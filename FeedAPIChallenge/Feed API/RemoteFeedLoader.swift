@@ -30,9 +30,9 @@ public final class RemoteFeedLoader: FeedLoader {
                     return completion(.failure(Error.invalidData))
                 }
                 
-                let decodeResult = Result { try JSONDecoder().decode([FeedImage].self, from: data) }
+                let itemsResult = Result { try FeedItemsMapper.map(data, from: response) }
                 
-                guard case .success = decodeResult else {
+                guard case .success = itemsResult else {
                     return completion(.failure(Error.invalidData))
                 }
                 
