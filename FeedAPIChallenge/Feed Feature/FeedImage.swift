@@ -18,7 +18,14 @@ public struct FeedImage: Hashable {
 	}
 }
 
-extension FeedImage: Decodable {}
+extension FeedImage: Decodable {
+    enum CodingKeys: String, CodingKey {
+        case id = "image_id"
+        case description = "image_desc"
+        case location = "image_loc"
+        case url = "image_url"
+    }
+}
 
 final class FeedItemsMapper {
     private struct Root: Decodable {
