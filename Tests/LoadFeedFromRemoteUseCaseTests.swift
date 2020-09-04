@@ -14,18 +14,20 @@ class RemoteFeedLoader {
         case invalidData
     }
     
+    typealias Result = FeedLoader.Result
+    
     init(url: URL, client: HTTPClient) {
         self.url = url
         self.client = client
     }
     
-    func load(completion: @escaping (Error) -> Void) {
+    func load(completion: @escaping (Result) -> Void) {
         client.get(from: url) { result in
             switch result {
             case .failure:
-                completion(.connectivity)
+                completion(.failure(Error.connectivity))
             case .success:
-                completion(.invalidData)
+                completion(.failure(Error.invalidData))
             }
         }
     }
@@ -90,7 +92,7 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
     func test_load_deliversConnectivityErrorOnClientError() {
         let (sut, client) = makeSUT()
         
-        expect(sut, toCompleteWithError: .connectivity, when: {
+        expect(sut, toCompleteWith: .failure(RemoteFeedLoader.Error.connectivity), when: {
             let clientError = NSError(domain: "client error", code: 0)
             client.complete(with: clientError)
         })
@@ -101,7 +103,7 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
         
         let samples = [199, 201, 300, 400, 500]
         samples.enumerated().forEach { index, code in
-            expect(sut, toCompleteWithError: .invalidData, when: {
+            expect(sut, toCompleteWith: .failure(RemoteFeedLoader.Error.invalidData), when: {
                 client.complete(withStatusCode: code, at: index)
             })
         }
@@ -110,12 +112,12 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
     func test_load_deliversInvalidDataOn200HTTPResponseWithInvalidData() {
         let (sut, client) = makeSUT()
         
-        expect(sut, toCompleteWithError: .invalidData, when: {
+        expect(sut, toCompleteWith: .failure(RemoteFeedLoader.Error.invalidData), when: {
             let invalidData = Data("invalid data".utf8)
             client.complete(withStatusCode: 200, data: invalidData)
         })
     }
-    
+        
     // MARK: - Helpers
     
     private func makeSUT(url: URL = URL(string: "any-url.com")!) -> (sut: RemoteFeedLoader, client: HTTPClient) {
@@ -124,12 +126,23 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
         return (sut, client)
     }
     
-    private func expect(_ sut: RemoteFeedLoader, toCompleteWithError error: RemoteFeedLoader.Error, when action: () -> Void, file: StaticString = #file, line: UInt = #line) {
-        var receivedErrors = [RemoteFeedLoader.Error]()
-        sut.load { receivedErrors.append($0) }
+    private func expect(_ sut: RemoteFeedLoader, toCompleteWith expectedResult: RemoteFeedLoader.Result, when action: () -> Void, file: StaticString = #file, line: UInt = #line) {
+        let exp = expectation(description: "Wait for load completion")
+        
+        sut.load { receivedResult in
+            switch (receivedResult, expectedResult) {
+            case let (.failure(receivedError as RemoteFeedLoader.Error), .failure(expectedError as RemoteFeedLoader.Error)):
+                XCTAssertEqual(receivedError, expectedError, file: file, line: line)
+                
+            default:
+                XCTFail("Expected failure, got \(receivedResult) instead", file: file, line: line)
+            }
+            
+            exp.fulfill()
+        }
         
         action()
         
-        XCTAssertEqual(receivedErrors, [error], file: file, line: line)
+        wait(for: [exp], timeout: 0.1)
     }
 }
