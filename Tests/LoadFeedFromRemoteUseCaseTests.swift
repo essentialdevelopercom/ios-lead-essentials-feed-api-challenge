@@ -26,8 +26,9 @@ class RemoteFeedLoader {
             switch result {
             case .failure:
                 completion(.failure(Error.connectivity))
-            case let .success((data, _)):
-                if let _ = try? JSONSerialization.jsonObject(with: data) {
+            case let .success((data, response)):
+                if response.statusCode == 200,
+                    let _ = try? JSONSerialization.jsonObject(with: data) {
                     return completion(.success([]))
                 }
                 completion(.failure(Error.invalidData))
@@ -51,7 +52,7 @@ class HTTPClient {
         messages[index].completion(.failure(error))
     }
     
-    func complete(withStatusCode code: Int, data: Data = Data(), at index: Int = 0) {
+    func complete(withStatusCode code: Int, data: Data, at index: Int = 0) {
         let response = HTTPURLResponse(url: requestedURLs[index],
                                        statusCode: code,
                                        httpVersion: nil,
@@ -107,7 +108,8 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
         let samples = [199, 201, 300, 400, 500]
         samples.enumerated().forEach { index, code in
             expect(sut, toCompleteWith: .failure(RemoteFeedLoader.Error.invalidData), when: {
-                client.complete(withStatusCode: code, at: index)
+                let emptyJSONList = Data("{\"items\": []}".utf8)
+                client.complete(withStatusCode: code, data: emptyJSONList, at: index)
             })
         }
     }
