@@ -11,6 +11,7 @@ class RemoteFeedLoader {
     
     enum Error: Swift.Error {
         case connectivity
+        case invalidData
     }
     
     init(url: URL, client: HTTPClient) {
@@ -19,14 +20,19 @@ class RemoteFeedLoader {
     }
     
     func load(completion: @escaping (Error) -> Void) {
-        client.get(from: url) { error in
-            completion(.connectivity)
+        client.get(from: url) { result in
+            switch result {
+            case .failure:
+                completion(.connectivity)
+            case .success:
+                completion(.invalidData)
+            }
         }
     }
 }
 
 class HTTPClient {
-    typealias Result = (Error)
+    typealias Result = (Swift.Result<HTTPURLResponse, Error>)
     var messages = [(url: URL, completion: (Result) -> Void)]()
     var requestedURLs: [URL] {
         return messages.map { $0.url }
@@ -37,7 +43,16 @@ class HTTPClient {
     }
     
     func complete(with error: Error, at index: Int = 0) {
-        messages[index].completion(error)
+        messages[index].completion(.failure(error))
+    }
+    
+    func complete(withStatusCode code: Int, at index: Int = 0) {
+        let response = HTTPURLResponse(url: requestedURLs[index],
+                                       statusCode: code,
+                                       httpVersion: nil,
+                                       headerFields: nil
+        )!
+        messages[index].completion(.success(response))
     }
 }
 
@@ -82,6 +97,17 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
         client.complete(with: clientError)
         
         XCTAssertEqual(receivedErrors, [.connectivity])
+    }
+    
+    func test_load_deliversInvalidDataOnNon200HTTPResponse() {
+        let (sut, client) = makeSUT()
+        
+        var receivedErrors = [RemoteFeedLoader.Error]()
+        sut.load { receivedErrors.append($0) }
+        
+        client.complete(withStatusCode: 400)
+        
+        XCTAssertEqual(receivedErrors, [.invalidData])
     }
     
     // MARK: - Helpers
