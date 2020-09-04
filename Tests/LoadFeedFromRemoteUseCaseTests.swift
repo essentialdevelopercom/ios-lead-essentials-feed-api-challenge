@@ -94,8 +94,8 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
     }
     
     func test_load_doesNotDeliverResultAfterSUTInstanceHasBeenDeallocated() {
-        let client = HTTPClient()
-        var sut: RemoteFeedLoader? = RemoteFeedLoader(url: URL(string: "any-url.com")!, request: client.get)
+        let client = HTTPClientSpy()
+        var sut: RemoteFeedLoader? = RemoteFeedLoader(url: URL(string: "any-url.com")!, client: client)
         
         var receivedResults: [RemoteFeedLoader.Result] = []
         sut?.load { receivedResults.append($0) }
@@ -108,9 +108,9 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
     
     // MARK: - Helpers
     
-    private func makeSUT(url: URL = URL(string: "any-url.com")!) -> (sut: RemoteFeedLoader, client: HTTPClient) {
-        let client = HTTPClient()
-        let sut = RemoteFeedLoader(url: url, request: client.get)
+    private func makeSUT(url: URL = URL(string: "any-url.com")!) -> (sut: RemoteFeedLoader, client: HTTPClientSpy) {
+        let client = HTTPClientSpy()
+        let sut = RemoteFeedLoader(url: url, client: client)
         return (sut, client)
     }
     
@@ -160,15 +160,14 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
         return .failure(error)
     }
     
-    private class HTTPClient {
-        typealias Result = (Swift.Result<(Data, HTTPURLResponse), Swift.Error>) -> Void
-        private var messages = [(url: URL, completion: Result)]()
+    private class HTTPClientSpy: HTTPClient {
+        private var messages = [(url: URL, completion: (HTTPClient.Result) -> Void)]()
         
         var requestedURLs: [URL] {
             return messages.map { $0.url }
         }
         
-        func get(from url: URL, completion: @escaping Result) {
+        func get(from url: URL, completion: @escaping (HTTPClient.Result) -> Void) {
             messages.append((url, completion))
         }
         
