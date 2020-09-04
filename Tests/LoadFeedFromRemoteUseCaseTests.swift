@@ -20,11 +20,9 @@ class RemoteFeedLoader {
 }
 
 class HTTPClient {
-    var requestedURL: URL?
     var requestedURLs: [URL] = []
     
     func get(from url: URL) {
-        requestedURL = url
         requestedURLs.append(url)
     }
 }
@@ -47,16 +45,7 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
     func test_load_doesNotRequestDataUponCreation() {
         let (_, client) = makeSUT()
         
-        XCTAssertNil(client.requestedURL)
-    }
-    
-    func test_load_requestDataFromURL() {
-        let url = URL(string: "another-url.com")!
-        let (sut, client) = makeSUT(url: url)
-        
-        sut.load()
-        
-        XCTAssertEqual(client.requestedURL, url)
+        XCTAssertTrue(client.requestedURLs.isEmpty)
     }
     
     func test_loadTwice_requestDataFromURLTwice() {
