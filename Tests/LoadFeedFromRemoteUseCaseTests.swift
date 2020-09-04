@@ -27,16 +27,17 @@ class RemoteFeedLoader {
 
 class HTTPClient {
     typealias Result = (Error)
-    var requestedURLs: [URL] = []
-    var completions = [(Result) -> Void]()
+    var messages = [(url: URL, completion: (Result) -> Void)]()
+    var requestedURLs: [URL] {
+        return messages.map { $0.url }
+    }
     
     func get(from url: URL, completion: @escaping (Result) -> Void) {
-        completions.append(completion)
-        requestedURLs.append(url)
+        messages.append((url, completion))
     }
     
     func complete(with error: Error, at index: Int = 0) {
-        completions[index](error)
+        messages[index].completion(error)
     }
 }
 
