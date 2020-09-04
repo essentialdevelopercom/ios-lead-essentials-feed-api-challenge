@@ -5,6 +5,12 @@
 import XCTest
 import FeedAPIChallenge
 
+protocol HTTPClient {
+    typealias Result = Swift.Result<(Data, HTTPURLResponse), Error>
+    
+    func get(from url: URL, completion: @escaping (Result) -> Void)
+}
+
 class RemoteFeedLoader {
     private let url: URL
     private let client: HTTPClient
@@ -75,7 +81,7 @@ final class FeedItemsMapper {
     }
 }
 
-class HTTPClient {
+class HTTPClientSpy: HTTPClient {
     typealias Result = (Swift.Result<(Data, HTTPURLResponse), Error>)
     var messages = [(url: URL, completion: (Result) -> Void)]()
     var requestedURLs: [URL] {
@@ -189,7 +195,7 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
     
     func test_load_doesNotDeliversResultAfterSUTInstanceHasBeenDeallocated() {
         let url = URL(string: "any-url.com")!
-        let client = HTTPClient()
+        let client = HTTPClientSpy()
         var sut: RemoteFeedLoader? = RemoteFeedLoader(url: url, client: client)
         
         var receivedResults = [RemoteFeedLoader.Result]()
@@ -203,8 +209,8 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
     
     // MARK: - Helpers
     
-    private func makeSUT(url: URL = URL(string: "any-url.com")!, file: StaticString = #file, line: UInt = #line) -> (sut: RemoteFeedLoader, client: HTTPClient) {
-        let client = HTTPClient()
+    private func makeSUT(url: URL = URL(string: "any-url.com")!, file: StaticString = #file, line: UInt = #line) -> (sut: RemoteFeedLoader, client: HTTPClientSpy) {
+        let client = HTTPClientSpy()
         let sut = RemoteFeedLoader(url: url, client: client)
         trackForMemoryLeaks(client, file: file, line: line)
         trackForMemoryLeaks(sut, file: file, line: line)
