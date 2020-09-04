@@ -20,13 +20,22 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
     //  ***********************
     
 	func test_init_doesNotRequestDataFromURL() {
+        let url = URL(string: "any-url.com")!
         let client = HTTPClient()
-        let _ = RemoteFeedLoader()
+        let _ = RemoteFeedLoader(url: url, request: client.get)
         
         XCTAssertNil(client.requestedURL)
 	}
     
 	func test_loadTwice_requestsDataFromURLTwice() {
+        let url = URL(string: "any-url.com")!
+        let client = HTTPClient()
+        let sut = RemoteFeedLoader(url: url, request: client.get)
+        
+        sut.load { _ in }
+        sut.load { _ in }
+        
+        XCTAssertEqual(client.requestedURLs, [url, url])
 	}
 
 	func test_load_deliversConnectivityErrorOnClientError() {
@@ -51,5 +60,10 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
     
     private class HTTPClient {
         var requestedURL: URL?
+        var requestedURLs = [URL]()
+        
+        func get(from url: URL) {
+            requestedURLs.append(url)
+        }
     }
 }
