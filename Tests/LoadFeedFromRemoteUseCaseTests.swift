@@ -31,15 +31,41 @@ class RemoteFeedLoader {
                     let root = try? JSONDecoder().decode(Root.self, from: data) else {
                         return completion(.failure(Error.invalidData))
                 }
-                return completion(.success(root.items))
+                return completion(.success(root.feed))
             }
         }
     }
 }
 
-struct Root: Decodable {
-    let items: [FeedImage]
+private struct Root: Decodable {
+    let items: [Item]
+    
+    var feed: [FeedImage] {
+        return items.map {
+            FeedImage(id: $0.id,
+                      description: $0.description,
+                      location: $0.location,
+                      url: $0.imageURL
+            )
+        }
+    }
 }
+
+private struct Item: Decodable {
+    let id: UUID
+    let description: String?
+    let location: String?
+    let imageURL: URL
+    
+    enum CodingKeys: String, CodingKey {
+        case id = "image_id"
+        case description = "image_desc"
+        case location = "image_loc"
+        case imageURL = "image_url"
+    }
+}
+
+
 
 class HTTPClient {
     typealias Result = (Swift.Result<(Data, HTTPURLResponse), Error>)
@@ -61,13 +87,13 @@ class HTTPClient {
                                        statusCode: code,
                                        httpVersion: nil,
                                        headerFields: nil
-        )!
+            )!
         messages[index].completion(.success((data, response)))
     }
 }
 
 class LoadFeedFromRemoteUseCaseTests: XCTestCase {
-	
+    
     //  ***********************
     //
     //  Follow the TDD process:
@@ -79,7 +105,7 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
     //  Repeat this process until all tests are passing.
     //
     //  ***********************
-
+    
     
     func test_load_doesNotRequestDataUponCreation() {
         let (_, client) = makeSUT()
@@ -164,7 +190,7 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
             client.complete(withStatusCode: 200, data: makeItemsJSON([item1JSON, item2JSON]))
         })
     }
-
+    
     // MARK: - Helpers
     
     private func makeSUT(url: URL = URL(string: "any-url.com")!) -> (sut: RemoteFeedLoader, client: HTTPClient) {
