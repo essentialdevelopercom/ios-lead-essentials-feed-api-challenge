@@ -50,7 +50,7 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
         let samples = [199, 201, 300, 400, 500]
         samples.enumerated().forEach { index, code in
             expect(sut, toCompleteWith: failure(.invalidData), when: {
-                client.complete(withStatusCode: code, at: index)
+                client.complete(withStatusCode: code, data: makeJSONItems([]), at: index)
             })
         }
     }
@@ -68,7 +68,7 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
         let (sut, client) = makeSUT()
         
         expect(sut, toCompleteWith: .success([]), when: {
-            let emptyJSONList = Data("{\"items\": []}".utf8)
+            let emptyJSONList = makeJSONItems([])
             client.complete(withStatusCode: 200, data: emptyJSONList)
         })
     }
@@ -109,6 +109,10 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
         wait(for: [exp], timeout: 1.0)
     }
     
+    private func makeJSONItems(_ items: [[String: Any]]) -> Data {
+        return try! JSONSerialization.data(withJSONObject: ["items": items])
+    }
+    
     private func failure(_ error: RemoteFeedLoader.Error) -> RemoteFeedLoader.Result {
         return .failure(error)
     }
@@ -127,7 +131,7 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
             completions[index](.failure(error))
         }
         
-        func complete(withStatusCode code: Int, data: Data = Data(), at index: Int = 0) {
+        func complete(withStatusCode code: Int, data: Data, at index: Int = 0) {
             let response = HTTPURLResponse(url: requestedURLs[index],
                                            statusCode: code,
                                            httpVersion: nil,
