@@ -73,8 +73,7 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
     }
     
     func test_load_deliversConnectivityErrorOnClientError() {
-        let url = URL(string: "another-url.com")!
-        let (sut, client) = makeSUT(url: url)
+        let (sut, client) = makeSUT()
         
         var receivedErrors = [RemoteFeedLoader.Error]()
         sut.load { receivedErrors.append($0) }
