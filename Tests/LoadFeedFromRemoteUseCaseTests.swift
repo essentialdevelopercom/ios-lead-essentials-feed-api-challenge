@@ -74,6 +74,36 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
     }
     
     func test_load_deliversSuccessWithItemsOn200HTTPResponseWithJSONItems() {
+        let (sut, client) = makeSUT()
+        
+        let item1 = FeedImage(id: UUID(),
+                              description: "a description",
+                              location: "a location",
+                              url: URL(string: "any-image-url.com")!
+        )
+        
+        let item1JSON = [
+            "image_id": item1.id.uuidString,
+            "image_desc": item1.description!,
+            "image_loc": item1.location!,
+            "image_url": item1.url.absoluteString
+        ]
+        
+        let item2 = FeedImage(id: UUID(),
+                              description: nil,
+                              location: nil,
+                              url: URL(string: "any-image-url.com")!
+        )
+        
+        let item2JSON = [
+            "image_id": item2.id.uuidString,
+            "image_url": item2.url.absoluteString
+        ]
+        
+        
+        expect(sut, toCompleteWith: .success([item1, item2]), when: {
+            client.complete(withStatusCode: 200, data: makeJSONItems([item1JSON, item2JSON]))
+        })
     }
     
     func test_load_doesNotDeliverResultAfterSUTInstanceHasBeenDeallocated() {
