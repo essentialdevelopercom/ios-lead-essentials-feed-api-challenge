@@ -90,13 +90,10 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
     func test_load_deliversConnectivityErrorOnClientError() {
         let (sut, client) = makeSUT()
         
-        var receivedErrors = [RemoteFeedLoader.Error]()
-        sut.load { receivedErrors.append($0) }
-        
-        let clientError = NSError(domain: "client error", code: 0)
-        client.complete(with: clientError)
-        
-        XCTAssertEqual(receivedErrors, [.connectivity])
+        expect(sut, toCompleteWithError: .connectivity, when: {
+            let clientError = NSError(domain: "client error", code: 0)
+            client.complete(with: clientError)
+        })
     }
     
     func test_load_deliversInvalidDataOnNon200HTTPResponse() {
@@ -104,12 +101,9 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
         
         let samples = [199, 201, 300, 400, 500]
         samples.enumerated().forEach { index, code in
-            var receivedErrors = [RemoteFeedLoader.Error]()
-            sut.load { receivedErrors.append($0) }
-            
-            client.complete(withStatusCode: code, at: index)
-            
-            XCTAssertEqual(receivedErrors, [.invalidData])
+            expect(sut, toCompleteWithError: .invalidData, when: {
+                client.complete(withStatusCode: code, at: index)
+            })
         }
     }
     
@@ -119,5 +113,14 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
         let client = HTTPClient()
         let sut = RemoteFeedLoader(url: url, client: client)
         return (sut, client)
+    }
+    
+    private func expect(_ sut: RemoteFeedLoader, toCompleteWithError error: RemoteFeedLoader.Error, when action: () -> Void, file: StaticString = #file, line: UInt = #line) {
+        var receivedErrors = [RemoteFeedLoader.Error]()
+        sut.load { receivedErrors.append($0) }
+        
+        action()
+        
+        XCTAssertEqual(receivedErrors, [error], file: file, line: line)
     }
 }
