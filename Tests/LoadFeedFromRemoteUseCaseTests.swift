@@ -162,16 +162,18 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
     
     private class HTTPClient {
         typealias Result = (Swift.Result<(Data, HTTPURLResponse), Swift.Error>) -> Void
-        var requestedURLs = [URL]()
-        var completions = [Result]()
+        private var messages = [(url: URL, completion: Result)]()
+        
+        var requestedURLs: [URL] {
+            return messages.map { $0.url }
+        }
         
         func get(from url: URL, completion: @escaping Result) {
-            requestedURLs.append(url)
-            completions.append(completion)
+            messages.append((url, completion))
         }
         
         func complete(with error: Error, at index: Int = 0) {
-            completions[index](.failure(error))
+            messages[index].completion(.failure(error))
         }
         
         func complete(withStatusCode code: Int, data: Data, at index: Int = 0) {
@@ -179,7 +181,7 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
                                            statusCode: code,
                                            httpVersion: nil,
                                            headerFields: nil)!
-            completions[index](.success((data, response)))
+            messages[index].completion(.success((data, response)))
         }
     }
 }
