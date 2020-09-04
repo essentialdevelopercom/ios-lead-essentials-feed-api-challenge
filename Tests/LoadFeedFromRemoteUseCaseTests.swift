@@ -27,14 +27,18 @@ class RemoteFeedLoader {
             case .failure:
                 completion(.failure(Error.connectivity))
             case let .success((data, response)):
-                if response.statusCode == 200,
-                    let _ = try? JSONSerialization.jsonObject(with: data) {
-                    return completion(.success([]))
+                guard response.statusCode == 200,
+                    let root = try? JSONDecoder().decode(Root.self, from: data) else {
+                        return completion(.failure(Error.invalidData))
                 }
-                completion(.failure(Error.invalidData))
+                return completion(.success(root.items))
             }
         }
     }
+}
+
+struct Root: Decodable {
+    let items: [FeedImage]
 }
 
 class HTTPClient {
@@ -127,6 +131,37 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
         
         expect(sut, toCompleteWith: .success([]), when: {
             client.complete(withStatusCode: 200, data: makeItemsJSON([]))
+        })
+    }
+    
+    func test_load_deliversItemsOn200HTTPResponseWithJSONItemsList() {
+        let (sut, client) = makeSUT()
+        let item1 = FeedImage(id: UUID(),
+                              description: "a description",
+                              location: "a location",
+                              url: URL(string: "any-url.com")!
+        )
+        
+        let item1JSON = [
+            "image_id": item1.id.uuidString,
+            "image_desc": item1.description!,
+            "image_loc": item1.location!,
+            "image_url": item1.url.absoluteString,
+        ]
+        
+        let item2 = FeedImage(id: UUID(),
+                              description: nil,
+                              location: nil,
+                              url: URL(string: "any-url.com")!
+        )
+        
+        let item2JSON = [
+            "image_id": item2.id.uuidString,
+            "image_url": item2.url.absoluteString,
+        ]
+        
+        expect(sut, toCompleteWith: .success([item1, item2]), when: {
+            client.complete(withStatusCode: 200, data: makeItemsJSON([item1JSON, item2JSON]))
         })
     }
 
