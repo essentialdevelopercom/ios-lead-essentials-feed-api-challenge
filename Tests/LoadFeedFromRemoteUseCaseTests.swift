@@ -5,6 +5,14 @@
 import XCTest
 import FeedAPIChallenge
 
+class RemoteFeedLoader {
+    
+}
+
+class HTTPClient {
+    var requestedURL: URL?
+}
+
 class LoadFeedFromRemoteUseCaseTests: XCTestCase {
 	
     //  ***********************
@@ -19,4 +27,11 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
     //
     //  ***********************
 
+    
+    func test_load_doesNotRequestDataUponCreation() {
+        let client = HTTPClient()
+        let _ = RemoteFeedLoader()
+        
+        XCTAssertNil(client.requestedURL)
+    }
 }
