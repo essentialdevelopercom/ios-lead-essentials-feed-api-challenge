@@ -65,7 +65,12 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
     }
     
     func test_load_deliversSuccessWithNoItemsOn200HTTPResponseWithEmptyJSONList() {
+        let (sut, client) = makeSUT()
         
+        expect(sut, toCompleteWith: .success([]), when: {
+            let emptyJSONList = Data("{\"items\": []}".utf8)
+            client.complete(withStatusCode: 200, data: emptyJSONList)
+        })
     }
     
     func test_load_deliversSuccessWithItemsOn200HTTPResponseWithJSONItems() {
@@ -90,6 +95,8 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
             case let (.failure(expectedError as RemoteFeedLoader.Error), .failure(receivedError as RemoteFeedLoader.Error)):
                 XCTAssertEqual(receivedError, expectedError, file: file, line: line)
                 
+            case let (.success(receivedItems), .success(expectedItems)):
+                XCTAssertEqual(receivedItems, expectedItems, file: file, line: line)
             default:
                 XCTFail("Expected failure, got \(receivedResult) instead", file: file, line: line)
             }
