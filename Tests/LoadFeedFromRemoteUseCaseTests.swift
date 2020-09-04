@@ -22,7 +22,9 @@ class RemoteFeedLoader {
     }
     
     func load(completion: @escaping (Result) -> Void) {
-        client.get(from: url) { result in
+        client.get(from: url) { [weak self] result in
+            guard self != nil else { return }
+            
             switch result {
             case .failure:
                 completion(.failure(Error.connectivity))
@@ -183,6 +185,20 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
         expect(sut, toCompleteWith: .success(items.map { $0.model }), when: {
             client.complete(withStatusCode: 200, data: makeItemsJSON(items.map { $0.json }))
         })
+    }
+    
+    func test_load_doesNotDeliversResultAfterSUTInstanceHasBeenDeallocated() {
+        let url = URL(string: "any-url.com")!
+        let client = HTTPClient()
+        var sut: RemoteFeedLoader? = RemoteFeedLoader(url: url, client: client)
+        
+        var receivedResults = [RemoteFeedLoader.Result]()
+        sut?.load { receivedResults.append($0) }
+        
+        sut = nil
+        client.complete(withStatusCode: 200, data: makeItemsJSON([]))
+        
+        XCTAssertTrue(receivedResults.isEmpty)
     }
     
     // MARK: - Helpers
