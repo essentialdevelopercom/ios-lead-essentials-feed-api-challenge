@@ -58,6 +58,24 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
 	}
 
 	func test_load_deliversInvalidDataErrorOnNon200HTTPResponse() {
+        let (sut, client) = makeSUT()
+        
+        let exp = expectation(description: "Wait for load completion")
+        sut.load { result in
+            switch result {
+            case let .failure(error as RemoteFeedLoader.Error):
+                XCTAssertEqual(error, .invalidData)
+                
+            default:
+                XCTFail("Expected failure, got \(result) instead")
+            }
+            
+            exp.fulfill()
+        }
+        
+        client.complete(withStatusCode: 400)
+        
+        wait(for: [exp], timeout: 1.0)
 	}
 
 	func test_load_deliversInvalidDataErrorOn200HTTPResponseWithInvalidJSON() {
@@ -81,7 +99,7 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
     }
     
     private class HTTPClient {
-        typealias Result = (Error) -> Void
+        typealias Result = (Swift.Result<HTTPURLResponse, Swift.Error>) -> Void
         var requestedURLs = [URL]()
         var completions = [Result]()
         
@@ -91,7 +109,15 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
         }
         
         func complete(with error: Error, at index: Int = 0) {
-            completions[index](error)
+            completions[index](.failure(error))
+        }
+        
+        func complete(withStatusCode code: Int, at index: Int = 0) {
+            let response = HTTPURLResponse(url: requestedURLs[index],
+                                           statusCode: code,
+                                           httpVersion: nil,
+                                           headerFields: nil)!
+            completions[index](.success(response))
         }
     }
 }

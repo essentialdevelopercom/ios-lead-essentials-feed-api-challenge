@@ -8,10 +8,11 @@ public final class RemoteFeedLoader: FeedLoader {
     private let url: URL
     private let request: Request
 	
-    public typealias Request = (URL, @escaping (Swift.Error) -> Void) -> Void
+    public typealias Request = (URL, @escaping (Swift.Result<HTTPURLResponse, Swift.Error>) -> Void) -> Void
     
 	public enum Error: Swift.Error {
         case connectivity
+        case invalidData
 	}
 		
     public init(url: URL, request: @escaping Request) {
@@ -20,8 +21,13 @@ public final class RemoteFeedLoader: FeedLoader {
 	}
 	
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
-        request(url) { error in
-            completion(.failure(Error.connectivity))
+        request(url) { result in
+            switch result {
+            case .failure:
+                completion(.failure(Error.connectivity))
+            case .success:
+                completion(.failure(Error.invalidData))
+            }
         }
     }
 }
