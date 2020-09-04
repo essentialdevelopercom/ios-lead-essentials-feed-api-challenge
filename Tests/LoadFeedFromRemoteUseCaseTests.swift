@@ -47,9 +47,12 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
 	func test_load_deliversInvalidDataErrorOnNon200HTTPResponse() {
         let (sut, client) = makeSUT()
         
-        expect(sut, toCompleteWith: .failure(RemoteFeedLoader.Error.invalidData), when: {
-            client.complete(withStatusCode: 400)
-        })
+        let samples = [199, 201, 300, 400, 500]
+        samples.enumerated().forEach { index, code in
+            expect(sut, toCompleteWith: .failure(RemoteFeedLoader.Error.invalidData), when: {
+                client.complete(withStatusCode: code, at: index)
+            })
+        }
 	}
 
 	func test_load_deliversInvalidDataErrorOn200HTTPResponseWithInvalidJSON() {
