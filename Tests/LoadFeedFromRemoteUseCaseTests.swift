@@ -20,6 +20,10 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
     //  ***********************
     
 	func test_init_doesNotRequestDataFromURL() {
+        let client = HTTPClient()
+        let _ = RemoteFeedLoader()
+        
+        XCTAssertNil(client.requestedURL)
 	}
     
 	func test_loadTwice_requestsDataFromURLTwice() {
@@ -44,4 +48,8 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
 	}
 	
 	// MARK: - Helpers
+    
+    private class HTTPClient {
+        var requestedURL: URL?
+    }
 }
