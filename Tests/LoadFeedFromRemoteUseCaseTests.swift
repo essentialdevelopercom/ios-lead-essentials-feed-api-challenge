@@ -43,20 +43,25 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
 
     
     func test_load_doesNotRequestDataUponCreation() {
-        let url = URL(string: "any-url.com")!
-        let client = HTTPClient()
-        let _ = RemoteFeedLoader(url: url, client: client)
+        let (_, client) = makeSUT()
         
         XCTAssertNil(client.requestedURL)
     }
     
     func test_load_requestDataFromURL() {
-        let url = URL(string: "any-url.com")!
-        let client = HTTPClient()
-        let sut = RemoteFeedLoader(url: url, client: client)
+        let url = URL(string: "another-url.com")!
+        let (sut, client) = makeSUT(url: url)
         
         sut.load()
         
         XCTAssertEqual(client.requestedURL, url)
+    }
+    
+    // MARK: - Helpers
+    
+    private func makeSUT(url: URL = URL(string: "any-url.com")!) -> (sut: RemoteFeedLoader, client: HTTPClient) {
+        let client = HTTPClient()
+        let sut = RemoteFeedLoader(url: url, client: client)
+        return (sut, client)
     }
 }
