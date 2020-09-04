@@ -9,21 +9,34 @@ class RemoteFeedLoader {
     private let url: URL
     private let client: HTTPClient
     
+    enum Error: Swift.Error {
+        case connectivity
+    }
+    
     init(url: URL, client: HTTPClient) {
         self.url = url
         self.client = client
     }
     
-    func load() {
-        client.get(from: url)
+    func load(completion: @escaping (Error) -> Void) {
+        client.get(from: url) { error in
+            completion(.connectivity)
+        }
     }
 }
 
 class HTTPClient {
+    typealias Result = (Error)
     var requestedURLs: [URL] = []
+    var completions = [(Result) -> Void]()
     
-    func get(from url: URL) {
+    func get(from url: URL, completion: @escaping (Result) -> Void) {
+        completions.append(completion)
         requestedURLs.append(url)
+    }
+    
+    func complete(with error: Error, at index: Int = 0) {
+        completions[index](error)
     }
 }
 
@@ -52,10 +65,23 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
         let url = URL(string: "another-url.com")!
         let (sut, client) = makeSUT(url: url)
         
-        sut.load()
-        sut.load()
+        sut.load { _ in }
+        sut.load { _ in }
         
         XCTAssertEqual(client.requestedURLs, [url, url])
+    }
+    
+    func test_load_deliversConnectivityErrorOnClientError() {
+        let url = URL(string: "another-url.com")!
+        let (sut, client) = makeSUT(url: url)
+        
+        var receivedErrors = [RemoteFeedLoader.Error]()
+        sut.load { receivedErrors.append($0) }
+        
+        let clientError = NSError(domain: "client error", code: 0)
+        client.complete(with: clientError)
+        
+        XCTAssertEqual(receivedErrors, [.connectivity])
     }
     
     // MARK: - Helpers
