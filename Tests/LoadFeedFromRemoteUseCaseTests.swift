@@ -6,7 +6,7 @@ import XCTest
 import FeedAPIChallenge
 
 class LoadFeedFromRemoteUseCaseTests: XCTestCase {
-	
+    
     //  ***********************
     //
     //  Follow the TDD process:
@@ -19,13 +19,13 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
     //
     //  ***********************
     
-	func test_init_doesNotRequestDataFromURL() {
+    func test_init_doesNotRequestDataFromURL() {
         let (_, client) = makeSUT()
         
         XCTAssertTrue(client.requestedURLs.isEmpty)
-	}
+    }
     
-	func test_loadTwice_requestsDataFromURLTwice() {
+    func test_loadTwice_requestsDataFromURLTwice() {
         let url = URL(string: "any-url.com")!
         let (sut, client) = makeSUT(url: url)
         
@@ -33,18 +33,18 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
         sut.load { _ in }
         
         XCTAssertEqual(client.requestedURLs, [url, url])
-	}
-
-	func test_load_deliversConnectivityErrorOnClientError() {
+    }
+    
+    func test_load_deliversConnectivityErrorOnClientError() {
         let (sut, client) = makeSUT()
         
         expect(sut, toCompleteWith: failure(.connectivity), when: {
             let clientError = NSError(domain: "", code: 0)
             client.complete(with: clientError)
         })
-	}
-
-	func test_load_deliversInvalidDataErrorOnNon200HTTPResponse() {
+    }
+    
+    func test_load_deliversInvalidDataErrorOnNon200HTTPResponse() {
         let (sut, client) = makeSUT()
         
         let samples = [199, 201, 300, 400, 500]
@@ -53,21 +53,28 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
                 client.complete(withStatusCode: code, at: index)
             })
         }
-	}
-
-	func test_load_deliversInvalidDataErrorOn200HTTPResponseWithInvalidJSON() {
-	}
-
-	func test_load_deliversSuccessWithNoItemsOn200HTTPResponseWithEmptyJSONList() {
-	}
-
-	func test_load_deliversSuccessWithItemsOn200HTTPResponseWithJSONItems() {
-	}
-
-	func test_load_doesNotDeliverResultAfterSUTInstanceHasBeenDeallocated() {
-	}
-	
-	// MARK: - Helpers
+    }
+    
+    func test_load_deliversInvalidDataErrorOn200HTTPResponseWithInvalidJSON() {
+        let (sut, client) = makeSUT()
+        
+        expect(sut, toCompleteWith: failure(.invalidData), when: {
+            let invalidData = Data("invalid data".utf8)
+            client.complete(withStatusCode: 200, data: invalidData)
+        })
+    }
+    
+    func test_load_deliversSuccessWithNoItemsOn200HTTPResponseWithEmptyJSONList() {
+        
+    }
+    
+    func test_load_deliversSuccessWithItemsOn200HTTPResponseWithJSONItems() {
+    }
+    
+    func test_load_doesNotDeliverResultAfterSUTInstanceHasBeenDeallocated() {
+    }
+    
+    // MARK: - Helpers
     
     private func makeSUT(url: URL = URL(string: "any-url.com")!) -> (sut: RemoteFeedLoader, client: HTTPClient) {
         let client = HTTPClient()
@@ -86,10 +93,10 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
             default:
                 XCTFail("Expected failure, got \(receivedResult) instead", file: file, line: line)
             }
-                        
+            
             exp.fulfill()
         }
-
+        
         action()
         
         wait(for: [exp], timeout: 1.0)
@@ -100,7 +107,7 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
     }
     
     private class HTTPClient {
-        typealias Result = (Swift.Result<HTTPURLResponse, Swift.Error>) -> Void
+        typealias Result = (Swift.Result<(Data, HTTPURLResponse), Swift.Error>) -> Void
         var requestedURLs = [URL]()
         var completions = [Result]()
         
@@ -113,12 +120,12 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
             completions[index](.failure(error))
         }
         
-        func complete(withStatusCode code: Int, at index: Int = 0) {
+        func complete(withStatusCode code: Int, data: Data = Data(), at index: Int = 0) {
             let response = HTTPURLResponse(url: requestedURLs[index],
                                            statusCode: code,
                                            httpVersion: nil,
                                            headerFields: nil)!
-            completions[index](.success(response))
+            completions[index](.success((data, response)))
         }
     }
 }

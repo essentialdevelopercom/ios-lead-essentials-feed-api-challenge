@@ -8,7 +8,7 @@ public final class RemoteFeedLoader: FeedLoader {
     private let url: URL
     private let request: Request
 	
-    public typealias Request = (URL, @escaping (Swift.Result<HTTPURLResponse, Swift.Error>) -> Void) -> Void
+    public typealias Request = (URL, @escaping (Swift.Result<(Data, HTTPURLResponse), Swift.Error>) -> Void) -> Void
     
 	public enum Error: Swift.Error {
         case connectivity
