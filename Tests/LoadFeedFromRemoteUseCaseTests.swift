@@ -47,7 +47,7 @@ final class FeedItemsMapper {
             }
         }
     }
-
+    
     private struct Item: Decodable {
         let id: UUID
         let description: String?
@@ -168,32 +168,20 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
     
     func test_load_deliversItemsOn200HTTPResponseWithJSONItemsList() {
         let (sut, client) = makeSUT()
-        let item1 = FeedImage(id: UUID(),
-                              description: "a description",
-                              location: "a location",
-                              url: URL(string: "any-url.com")!
+        let item1 = makeItem(description: "a description",
+                             location: "a location",
+                             url: URL(string: "any-url.com")!
         )
         
-        let item1JSON = [
-            "image_id": item1.id.uuidString,
-            "image_desc": item1.description!,
-            "image_loc": item1.location!,
-            "image_url": item1.url.absoluteString,
-        ]
-        
-        let item2 = FeedImage(id: UUID(),
-                              description: nil,
-                              location: nil,
-                              url: URL(string: "any-url.com")!
+        let item2 = makeItem(description: nil,
+                             location: nil,
+                             url: URL(string: "any-url.com")!
         )
+
+        let items = [item1, item2]
         
-        let item2JSON = [
-            "image_id": item2.id.uuidString,
-            "image_url": item2.url.absoluteString,
-        ]
-        
-        expect(sut, toCompleteWith: .success([item1, item2]), when: {
-            client.complete(withStatusCode: 200, data: makeItemsJSON([item1JSON, item2JSON]))
+        expect(sut, toCompleteWith: .success(items.map { $0.model }), when: {
+            client.complete(withStatusCode: 200, data: makeItemsJSON(items.map { $0.json }))
         })
     }
     
@@ -203,6 +191,23 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
         let client = HTTPClient()
         let sut = RemoteFeedLoader(url: url, client: client)
         return (sut, client)
+    }
+    
+    private func makeItem(description: String? = nil, location: String? = nil, url: URL) -> (model: FeedImage, json: [String: Any]) {
+        let item = FeedImage(id: UUID(),
+                             description: description,
+                             location: location,
+                             url: url
+        )
+        
+        let itemJSON = [
+            "image_id": item.id.uuidString,
+            "image_desc": item.description,
+            "image_loc": item.location,
+            "image_url": item.url.absoluteString,
+            ].compactMapValues { $0 }
+        
+        return (item, itemJSON)
     }
     
     private func makeItemsJSON(_ items: [[String: Any]]) -> Data {
