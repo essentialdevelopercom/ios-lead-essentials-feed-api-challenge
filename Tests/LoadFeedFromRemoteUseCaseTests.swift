@@ -36,6 +36,25 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
 	}
 
 	func test_load_deliversConnectivityErrorOnClientError() {
+        let (sut, client) = makeSUT()
+        
+        let exp = expectation(description: "Wait for load completion")
+        sut.load { result in
+            switch result {
+            case let .failure(receivedError as RemoteFeedLoader.Error):
+                XCTAssertEqual(receivedError, RemoteFeedLoader.Error.connectivity)
+                
+            default:
+                XCTFail("Expected failure, got \(result) instead")
+            }
+            
+            exp.fulfill()
+        }
+        
+        let clientError = NSError(domain: "", code: 0)
+        client.complete(with: clientError)
+        
+        wait(for: [exp], timeout: 1)
 	}
 
 	func test_load_deliversInvalidDataErrorOnNon200HTTPResponse() {
@@ -62,10 +81,17 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
     }
     
     private class HTTPClient {
+        typealias Result = (Error) -> Void
         var requestedURLs = [URL]()
+        var completions = [Result]()
         
-        func get(from url: URL) {
+        func get(from url: URL, completion: @escaping Result) {
             requestedURLs.append(url)
+            completions.append(completion)
+        }
+        
+        func complete(with error: Error, at index: Int = 0) {
+            completions[index](error)
         }
     }
 }
