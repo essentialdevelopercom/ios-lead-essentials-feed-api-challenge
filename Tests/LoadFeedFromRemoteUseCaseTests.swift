@@ -26,7 +26,10 @@ class RemoteFeedLoader {
             switch result {
             case .failure:
                 completion(.failure(Error.connectivity))
-            case .success:
+            case let .success((data, _)):
+                if let _ = try? JSONSerialization.jsonObject(with: data) {
+                    return completion(.success([]))
+                }
                 completion(.failure(Error.invalidData))
             }
         }
@@ -117,7 +120,16 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
             client.complete(withStatusCode: 200, data: invalidData)
         })
     }
+    
+    func test_load_deliversEmptyItemsOn200HTTPResponseWithEmptyJSONList() {
+        let (sut, client) = makeSUT()
         
+        expect(sut, toCompleteWith: .success([]), when: {
+            let emptyJSONList = Data("{\"items\": []}".utf8)
+            client.complete(withStatusCode: 200, data: emptyJSONList)
+        })
+    }
+
     // MARK: - Helpers
     
     private func makeSUT(url: URL = URL(string: "any-url.com")!) -> (sut: RemoteFeedLoader, client: HTTPClient) {
@@ -134,8 +146,10 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
             case let (.failure(receivedError as RemoteFeedLoader.Error), .failure(expectedError as RemoteFeedLoader.Error)):
                 XCTAssertEqual(receivedError, expectedError, file: file, line: line)
                 
+            case let (.success(receivedItems), .success(expectedItems)):
+                XCTAssertEqual(receivedItems, expectedItems, file: file, line: line)
             default:
-                XCTFail("Expected failure, got \(receivedResult) instead", file: file, line: line)
+                XCTFail("Expected \(expectedResult) result, got \(receivedResult) result instead", file: file, line: line)
             }
             
             exp.fulfill()
