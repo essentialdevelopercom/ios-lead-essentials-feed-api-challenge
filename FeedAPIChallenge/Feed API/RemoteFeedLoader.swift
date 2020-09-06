@@ -44,13 +44,6 @@ private struct Root: Decodable {
     let items: [RemoteFeedImage]
 }
 
-private struct RemoteFeedImage: Decodable {
-    let image_id: UUID
-    let image_desc: String?
-    let image_loc: String?
-    let image_url: URL
-}
-
 extension Array where Element == RemoteFeedImage {
     func toModel() -> [FeedImage] {
         return map { FeedImage(id: $0.image_id, description: $0.image_desc, location: $0.image_loc, url: $0.image_url) }
