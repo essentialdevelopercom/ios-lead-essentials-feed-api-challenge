@@ -3,6 +3,7 @@
 //
 
 import Foundation
+let OK_STATUS_CODE = 200
 
 public final class RemoteFeedLoader: FeedLoader {
 	private let url: URL
@@ -25,22 +26,28 @@ public final class RemoteFeedLoader: FeedLoader {
             case  .failure(_):
                 completion(.failure(RemoteFeedLoader.Error.connectivity))
             case let .success((data, response)):
-                if response.statusCode != 200{
-                    completion(.failure(RemoteFeedLoader.Error.invalidData))
-                }
-                else{
-                    if let root = try? JSONDecoder().decode(Root.self, from: data){
-                        completion(.success(root.items.map{FeedImage(id: $0.id, description: $0.description, location: $0.location, url: $0.url)}))
-                    }
-                    else{
-                        completion(.failure(RemoteFeedLoader.Error.invalidData))
-                    }
-
-                }
+                completion(RemoteFeedLoader.map(data,response))
             }
         }
     }
+
+    private static func  map(_ data : Data, _ response:HTTPURLResponse) -> FeedLoader.Result{
+
+        guard  response.statusCode == OK_STATUS_CODE else {
+            return (.failure(RemoteFeedLoader.Error.invalidData))
+        }
+
+        if let root = try? JSONDecoder().decode(Root.self, from: data){
+            return(.success(root.items.map{FeedImage(id: $0.id, description: $0.description, location: $0.location, url: $0.url)}))
+        }
+        else{
+            return(.failure(RemoteFeedLoader.Error.invalidData))
+        }
+
+    }
 }
+
+
 
 struct Root : Decodable {
     var items : [RemoteFeedImage]
