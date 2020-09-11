@@ -8,7 +8,6 @@ let OK_STATUS_CODE = 200
 public final class RemoteFeedLoader: FeedLoader {
 	private let url: URL
 	private let client: HTTPClient
-    private var urls = [URL]()
 	
 	public enum Error: Swift.Error {
 		case connectivity
