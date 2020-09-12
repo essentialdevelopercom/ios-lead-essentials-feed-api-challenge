@@ -14,8 +14,8 @@ final class FeedImageMapper {
 
     static func map(_ data: Data, _ response: HTTPURLResponse) -> FeedLoader.Result {
         if response.statusCode == OK_STATUS,
-            let feed = try? JSONDecoder().decode(Root.self, from: data) {
-            return .success(feed.items.map(\.feedImage))
+            let feedRoot = try? JSONDecoder().decode(Root.self, from: data) {
+            return .success(feedRoot.items.map(\.toFeedImage))
         } else {
             return .failure(Error.invalidData)
         }
@@ -31,7 +31,7 @@ final class FeedImageMapper {
         private let image_loc: String?
         private let image_url: URL
 
-        var feedImage: FeedImage {
+        var toFeedImage: FeedImage {
             FeedImage(id: image_id, description: image_desc, location: image_loc, url: image_url)
         }
     }
