@@ -23,9 +23,26 @@ public final class RemoteFeedLoader: FeedLoader {
             switch response {
             case .failure:
                 completion(.failure(Error.connectivity))
-            case .success(let _):
-                completion(.failure(Error.invalidData))
+            case .success(let success):
+               completion(FeedImageMapper.map(success.data, success.response))
             }
         }
     }
+}
+
+
+final class FeedImageMapper {
+    typealias Error = RemoteFeedLoader.Error
+
+    static func map(_ data: Data, _ response: HTTPURLResponse) -> FeedLoader.Result {
+        if response.statusCode == 200,
+            let _ = try? JSONDecoder().decode(Root.self, from: data) {
+            return .success([])
+        } else {
+            return .failure(Error.invalidData)
+        }
+    }
+}
+private struct Root: Decodable {
+    let items: [String]
 }
