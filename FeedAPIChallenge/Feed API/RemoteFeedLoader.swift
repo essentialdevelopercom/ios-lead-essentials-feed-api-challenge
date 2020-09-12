@@ -24,13 +24,42 @@ public final class RemoteFeedLoader: FeedLoader {
             case let .success((data, response)):
                 guard
                     response.statusCode == 200,
-                    let _ = try? JSONSerialization.jsonObject(with: data) else {
+                    let root = try? JSONDecoder().decode(Root.self, from: data) else {
                         return completion(.failure(Error.invalidData))
                 }
-                completion(.success([]))
+                completion(.success(root.feed))
             case .failure:
                 completion(.failure(Error.connectivity))
             }
         }
+    }
+}
+
+private struct Root: Decodable {
+    private let items: [RemoteFeedImage]
+
+    var feed: [FeedImage] {
+        return items.map {
+            return FeedImage(
+                id: $0.id,
+                description: $0.description,
+                location: $0.location,
+                url: $0.url
+            )
+        }
+    }
+}
+
+private struct RemoteFeedImage: Decodable {
+    let id: UUID
+    let description: String?
+    let location: String?
+    let url: URL
+
+    enum CodingKeys: String, CodingKey {
+        case id = "image_id"
+        case description = "image_desc"
+        case location = "image_loc"
+        case url = "image_url"
     }
 }
