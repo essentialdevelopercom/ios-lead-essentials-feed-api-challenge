@@ -22,8 +22,13 @@ public final class RemoteFeedLoader: FeedLoader {
         client.get(from: url) { (result) in
             switch result {
             case .success(let (data, response)):
-                if response.statusCode == 200, let root = try? JSONDecoder().decode(Root.self, from: data) {
-                    completion(.success(root.feedImages))
+                if response.statusCode == 200 {
+                    do {
+                        let root = try JSONDecoder().decode(Root.self, from: data)
+                        completion(.success(root.feedImages))
+                    } catch {
+                        completion(.failure(RemoteFeedLoader.Error.invalidData))
+                    }
                 } else {
                     completion(.failure(RemoteFeedLoader.Error.invalidData))
                 }
@@ -42,8 +47,8 @@ private struct Root: Decodable {
 
     struct Image: Decodable {
         let id: UUID
-        let description: String
-        let location: String
+        let description: String?
+        let location: String?
         let url: URL
 
         var feedImage: FeedImage {
