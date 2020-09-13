@@ -7,8 +7,8 @@
 //
 
 import Foundation
-
-final class FeedIamgeMapper {
+    
+final class FeedImageMapper {
     static func map(data: Data, response: HTTPURLResponse) -> FeedLoader.Result {
         guard response.statusCode == 200, let root = try? JSONDecoder().decode(Root.self, from: data) else {
             return .failure(RemoteFeedLoader.Error.invalidData)
