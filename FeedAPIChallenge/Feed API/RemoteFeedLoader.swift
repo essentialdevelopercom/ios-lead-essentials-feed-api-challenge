@@ -23,12 +23,7 @@ public final class RemoteFeedLoader: FeedLoader {
             guard self != nil else { return }
             switch result {
             case .success(let (data, response)):
-                do {
-                    let items = try FeedIamgeMapper.makeFeedImages(data: data, response: response)
-                    completion(.success(items))
-                } catch {
-                    completion(.failure(error))
-                }
+                completion(FeedIamgeMapper.map(data: data, response: response))
             case .failure(_):
                 completion(.failure(RemoteFeedLoader.Error.connectivity))
             }
@@ -36,15 +31,13 @@ public final class RemoteFeedLoader: FeedLoader {
     }
 }
 
-private class FeedIamgeMapper {
-
-    static func makeFeedImages(data: Data, response: HTTPURLResponse) throws -> [FeedImage] {
+final class FeedIamgeMapper {
+    static func map(data: Data, response: HTTPURLResponse) -> FeedLoader.Result {
         guard response.statusCode == 200, let root = try? JSONDecoder().decode(Root.self, from: data) else {
-            throw RemoteFeedLoader.Error.invalidData
-
+            return .failure(RemoteFeedLoader.Error.invalidData)
         }
 
-        return root.feedImages
+        return .success(root.feedImages)
     }
 }
 
