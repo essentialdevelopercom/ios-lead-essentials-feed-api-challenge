@@ -19,7 +19,9 @@ public final class RemoteFeedLoader: FeedLoader {
 	}
 	
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
-        client.get(from: url) { httpResult in
+        client.get(from: url) { [weak self] httpResult in
+            guard self != nil else { return }
+            
             let feedImageResult = FeedImageMapper.map(httpResult)
             completion(feedImageResult)
         }
