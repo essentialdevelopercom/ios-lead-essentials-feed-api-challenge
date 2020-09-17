@@ -19,15 +19,9 @@ public final class RemoteFeedLoader: FeedLoader {
 	}
 	
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
-        client.get(from: url) { result in
-            if case let .success((data, httpURLResponse)) = result {
-                let result = Result { try FeedImageMapper.map(data, httpURLResponse) }
-                completion(result)
-            
-            } else if case .failure = result {
-                completion(.failure(RemoteFeedLoader.Error.connectivity))
-                
-            }
+        client.get(from: url) { httpResult in
+            let feedImageResult = FeedImageMapper.map(httpResult)
+            completion(feedImageResult)
         }
     }
 }
@@ -51,7 +45,18 @@ class FeedImageMapper {
         }
     }
     
-    static func map(_ data: Data, _ httpURLResponse: HTTPURLResponse) throws -> [FeedImage] {
+    static func map(_ result: HTTPClient.Result) -> FeedLoader.Result {
+        switch result {
+        case let .success((data, httpURLResponse)):
+            return Result { try FeedImageMapper.map(data, httpURLResponse) }
+        
+        case .failure(_):
+            return .failure(RemoteFeedLoader.Error.connectivity)
+            
+        }
+    }
+    
+    private static func map(_ data: Data, _ httpURLResponse: HTTPURLResponse) throws -> [FeedImage] {
         guard httpURLResponse.statusCode == 200 else {
             throw RemoteFeedLoader.Error.invalidData
         }
@@ -63,6 +68,7 @@ class FeedImageMapper {
             
         } catch {
             throw RemoteFeedLoader.Error.invalidData
+            
         }
     }
     
