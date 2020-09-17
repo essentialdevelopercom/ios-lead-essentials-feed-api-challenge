@@ -21,20 +21,9 @@ public final class RemoteFeedLoader: FeedLoader {
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
         client.get(from: url) { result in
             if case let .success((data, httpURLResponse)) = result {
-                guard httpURLResponse.statusCode == 200 else {
-                    completion(.failure(RemoteFeedLoader.Error.invalidData))
-                    return
-                }
-                
-                do {
-                    let items = try JSONDecoder().decode(RemoteFeedImageItems.self, from: data)
-                    let feedImages = items.items.map { $0.toModel() }
-                    completion(.success(feedImages))
-                    
-                } catch {
-                    completion(.failure(RemoteFeedLoader.Error.invalidData))
-                }
-                
+                let result = Result { try FeedImageMapper.map(data, httpURLResponse) }
+                completion(result)
+            
             } else if case .failure = result {
                 completion(.failure(RemoteFeedLoader.Error.connectivity))
                 
@@ -43,26 +32,44 @@ public final class RemoteFeedLoader: FeedLoader {
     }
 }
 
-struct RemoteFeedImageItems: Decodable {
-    let items: [RemoteFeedImage]
-}
-
-struct RemoteFeedImage: Decodable {
-    let id: UUID
-    let description: String?
-    let location: String?
-    let url: URL
-    
-    enum CodingKeys: String, CodingKey {
-        case id = "image_id"
-        case description = "image_desc"
-        case location = "image_loc"
-        case url = "image_url"
+class FeedImageMapper {
+    private struct RemoteFeedImageItems: Decodable {
+        let items: [RemoteFeedImage]
     }
-}
 
-extension RemoteFeedImage {
-    func toModel() -> FeedImage {
-        return FeedImage(id: id, description: description, location: location, url: url)
+    private struct RemoteFeedImage: Decodable {
+        let id: UUID
+        let description: String?
+        let location: String?
+        let url: URL
+        
+        enum CodingKeys: String, CodingKey {
+            case id = "image_id"
+            case description = "image_desc"
+            case location = "image_loc"
+            case url = "image_url"
+        }
+    }
+    
+    static func map(_ data: Data, _ httpURLResponse: HTTPURLResponse) throws -> [FeedImage] {
+        guard httpURLResponse.statusCode == 200 else {
+            throw RemoteFeedLoader.Error.invalidData
+        }
+        
+        do {
+            let items = try JSONDecoder().decode(RemoteFeedImageItems.self, from: data)
+            let feedImages = items.items.map(toModel(_:))
+            return feedImages
+            
+        } catch {
+            throw RemoteFeedLoader.Error.invalidData
+        }
+    }
+    
+    private static func toModel(_ item: RemoteFeedImage) -> FeedImage {
+        return FeedImage(id: item.id,
+                         description: item.description,
+                         location: item.location,
+                         url: item.url)
     }
 }
