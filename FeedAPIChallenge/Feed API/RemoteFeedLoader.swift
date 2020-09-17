@@ -27,8 +27,9 @@ public final class RemoteFeedLoader: FeedLoader {
                 }
                 
                 do {
-                    _ = try JSONDecoder().decode(RemoteFeedImageItems.self, from: data)
-                    completion(.success([]))
+                    let items = try JSONDecoder().decode(RemoteFeedImageItems.self, from: data)
+                    let feedImages = items.items.map { $0.toModel() }
+                    completion(.success(feedImages))
                     
                 } catch {
                     completion(.failure(RemoteFeedLoader.Error.invalidData))
@@ -57,5 +58,11 @@ struct RemoteFeedImage: Decodable {
         case description = "image_desc"
         case location = "image_loc"
         case url = "image_url"
+    }
+}
+
+extension RemoteFeedImage {
+    func toModel() -> FeedImage {
+        return FeedImage(id: id, description: description, location: location, url: url)
     }
 }
