@@ -25,6 +25,8 @@ public final class RemoteFeedLoader: FeedLoader {
                     completion(.failure(RemoteFeedLoader.Error.invalidData))
                     return
                 }
+
+                completion(.failure(RemoteFeedLoader.Error.invalidData))
                 
             } else if case .failure = result {
                 completion(.failure(RemoteFeedLoader.Error.connectivity))
