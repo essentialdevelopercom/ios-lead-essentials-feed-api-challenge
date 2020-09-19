@@ -8,6 +8,6 @@
 
 import Foundation
 
-public struct FeedImageResponse: Decodable {
+internal struct FeedImageResponse: Decodable {
     let items: [FeedImageRemote]
 }

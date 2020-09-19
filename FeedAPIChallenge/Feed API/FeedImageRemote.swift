@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct FeedImageRemote: Decodable {
+internal struct FeedImageRemote: Decodable {
     public let id: UUID
     public let description: String?
     public let location: String?
