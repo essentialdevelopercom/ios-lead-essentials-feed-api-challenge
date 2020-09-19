@@ -14,6 +14,13 @@ public struct FeedImageRemote: Decodable {
     public let location: String?
     public let url: URL
     
+    private enum CodingKeys: String, CodingKey {
+        case id = "image_id"
+        case description = "image_desc"
+        case location = "image_loc"
+        case url = "image_url"
+    }
+    
     init(from model: FeedImage) {
         self.id = model.id
         self.description = model.description
