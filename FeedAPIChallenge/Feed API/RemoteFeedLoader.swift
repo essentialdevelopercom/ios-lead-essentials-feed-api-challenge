@@ -8,8 +8,6 @@ public final class RemoteFeedLoader: FeedLoader {
     private let url: URL
     private let client: HTTPClient
     
-    private static var OK_200: Int { return 200 }
-    
     public enum Error: Swift.Error {
         case connectivity
         case invalidData
@@ -24,12 +22,7 @@ public final class RemoteFeedLoader: FeedLoader {
         client.get(from: url, completion: { result in
             switch result {
             case let .success((data, response)):
-                if let _ = try? JSONSerialization.jsonObject(with: data),
-                    response.statusCode == RemoteFeedLoader.OK_200 {
-                    completion(.success([]))
-                } else {
-                    completion(.failure(Error.invalidData))
-                }
+                completion(FeedItemsMapper.map(data, form: response))
             case .failure(_):
                 completion(.failure(Error.connectivity))
             }
