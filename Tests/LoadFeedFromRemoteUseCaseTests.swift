@@ -28,13 +28,6 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
         XCTAssertTrue(client.requestedURLs.isEmpty)
     }
     
-    public static func XCTAssertFailsInWrongPlace(file: StaticString = #file,
-                                           line: UInt = #line) {
-        // We'll see a failure here, or many many failures if we use this
-        // assertion throughout our test suite.
-        XCTFail("Forgot to pass through our file and line!",file: file,line: line)
-    }
-    
     func test_loadTwice_requestsDataFromURLTwice() {
         let url = URL(string: "https://a-given-url.com")!
         let (sut, client) = makeSUT(url: url)
@@ -150,9 +143,3 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
 
 }
 
-class TestFailsInWrongPlace: XCTestCase {
-    func testAssertionFailsInWrongPlace() {
-        // The failure doesn't show up here, but instead where we defined our assertion!
-       // LoadFeedFromRemoteUseCaseTests.XCTAssertFailsInWrongPlace()
-    }
-}
