@@ -95,7 +95,7 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
 			client.complete(withStatusCode: 200, data: json)
 		})
 	}
-//
+
 //	func test_load_doesNotDeliverResultAfterSUTInstanceHasBeenDeallocated() {
 //		let url = URL(string: "http://any-url.com")!
 //		let client = HTTPClientSpy()
