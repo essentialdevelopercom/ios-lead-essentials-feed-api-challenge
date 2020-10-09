@@ -5,9 +5,6 @@
 import XCTest
 import FeedAPIChallenge
 
-
-
-
 class LoadFeedFromRemoteUseCaseTests: XCTestCase {
 	
     //  ***********************
@@ -22,6 +19,7 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
     //
     //  ***********************
     
+
     func test_init_doesNotRequestDataFromURL() {
         let (_, client) = makeSUT()
 
@@ -37,16 +35,16 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
 
         XCTAssertEqual(client.requestedURLs, [url, url])
     }
-//
-//	func test_load_deliversConnectivityErrorOnClientError() {
-//		let (sut, client) = makeSUT()
-//
-//        expect(sut, toCompleteWith: .failure(.connectivity), when: {
-//			let clientError = NSError(domain: "Test", code: 0)
-//			client.complete(with: clientError)
-//		})
-//	}
-//
+
+	func test_load_deliversConnectivityErrorOnClientError() {
+		let (sut, client) = makeSUT()
+
+        expect(sut, toCompleteWith: .failure(.connectivity), when: {
+			let clientError = NSError(domain: "Test", code: 0)
+			client.complete(with: clientError)
+		})
+	}
+
 //	func test_load_deliversInvalidDataErrorOnNon200HTTPResponse() {
 //		let (sut, client) = makeSUT()
 //
@@ -115,6 +113,7 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
 	
 	// MARK: - Helpers
 	
+
 	private func makeSUT(url: URL = URL(string: "https://a-url.com")!, file: StaticString = #file, line: UInt = #line) -> (sut: RemoteFeedLoader, client: HTTPClientSpy) {
 		let client = HTTPClientSpy()
 		let sut = RemoteFeedLoader(url: url, client: client)

@@ -7,24 +7,23 @@ import Foundation
 import FeedAPIChallenge
 
 class HTTPClientSpy: HTTPClient {
-	private var messages = [(url: URL, completion: (HTTPClient.Result) -> Void)]()
+	private var messages = [(url: URL, completion: (HTTPClientResult) -> Void)]()
 	
 	var requestedURLs: [URL] {
 		return messages.map { $0.url }
 	}
 	
-	func get(from url: URL, completion: @escaping (HTTPClient.Result) -> Void) {
+	func get(from url: URL, completion: @escaping (HTTPClientResult) -> Void) {
 		messages.append((url, completion))
 	}
-	
+
 	func complete(with error: Error, at index: Int = 0, file: StaticString = #file, line: UInt = #line) {
         guard messages.count > index else {
             return XCTFail("Can't complete request never made", file: file, line: line)
         }
-
 		messages[index].completion(.failure(error))
-	}
-	
+    }
+
 	func complete(withStatusCode code: Int, data: Data, at index: Int = 0, file: StaticString = #file, line: UInt = #line) {
         guard requestedURLs.count > index else {
             return XCTFail("Can't complete request never made", file: file, line: line)
@@ -37,6 +36,6 @@ class HTTPClientSpy: HTTPClient {
 			headerFields: nil
 		)!
         
-		messages[index].completion(.success((data, response)))
+        messages[index].completion(.success(data, response))
 	}
 }
