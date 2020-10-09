@@ -32,6 +32,7 @@ public final class RemoteFeedLoader: FeedLoader {
                     return
                 }
                 
+                completion(.success([]))
             }
         })
     }
