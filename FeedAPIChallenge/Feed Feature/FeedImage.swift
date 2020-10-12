@@ -20,9 +20,9 @@ public struct FeedImage: Hashable {
 
 extension FeedImage: Decodable {
     private enum CodingKeys: String, CodingKey {
-        case id
-        case description
-        case location
-        case url = "image"
+        case id = "image_id"
+        case description = "image_desc"
+        case location = "image_loc"
+        case url = "image_url"
     }
 }
