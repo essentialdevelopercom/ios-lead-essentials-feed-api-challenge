@@ -17,3 +17,12 @@ public struct FeedImage: Hashable {
 		self.url = url
 	}
 }
+
+extension FeedImage: Decodable {
+    private enum CodingKeys: String, CodingKey {
+        case id
+        case description
+        case location
+        case url = "image"
+    }
+}
