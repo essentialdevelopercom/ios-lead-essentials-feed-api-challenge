@@ -29,7 +29,7 @@ public final class RemoteFeedLoader: FeedLoader {
                 completion(.failure(Error.connectivity))
             case let .success((data, httpResponse)):
                 
-                guard httpResponse.statusCode == 200, let feedImages = ItemsMapper().mapJsonResponse(jsonResponse: data) else {
+                guard httpResponse.statusCode == 200, let feedImages = ItemsMapper.mapJsonResponse(jsonResponse: data) else {
                     completion(.failure(Error.invalidData))
                     return
                 }

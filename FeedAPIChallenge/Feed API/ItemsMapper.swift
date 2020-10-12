@@ -31,7 +31,7 @@ class ItemsMapper {
         }
     }
     
-    func mapJsonResponse(jsonResponse: Data) -> [FeedImage]? {
+    static func mapJsonResponse(jsonResponse: Data) -> [FeedImage]? {
         
         do {
             let root = try JSONDecoder().decode(ItemsMapper.Root.self, from: jsonResponse)
