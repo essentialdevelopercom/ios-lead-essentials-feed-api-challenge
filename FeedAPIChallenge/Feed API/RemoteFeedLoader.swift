@@ -29,25 +29,13 @@ public final class RemoteFeedLoader: FeedLoader {
                 completion(.failure(Error.connectivity))
             case let .success((data, httpResponse)):
                 
-                guard self?.isValidJson(data: data) == true, httpResponse.statusCode == 200 else {
+                guard httpResponse.statusCode == 200, let feedImages = ItemsMapper().mapJsonResponse(jsonResponse: data) else {
                     completion(.failure(Error.invalidData))
                     return
                 }
-                
-                ItemsMapper().mapJsonResponse(jsonResponse: data, completion: { feedImages in
-                    completion(.success(feedImages))
-                })
+                completion(.success(feedImages))
             }
         })
-    }
-    
-    private func isValidJson(data: Data) -> Bool {
-        
-        if let _ = try? JSONSerialization.jsonObject(with: data, options: []) {
-            return true
-        }
-        
-        return false
     }
         
 }

@@ -31,13 +31,13 @@ class ItemsMapper {
         }
     }
     
-    func mapJsonResponse(jsonResponse: Data, completion: @escaping ([FeedImage]) -> Void) {
+    func mapJsonResponse(jsonResponse: Data) -> [FeedImage]? {
         
         do {
             let root = try JSONDecoder().decode(ItemsMapper.Root.self, from: jsonResponse)
-            completion(root.feed)
+            return root.feed
         } catch {
-            completion([])
+            return nil
         }
         
     }
