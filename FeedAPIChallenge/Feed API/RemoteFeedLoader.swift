@@ -22,10 +22,10 @@ public final class RemoteFeedLoader: FeedLoader {
         client.get(from: url) { result in
             switch result {
             case let .success((data, response)):
-                if let items = try? FeedImageObjectMapper.map(data), response.statusCode == 200 {
-                    
+                do {
+                    let items = try FeedImageObjectMapper.map(data, response)
                     completion(.success(items))
-                } else {
+                } catch {
                     completion(.failure(Error.invalidData))
                 }
             case .failure:
