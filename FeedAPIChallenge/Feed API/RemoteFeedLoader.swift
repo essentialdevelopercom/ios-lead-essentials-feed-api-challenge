@@ -35,13 +35,17 @@ class FeedImagesMapper {
     static private var Ok200HTTPStatusCode = 200
     
     static func map(data: Data, response: HTTPURLResponse) -> FeedLoader.Result {
-        guard response.statusCode == Ok200HTTPStatusCode,
+        guard valid200HTTPResponse(from: response),
               let items = decodeFeedImages(from: data)
         else {
             return .failure(RemoteFeedLoader.Error.invalidData)
         }
 
         return .success(items.feedImages)
+    }
+    
+    static private func valid200HTTPResponse(from response: HTTPURLResponse) -> Bool {
+        response.statusCode == Ok200HTTPStatusCode
     }
     
     static private func decodeFeedImages(from data: Data) -> Root? {
