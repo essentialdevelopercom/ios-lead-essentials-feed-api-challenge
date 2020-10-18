@@ -32,10 +32,10 @@ public final class RemoteFeedLoader: FeedLoader {
 
 class FeedImageMapper {
     
-    static private var Ok200StatusCode = 200
+    static private var Ok200HTTPStatusCode = 200
     
     static func map(data: Data, response: HTTPURLResponse) -> FeedLoader.Result {
-        guard response.statusCode == Ok200StatusCode,
+        guard response.statusCode == Ok200HTTPStatusCode,
               let items = decodeFeedImages(from: data)
         else {
             return .failure(RemoteFeedLoader.Error.invalidData)
