@@ -40,7 +40,7 @@ public final class RemoteFeedLoader: FeedLoader {
         return .success([])
     }
     
-    struct Root: Decodable {
+    private struct Root: Decodable {
         let items: [FeedImage]
     }
 }
