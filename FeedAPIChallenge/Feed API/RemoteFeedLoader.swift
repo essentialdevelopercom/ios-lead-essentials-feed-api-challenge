@@ -67,14 +67,11 @@ private struct FeedImageMapper {
     
     // MARK: - Mapping
     static func map(data: Data, with response: HTTPURLResponse) -> FeedLoader.Result {
-        guard response.statusCode == HTTPStatusCode.success.rawValue else {
+        guard response.statusCode == HTTPStatusCode.success.rawValue,
+              let feedImages = try? JSONDecoder().decode(Root.self, from: data).feedImages else {
             return .failure(RemoteFeedLoader.Error.invalidData)
         }
-        
-        if let root = try? JSONDecoder().decode(Root.self, from: data) {
-            return .success(root.feedImages)
-        } else {
-            return .failure(RemoteFeedLoader.Error.invalidData)
-        }
+    
+        return .success(feedImages)
     }
 }
