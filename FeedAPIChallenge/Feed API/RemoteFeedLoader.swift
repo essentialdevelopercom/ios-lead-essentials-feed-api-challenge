@@ -61,9 +61,13 @@ private struct FeedImageMapper {
         }
     }
     
+    private enum HTTPStatusCode: Int {
+        case success = 200
+    }
+    
     // MARK: - Mapping
     static func map(data: Data, with response: HTTPURLResponse) -> FeedLoader.Result {
-        guard response.statusCode == 200 else {
+        guard response.statusCode == HTTPStatusCode.success.rawValue else {
             return .failure(RemoteFeedLoader.Error.invalidData)
         }
         
