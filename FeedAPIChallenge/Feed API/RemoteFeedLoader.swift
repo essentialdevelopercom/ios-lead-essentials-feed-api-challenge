@@ -22,7 +22,7 @@ public final class RemoteFeedLoader: FeedLoader {
         client.get(from: url) { result in
             switch result {
             case let .success((data, response)):
-                completion(FeedImageMapper.map(data: data, response: response))
+                completion(FeedImagesMapper.map(data: data, response: response))
             default:
                 completion(.failure(Error.connectivity))
             }
@@ -30,7 +30,7 @@ public final class RemoteFeedLoader: FeedLoader {
     }
 }
 
-class FeedImageMapper {
+class FeedImagesMapper {
     
     static private var Ok200HTTPStatusCode = 200
     
