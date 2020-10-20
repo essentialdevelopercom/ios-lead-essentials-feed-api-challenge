@@ -9,3 +9,5 @@ public protocol FeedLoader {
 	
 	func load(completion: @escaping (Result) -> Void)
 }
+
+
