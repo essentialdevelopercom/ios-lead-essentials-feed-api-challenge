@@ -20,7 +20,14 @@ public final class RemoteFeedLoader: FeedLoader {
 	
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
         client.get(from: url) { result in
-            completion(.failure(RemoteFeedLoader.Error.connectivity))
+            switch result {
+            case .failure:
+                completion(.failure(RemoteFeedLoader.Error.connectivity))
+            case let .success(( _, response)):
+                if response.statusCode != 200 {
+                    completion(.failure(RemoteFeedLoader.Error.invalidData))
+                }
+            }
         }
     }
 }
