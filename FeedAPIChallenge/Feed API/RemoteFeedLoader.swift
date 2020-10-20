@@ -23,9 +23,9 @@ public final class RemoteFeedLoader: FeedLoader {
             switch result {
             case .failure:
                 completion(.failure(RemoteFeedLoader.Error.connectivity))
-            case let .success(( data, response)):
-                if response.statusCode == 200, (try? JSONSerialization.jsonObject(with: data, options: .fragmentsAllowed)) != nil {
-                    completion(.success([]))
+            case let .success((data, response)):
+                if response.statusCode == 200, let itemsRoot = try? JSONDecoder().decode(Root.self, from: data) {
+                    completion(.success(itemsRoot.items.map { $0.feedImage }))
                 } else {
                     completion(.failure(RemoteFeedLoader.Error.invalidData))
                 }
@@ -33,3 +33,29 @@ public final class RemoteFeedLoader: FeedLoader {
         }
     }
 }
+
+private struct Root: Decodable {
+    
+    struct ImageItem: Decodable {
+        let id: UUID
+        let description: String?
+        let location: String?
+        let imageURL: URL
+        
+        enum CodingKeys: String, CodingKey {
+            case id = "image_id"
+            case description = "image_desc"
+            case location = "image_loc"
+            case imageURL = "image_url"
+        }
+        
+        var feedImage: FeedImage {
+            return FeedImage(id: id, description: description, location: location, url: imageURL)
+        }
+    }
+    
+    var items: [ImageItem]
+    
+}
+
+
