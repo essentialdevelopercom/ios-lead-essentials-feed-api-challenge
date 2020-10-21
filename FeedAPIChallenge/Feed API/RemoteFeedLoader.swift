@@ -27,15 +27,19 @@ public final class RemoteFeedLoader: FeedLoader {
                     return
                 }
 
-                guard let _ = try? JSONSerialization.jsonObject(with: data, options: [.allowFragments]) else {
+                guard let feed = try? JSONDecoder().decode(Root.self, from: data) else {
                     completion(.failure(Error.invalidData))
                     return
                 }
 
-                completion(.success([]))
+                completion(.success(feed.items))
             case .failure:
                 completion(.failure(Error.connectivity))
             }
         }
     }
+}
+
+private struct Root: Decodable {
+    let items: [FeedImage]
 }
