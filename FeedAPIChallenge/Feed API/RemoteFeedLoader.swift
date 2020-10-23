@@ -12,6 +12,24 @@ public final class RemoteFeedLoader: FeedLoader {
 		case connectivity
 		case invalidData
 	}
+    
+    private struct Root: Codable{
+        let items: [FeedImageParseModel]
+    }
+    
+    private struct FeedImageParseModel: Codable {
+        public let id: UUID
+        public let description: String?
+        public let location: String?
+        public let url: URL
+        
+        public init(id: UUID, description: String?, location: String?, url: URL) {
+            self.id = id
+            self.description = description
+            self.location = location
+            self.url = url
+        }
+    }
 		
 	public init(url: URL, client: HTTPClient) {
 		self.url = url
@@ -24,7 +42,8 @@ public final class RemoteFeedLoader: FeedLoader {
             case .failure(_):
                 completion(.failure(Error.connectivity))
             case let .success( (data, response)):
-                guard response.statusCode == 200, let _ = try? JSONDecoder().decode(String.self, from: data)
+                guard response.statusCode == 200,
+                      let _ = try? JSONDecoder().decode(Root.self, from: data)
                 else{
                     completion(.failure(Error.invalidData))
                     return
@@ -34,3 +53,5 @@ public final class RemoteFeedLoader: FeedLoader {
         })
     }
 }
+
+
