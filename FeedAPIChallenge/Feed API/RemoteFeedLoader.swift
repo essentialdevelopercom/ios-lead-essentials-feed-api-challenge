@@ -43,15 +43,13 @@ public final class RemoteFeedLoader: FeedLoader {
     }
     
     public func load(completion: @escaping (FeedLoader.Result) -> Void) {
-        client.get(from: url, completion: { result in
+        client.get(from: url, completion: {[weak self] result in
             switch result{
             case .failure(_):
                 completion(.failure(Error.connectivity))
             case let .success( (data, response)):
-                let decoder = JSONDecoder()
-                decoder.keyDecodingStrategy = .convertFromSnakeCase
                 guard response.statusCode == 200,
-                      let data = try? decoder.decode(Root.self, from: data)
+                      let data = self?.decodeRootFrom(data: data)
                 else{
                     completion(.failure(Error.invalidData))
                     return
@@ -61,6 +59,12 @@ public final class RemoteFeedLoader: FeedLoader {
                 ))
             }
         })
+    }
+    
+    private func decodeRootFrom(data: Data) -> Root?{
+        let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
+        return try? decoder.decode(Root.self, from: data)
     }
 }
 
