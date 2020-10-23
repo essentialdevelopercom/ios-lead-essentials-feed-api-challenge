@@ -14,7 +14,13 @@ public final class RemoteFeedLoader: FeedLoader {
     }
     
     private struct Root: Codable{
-        let items: [FeedImageParseModel]
+        private let items: [FeedImageParseModel]
+        
+        public func mapToFeedImages() -> [FeedImage]{
+            return items.map({
+                FeedImage.init(id: $0.imageId, description: $0.imageDesc, location: $0.imageLoc, url: $0.imageUrl)
+            })
+        }
     }
     
     private struct FeedImageParseModel: Codable {
@@ -51,9 +57,7 @@ public final class RemoteFeedLoader: FeedLoader {
                     return
                 }
                 completion(.success(
-                    data.items.map({
-                        FeedImage.init(id: $0.imageId, description: $0.imageDesc, location: $0.imageLoc, url: $0.imageUrl)
-                    })
+                    data.mapToFeedImages()
                 ))
             }
         })
