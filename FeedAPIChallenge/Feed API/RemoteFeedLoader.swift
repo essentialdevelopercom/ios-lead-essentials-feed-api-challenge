@@ -31,6 +31,7 @@ public final class RemoteFeedLoader: FeedLoader {
                         completion(.failure(Error.invalidData))
                         return
                     }
+                    completion(.success([]))
                 }
             }
         }
