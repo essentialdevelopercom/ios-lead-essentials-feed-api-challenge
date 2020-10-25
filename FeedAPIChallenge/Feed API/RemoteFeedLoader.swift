@@ -27,12 +27,10 @@ public final class RemoteFeedLoader: FeedLoader {
     
     private func mapCompletionResult(_ result: Result<(Data, HTTPURLResponse), Swift.Error>, completion: @escaping (FeedLoader.Result) -> Void) {
         switch result {
-        case let .success(data, response):
-            if response.statusCode != 200 {
+        case let .success((data, response)):
+            if response.statusCode != 200 || !JSONSerialization.isValidJSONObject(data) {
                 completion(.failure(RemoteFeedLoader.Error.invalidData))
-            } else if !JSONSerialization.isValidJSONObject(data) {
-                completion(.failure(RemoteFeedLoader.Error.invalidData))
-            }
+            } 
         case .failure:
             completion(.failure(RemoteFeedLoader.Error.connectivity))
         }
