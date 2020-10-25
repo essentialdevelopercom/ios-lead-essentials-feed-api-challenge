@@ -26,16 +26,42 @@ public final class RemoteFeedLoader: FeedLoader {
                     completion(.failure(Error.invalidData))
                     return
                 }
-                guard let jsonDictionary = try? JSONSerialization.jsonObject(with: data) as? [String: Any], let items = jsonDictionary["items"] as? [Any] else {
+                guard let feedItemList = try? JSONDecoder().decode(FeedItemListDTO.self, from: data) else {
                     completion(.failure(Error.invalidData))
                     return
                 }
-                if items.isEmpty {
+                if feedItemList.items.isEmpty {
                     completion(.success([]))
+                } else {
+                    completion(.success(feedItemList.items.map { $0.feedImage }))
                 }
             case .failure:
                 completion(.failure(Error.connectivity))
             }
         }
+    }
+}
+
+private struct FeedItemListDTO: Decodable {
+    let items: [FeedImageDTO]
+}
+
+private struct FeedImageDTO: Decodable {
+    let id: UUID
+    let description: String?
+    let location: String?
+    let url: URL
+
+    enum CodingKeys: String, CodingKey {
+        case id = "image_id"
+        case description = "image_desc"
+        case location = "image_loc"
+        case url = "image_url"
+    }
+}
+
+private extension FeedImageDTO {
+    var feedImage: FeedImage {
+        FeedImage(id: id, description: description, location: location, url: url)
     }
 }
