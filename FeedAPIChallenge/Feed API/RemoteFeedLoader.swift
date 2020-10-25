@@ -28,11 +28,40 @@ public final class RemoteFeedLoader: FeedLoader {
     private func mapCompletionResult(_ result: Result<(Data, HTTPURLResponse), Swift.Error>, completion: @escaping (FeedLoader.Result) -> Void) {
         switch result {
         case let .success((data, response)):
-            if response.statusCode != 200 || !JSONSerialization.isValidJSONObject(data) {
-                completion(.failure(RemoteFeedLoader.Error.invalidData))
-            } 
+            completion(FeedImageMapper.map(data, from: response))
         case .failure:
             completion(.failure(RemoteFeedLoader.Error.connectivity))
         }
+    }
+}
+
+class FeedImageMapper {
+    private static var ACK200: Int { 200 }
+    private struct Root: Decodable {
+        let items: [Item]
+        
+        var feedImages: [FeedImage] {
+            items.map(\.feedImage)
+        }
+    }
+    
+    private struct Item: Decodable {
+        let id: UUID
+        let description: String?
+        let location: String?
+        let image: URL
+        
+        var feedImage: FeedImage {
+            FeedImage(id: id, description: description, location: location, url: image)
+        }
+    }
+    
+    static func map(_ data: Data, from response: HTTPURLResponse) -> FeedLoader.Result {
+        guard response.statusCode == ACK200,
+              let root = try? JSONDecoder().decode(Root.self, from: data) else {
+            return .failure(RemoteFeedLoader.Error.invalidData)
+        }
+        
+        return .success(root.feedImages)
     }
 }
