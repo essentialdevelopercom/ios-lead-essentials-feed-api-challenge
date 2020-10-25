@@ -14,18 +14,24 @@ internal class FeedItemsMapper{
         
         internal func mapToFeedImages() -> [FeedImage]{
             return items.map({
-                FeedImage.init(id: $0.imageId, description: $0.imageDesc, location: $0.imageLoc, url: $0.imageUrl)
+                FeedImage.init(id: $0.imageId,
+                               description: $0.imageDesc,
+                               location: $0.imageLoc,
+                               url: $0.imageUrl)
             })
         }
     }
     
     private struct FeedImageParseModel: Decodable {
-        public let imageId: UUID
-        public let imageDesc: String?
-        public let imageLoc: String?
-        public let imageUrl: URL
+        internal let imageId: UUID
+        internal let imageDesc: String?
+        internal let imageLoc: String?
+        internal let imageUrl: URL
         
-        public init(id: UUID, description: String?, location: String?, url: URL) {
+        private init(id: UUID,
+                     description: String?,
+                     location: String?,
+                     url: URL) {
             self.imageId = id
             self.imageDesc = description
             self.imageLoc = location
@@ -33,8 +39,10 @@ internal class FeedItemsMapper{
         }
     }
     
+    private static let OK_200 = 200
+    
     internal static func getFeedImagesResultFor(data: Data, response: HTTPURLResponse) -> FeedLoader.Result{
-        guard response.statusCode == 200,
+        guard response.statusCode == OK_200,
               let data = decodeFeedImagesResponseFrom(data: data)
         else{
             return .failure(RemoteFeedLoader.Error.invalidData)
