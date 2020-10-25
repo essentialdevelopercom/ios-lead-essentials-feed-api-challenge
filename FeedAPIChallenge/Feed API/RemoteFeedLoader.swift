@@ -19,25 +19,21 @@ public final class RemoteFeedLoader: FeedLoader {
 	}
 	
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
-        client.get(from: url) { result in
-            switch result {
-            case let .success((data, response)):
-                guard response.statusCode == 200 else {
-                    completion(.failure(Error.invalidData))
-                    return
-                }
-                guard let feedItemList = try? JSONDecoder().decode(FeedItemListDTO.self, from: data) else {
-                    completion(.failure(Error.invalidData))
-                    return
-                }
-                if feedItemList.items.isEmpty {
-                    completion(.success([]))
-                } else {
-                    completion(.success(feedItemList.items.map { $0.feedImage }))
-                }
-            case .failure:
-                completion(.failure(Error.connectivity))
+        client.get(from: url) { [weak self] result in
+            self?.handleClientResult(result, completion: completion)
+        }
+    }
+
+    private func handleClientResult(_ result: HTTPClient.Result, completion: @escaping (FeedLoader.Result) -> Void) {
+        switch result {
+        case let .success((data, response)):
+            guard response.statusCode == 200, let feedItemList = try? JSONDecoder().decode(FeedItemListDTO.self, from: data) else {
+                completion(.failure(Error.invalidData))
+                return
             }
+            completion(.success(feedItemList.items.map { $0.feedImage }))
+        case .failure:
+            completion(.failure(Error.connectivity))
         }
     }
 }
