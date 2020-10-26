@@ -5,15 +5,16 @@
 import Foundation
 
 public struct FeedImage: Hashable {
-	public let id: UUID
-	public let description: String?
-	public let location: String?
-	public let url: URL
+	public let image_id: UUID
+	public let image_desc: String?
+	public let image_loc: String?
+	public let image_url: URL
+    
 	
-	public init(id: UUID, description: String?, location: String?, url: URL) {
-		self.id = id
-		self.description = description
-		self.location = location
-		self.url = url
+	public init(image_id: UUID, image_desc: String?, image_loc: String?, image_url: URL) {
+		self.image_id = image_id
+		self.image_desc = image_desc
+		self.image_loc = image_loc
+		self.image_url = image_url
 	}
 }
