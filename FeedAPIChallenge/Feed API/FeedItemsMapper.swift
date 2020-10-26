@@ -27,16 +27,6 @@ internal class FeedItemsMapper{
         internal let imageDesc: String?
         internal let imageLoc: String?
         internal let imageUrl: URL
-        
-        private init(id: UUID,
-                     description: String?,
-                     location: String?,
-                     url: URL) {
-            self.imageId = id
-            self.imageDesc = description
-            self.imageLoc = location
-            self.imageUrl = url
-        }
     }
     
     private static let OK_200 = 200
