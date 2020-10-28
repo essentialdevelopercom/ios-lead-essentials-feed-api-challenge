@@ -18,11 +18,20 @@ internal final class FeedImagesMapper {
         }
         
         do {
-            let _ = try JSONDecoder().decode(FeedImagesResponse.self, from: data)
-            return .success([])
+            let imageResponses = try JSONDecoder().decode(FeedImagesResponse.self, from: data)
+            let images = imageResponses.items.map({ mapImageResponseToFeedImage($0) })
+            return .success(images)
         } catch {
             return .failure(RemoteFeedLoader.Error.invalidData)
         }
+    }
+    
+    private func mapImageResponseToFeedImage(_ imageResponse: FeedImageResponse) -> FeedImage {
+        FeedImage(id: imageResponse.id,
+                  description: imageResponse.description,
+                  location: imageResponse.location,
+                  url: imageResponse.url
+        )
     }
     
 }
