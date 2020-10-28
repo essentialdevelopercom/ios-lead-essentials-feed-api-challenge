@@ -18,6 +18,7 @@
 		08BBFF882492A6A500141A91 /* XCTestCase+MemoryLeakTracking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08BBFF872492A6A500141A91 /* XCTestCase+MemoryLeakTracking.swift */; };
 		18E343B125499112000EC6BD /* FeedImageResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18E343B025499112000EC6BD /* FeedImageResponse.swift */; };
 		18E343B5254991F7000EC6BD /* FeedImagesResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18E343B4254991F7000EC6BD /* FeedImagesResponse.swift */; };
+		18E343B925499345000EC6BD /* FeedImagesMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18E343B825499345000EC6BD /* FeedImagesMapper.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -45,6 +46,7 @@
 		08BBFF872492A6A500141A91 /* XCTestCase+MemoryLeakTracking.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "XCTestCase+MemoryLeakTracking.swift"; sourceTree = "<group>"; };
 		18E343B025499112000EC6BD /* FeedImageResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedImageResponse.swift; sourceTree = "<group>"; };
 		18E343B4254991F7000EC6BD /* FeedImagesResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedImagesResponse.swift; sourceTree = "<group>"; };
+		18E343B825499345000EC6BD /* FeedImagesMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedImagesMapper.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -121,6 +123,7 @@
 				08BBFF6C2492A4C700141A91 /* RemoteFeedLoader.swift */,
 				18E343B025499112000EC6BD /* FeedImageResponse.swift */,
 				18E343B4254991F7000EC6BD /* FeedImagesResponse.swift */,
+				18E343B825499345000EC6BD /* FeedImagesMapper.swift */,
 			);
 			path = "Feed API";
 			sourceTree = "<group>";
@@ -244,6 +247,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				18E343B125499112000EC6BD /* FeedImageResponse.swift in Sources */,
+				18E343B925499345000EC6BD /* FeedImagesMapper.swift in Sources */,
 				08BBFF702492A4C700141A91 /* RemoteFeedLoader.swift in Sources */,
 				08BBFF732492A4C700141A91 /* HTTPClient.swift in Sources */,
 				08BBFF822492A5C100141A91 /* FeedLoader.swift in Sources */,
