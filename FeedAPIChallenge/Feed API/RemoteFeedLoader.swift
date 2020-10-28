@@ -19,7 +19,9 @@ public final class RemoteFeedLoader: FeedLoader {
 	}
 	 
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
-        self.client.get(from: self.url) { result in
+        self.client.get(from: self.url) { [weak self] result in
+            guard let _ = self else { return }
+            
             switch result {
             case .success((let data, let response)):
                 if response.statusCode != 200 {
