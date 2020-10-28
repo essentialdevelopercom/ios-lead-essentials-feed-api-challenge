@@ -24,7 +24,7 @@ public final class RemoteFeedLoader: FeedLoader {
     }
 
     private struct ImageDTO: Decodable {
-        let uuid: String
+        let image_id: UUID
         let image_desc: String?
         let image_loc: String?
         let image_url: URL
@@ -37,8 +37,8 @@ public final class RemoteFeedLoader: FeedLoader {
                 if response.statusCode == 200 {
                     do {
                         let decoder = JSONDecoder()
-                        let _ = try decoder.decode(PayloadDTO.self, from: data)
-                        completion(.success([]))
+                        let payload = try decoder.decode(PayloadDTO.self, from: data)
+                        completion(.success(RemoteFeedLoader.convert(imageDTOs: payload.items)))
                     } catch {
                         completion(.failure(RemoteFeedLoader.Error.invalidData))
                     }
@@ -49,5 +49,9 @@ public final class RemoteFeedLoader: FeedLoader {
                 completion(.failure(RemoteFeedLoader.Error.connectivity))
             }
         }
+    }
+    
+    private static func convert(imageDTOs: [ImageDTO]) -> [FeedImage] {
+        return imageDTOs.map({ FeedImage(id: $0.image_id, description: $0.image_desc, location: $0.image_loc, url: $0.image_url) })
     }
 }
