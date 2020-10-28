@@ -16,7 +16,10 @@ internal final class FeedImagesMapper {
         if response.statusCode != 200 {
             return .failure(RemoteFeedLoader.Error.invalidData)
         }
-        
+        return decodeData()
+    }
+    
+    private func decodeData() -> FeedLoader.Result {
         do {
             let imageResponses = try JSONDecoder().decode(FeedImagesResponse.self, from: data)
             let images = imageResponses.items.map({ mapImageResponseToFeedImage($0) })
