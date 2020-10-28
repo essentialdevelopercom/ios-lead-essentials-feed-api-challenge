@@ -17,3 +17,7 @@ public struct FeedImage: Hashable, Decodable {
 		self.url = url
 	}
 }
+
+public struct Root : Decodable {
+    let items : [FeedImage]
+}
