@@ -31,14 +31,15 @@ public final class RemoteFeedLoader: FeedLoader {
     }
     
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
-        client.get(from: url) { (error) in
+        client.get(from: url) { [weak self] (error) in
+            guard let self = self else { return }
             switch error {
             case .success((let data, let response)):
                 if response.statusCode == 200 {
                     do {
                         let decoder = JSONDecoder()
                         let payload = try decoder.decode(PayloadDTO.self, from: data)
-                        completion(.success(RemoteFeedLoader.convert(imageDTOs: payload.items)))
+                        completion(.success(self.convert(imageDTOs: payload.items)))
                     } catch {
                         completion(.failure(RemoteFeedLoader.Error.invalidData))
                     }
@@ -51,7 +52,7 @@ public final class RemoteFeedLoader: FeedLoader {
         }
     }
     
-    private static func convert(imageDTOs: [ImageDTO]) -> [FeedImage] {
+    private func convert(imageDTOs: [ImageDTO]) -> [FeedImage] {
         return imageDTOs.map({ FeedImage(id: $0.image_id, description: $0.image_desc, location: $0.image_loc, url: $0.image_url) })
     }
 }
