@@ -17,3 +17,5 @@ public struct FeedImage: Hashable {
 		self.url = url
 	}
 }
+
+
