@@ -17,37 +17,29 @@ public final class RemoteFeedLoader: FeedLoader {
 		self.url = url
 		self.client = client
 	}
-	
-    private static var OK_200: Int { 200 }
     
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
         client.get(from: url) { result in
             switch result {
                 case let .success((data, response)):
-                    guard response.statusCode == RemoteFeedLoader.OK_200,
-                          let json = try? JSONDecoder().decode(Root.self, from: data) else {
-                
-                        completion(.failure(Error.invalidData))
-                        return
-                    }
-                    
-                    if json.items.isEmpty {
-                        completion(.success([]))
-                    } else {
-                        completion(.success(json.items.map { $0.feedImage }))
-                    }
+                    completion(FeedImageMapper.map(data, response))
                     
                 case .failure:
                     completion(.failure(Error.connectivity))
             }
         }
     }
-    
+}
+
+internal final class FeedImageMapper {
     private struct Root: Codable {
-        let items: [FeedImageParser]
+        let items: [Item]
+        var feed: [FeedImage] {
+            return items.map { $0.feedImage }
+        }
     }
     
-    private struct FeedImageParser: Codable {
+    private struct Item: Codable {
         let image_id: UUID
         let image_desc: String?
         let image_loc: String?
@@ -56,5 +48,16 @@ public final class RemoteFeedLoader: FeedLoader {
         var feedImage: FeedImage {
             return FeedImage(id: image_id, description: image_desc, location: image_loc, url: image_url)
         }
+    }
+    
+    private static var OK_200: Int { 200 }
+    
+    internal static func map (_ data: Data, _ response: HTTPURLResponse) -> FeedLoader.Result {
+        guard response.statusCode == OK_200,
+              let root = try? JSONDecoder().decode(Root.self, from: data) else {
+            return .failure(RemoteFeedLoader.Error.invalidData)
+        }
+        
+        return .success(root.feed)
     }
 }
