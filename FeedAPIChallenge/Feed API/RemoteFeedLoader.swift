@@ -22,15 +22,33 @@ public final class RemoteFeedLoader: FeedLoader {
 //        client.get(from: url) { _ in
 //            completion(.failure(Error.connectivity))
             
-        client.get(from: url) { result in
-            switch result {
-            case let .success(_, response):
-                if response.statusCode != 200 {
-                    completion(.failure(RemoteFeedLoader.Error.invalidData))
-                }
-            case .failure:
-                completion(.failure(RemoteFeedLoader.Error.connectivity))
+//        client.get(from: url) { result in
+//            switch result {
+//            case let .success(_, response):
+//                if response.statusCode != 200 {
+//                    completion(.failure(RemoteFeedLoader.Error.invalidData))
+//                }
+//            case .failure:
+//                completion(.failure(RemoteFeedLoader.Error.connectivity))
+//            }
+//        }
+        client.get(from: url) { [weak self] result in
+            guard let self = self else { return }
+            self.mapCompleteResult(result, completion: completion)
+        }
+    }
+    
+    private func mapCompleteResult(_ result: Result<(Data, HTTPURLResponse), Swift.Error>, completion: @escaping (FeedLoader.Result) -> Void) {
+        switch result {
+        case let .success(data, response):
+            if response.statusCode != 200 {
+                completion(.failure(RemoteFeedLoader.Error.invalidData))
+            } else if !JSONSerialization.isValidJSONObject(data) {
+                completion(.failure(RemoteFeedLoader.Error.invalidData))
             }
+            
+        case .failure:
+            completion(.failure(RemoteFeedLoader.Error.connectivity))
         }
     }
 }
