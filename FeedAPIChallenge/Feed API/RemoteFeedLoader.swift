@@ -48,18 +48,50 @@ public final class RemoteFeedLoader: FeedLoader {
 //                    let obj = try? JSONDecoder().decode(Root.self, from: data)
 //
 //                    if obj == nil {
-                    do {
-                        let obj = try JSONDecoder().decode(Root.self, from: data)
-                        completion(.success(obj.items))
-                    } catch {
-                        completion(.failure(Error.invalidData))
+//                    do {
+//                        let obj = try JSONDecoder().decode(Root.self, from: data)
+//                        completion(.success(obj.items))
+//                    } catch {
+//                        completion(.failure(Error.invalidData))
 //                    } else {
 //                        completion(.success([]))
-                    }
+//                    }
+                completion(FeedImageMapper.map(data: data, response: response))
                 }
             default:
                 completion(.failure(Error.connectivity))
             }
         }
+    }
+}
+
+internal final class FeedImageMapper {
+    private struct Item: Decodable {
+        public let image_id : UUID
+        public let image_desc : String?
+        public let image_loc : String?
+        public let image_url : URL
+        
+        var feedImage : FeedImage {
+            return FeedImage(id: self.image_id, description: self.image_desc, location: self.image_loc, url: self.image_url)
+        }
+    }
+    
+    private struct Root : Decodable {
+        private let items : [Item]
+        
+        var images : [FeedImage] {
+            return self.items.map { $0.feedImage }
+        }
+    }
+    
+    private static var successStatusCode : Int { return 200 }
+    
+    static func map(data: Data, response: HTTPURLResponse) -> RemoteFeedLoader.Result {
+        guard response.statusCode == successStatusCode, let root = try? JSONDecoder().decode(Root.self, from: data) else {
+            return .failure(RemoteFeedLoader.Error.invalidData)
+        }
+        
+        return .success(root.images)
     }
 }
