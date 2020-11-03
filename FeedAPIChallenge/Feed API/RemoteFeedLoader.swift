@@ -16,9 +16,11 @@ public final class RemoteFeedLoader: FeedLoader {
 	public init(url: URL, client: HTTPClient) {
 		self.url = url
 		self.client = client
-	}
-	
-	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
-        client.get(from: url) { _ in }
+    }
+    
+    public func load(completion: @escaping (FeedLoader.Result) -> Void) {
+        client.get(from: url) { _ in
+            completion(.failure(Error.connectivity))
+        }
     }
 }
