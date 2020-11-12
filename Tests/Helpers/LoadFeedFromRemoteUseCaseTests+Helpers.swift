@@ -31,8 +31,4 @@ extension LoadFeedFromRemoteUseCaseTests {
 
         waitForExpectations(timeout: 0.1)
     }
-    
-    
-
-    
 }
