@@ -55,8 +55,4 @@ public final class RemoteFeedLoader: FeedLoader {
         case url = "image_url"
       }
     }
-    
-   
-    
-    
 }

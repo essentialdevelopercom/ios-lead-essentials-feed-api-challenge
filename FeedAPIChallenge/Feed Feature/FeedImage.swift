@@ -5,17 +5,17 @@
 import Foundation
 
 public struct FeedImage: Hashable, Decodable {
-	public let id: UUID
-	public let description: String?
-	public let location: String?
-	public let url: URL
+	public let image_id: UUID
+	public let image_description: String?
+	public let image_location: String?
+	public let image_url: URL
     
 	
 	public init(image_id: UUID, image_desc: String?, image_loc: String?, image_url: URL) {
-		self.id = image_id
-		self.description = image_desc
-		self.location = image_loc
-		self.url = image_url
+		self.image_id = image_id
+		self.image_description = image_desc
+		self.image_location = image_loc
+		self.image_url = image_url
 	}
     
 }
