@@ -19,8 +19,14 @@ public final class RemoteFeedLoader: FeedLoader {
 	}
 	
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
-        client.get(from: self.url) {_ in
-            completion(.success([]))
+        client.get(from: self.url) {
+            [completion] result in
+            switch result {
+            case .success:
+                completion(.success([]))
+            case .failure:
+                completion(.failure(Error.connectivity))
+            }
         }
     }
 }
