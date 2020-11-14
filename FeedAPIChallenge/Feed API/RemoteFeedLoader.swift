@@ -33,8 +33,22 @@ public final class RemoteFeedLoader: FeedLoader {
 }
 
 private func mapToFeedImage(_ result: (Data, HTTPURLResponse)) throws ->  [FeedImage] {
-    guard result.1.statusCode == 200 else {
+    let (data, response) = result
+    try throwIfNot200(response: response)
+    try throwIfNotJSON(data: data)
+    return []
+}
+
+private func throwIfNot200(response: HTTPURLResponse) throws {
+    guard response.statusCode == 200 else {
         throw RemoteFeedLoader.Error.invalidData
     }
-    return []
+}
+private func throwIfNotJSON(data: Data) throws {
+    let jsonString = String(data: data, encoding: .utf8) ?? ""
+    guard
+        jsonString.hasPrefix("{"),
+        jsonString.hasSuffix("}") else {
+        throw RemoteFeedLoader.Error.invalidData
+    }
 }
