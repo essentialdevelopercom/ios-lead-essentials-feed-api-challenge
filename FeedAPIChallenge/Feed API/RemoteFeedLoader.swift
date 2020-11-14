@@ -37,8 +37,12 @@ public final class RemoteFeedLoader: FeedLoader {
 private func mapToFeedImage(_ result: (Data, HTTPURLResponse)) throws ->  [FeedImage] {
     let (data, response) = result
     try throwIfNot200(response: response)
-    try throwIfNotJSON(data: data)
-    return try makeFeedImages(data)
+    
+    do {
+       return try makeFeedImages(data)
+    } catch {
+        throw RemoteFeedLoader.Error.invalidData
+    }
 }
 
 private func throwIfNot200(response: HTTPURLResponse) throws {
@@ -47,13 +51,11 @@ private func throwIfNot200(response: HTTPURLResponse) throws {
     }
 }
 
-private func throwIfNotJSON(data: Data) throws {
-    let jsonString = String(data: data, encoding: .utf8) ?? ""
-    guard
-        jsonString.hasPrefix("{"),
-        jsonString.hasSuffix("}") else {
-        throw RemoteFeedLoader.Error.invalidData
-    }
+private func makeFeedImages(
+    decoder: JSONDecoder = JSONDecoder(),
+    _ data: Data) throws -> [FeedImage] {
+    let r = try decoder.decode(PrivateFeedImage.self, from: data)
+    return r.items.compactMap(\.feedimage)
 }
 
 struct PrivateFeedImage: Decodable {
@@ -83,11 +85,4 @@ struct PrivateFeedImage: Decodable {
                 url: url)
         }
     }
-}
-
-private func makeFeedImages(
-    decoder: JSONDecoder = JSONDecoder(),
-    _ data: Data) throws -> [FeedImage] {
-    let r = try decoder.decode(PrivateFeedImage.self, from: data)
-    return r.items.compactMap(\.feedimage)
 }
