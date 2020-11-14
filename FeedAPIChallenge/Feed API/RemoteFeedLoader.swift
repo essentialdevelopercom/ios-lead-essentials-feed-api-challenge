@@ -20,13 +20,21 @@ public final class RemoteFeedLoader: FeedLoader {
 	
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
         client.get(from: self.url) {
-            [completion] result in
+            [completion] (result: Result) in
             switch result {
-            case .success:
-                completion(.success([]))
+            case let .success((_, response)):
+                completion(FeedLoader.Result{try mapToFeedImage((Data(), response))})
             case .failure:
                 completion(.failure(Error.connectivity))
             }
         }
     }
+    
+}
+
+private func mapToFeedImage(_ result: (Data, HTTPURLResponse)) throws ->  [FeedImage] {
+    guard result.1.statusCode == 200 else {
+        throw RemoteFeedLoader.Error.invalidData
+    }
+    return []
 }
