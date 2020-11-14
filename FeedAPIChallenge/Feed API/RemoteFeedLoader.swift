@@ -38,7 +38,7 @@ private func mapToFeedImage(_ result: (Data, HTTPURLResponse)) throws ->  [FeedI
     let (data, response) = result
     try throwIfNot200(response: response)
     try throwIfNotJSON(data: data)
-    return []
+    return try makeFeedImages(data)
 }
 
 private func throwIfNot200(response: HTTPURLResponse) throws {
@@ -46,6 +46,7 @@ private func throwIfNot200(response: HTTPURLResponse) throws {
         throw RemoteFeedLoader.Error.invalidData
     }
 }
+
 private func throwIfNotJSON(data: Data) throws {
     let jsonString = String(data: data, encoding: .utf8) ?? ""
     guard
@@ -53,4 +54,40 @@ private func throwIfNotJSON(data: Data) throws {
         jsonString.hasSuffix("}") else {
         throw RemoteFeedLoader.Error.invalidData
     }
+}
+
+struct PrivateFeedImage: Decodable {
+    let items:[_FeeedImage]
+    /**
+     a decoable form XXX API
+     {
+     "image_id": "a UUID",
+     "image_desc": "a description",
+     "image_loc": "a location",
+     "image_url": "https://a-image.url",
+     }     */
+    struct _FeeedImage: Decodable {
+        
+        let image_id: String
+        let image_desc: String?
+        let image_loc: String?
+        let image_url: String
+        
+        var feedimage: FeedImage?{
+            guard let id  = UUID(uuidString: image_id),
+                  let url = URL(string: image_url) else {return nil}
+            return FeedImage(
+                id: id,
+                description: image_desc,
+                location: image_loc,
+                url: url)
+        }
+    }
+}
+
+private func makeFeedImages(
+    decoder: JSONDecoder = JSONDecoder(),
+    _ data: Data) throws -> [FeedImage] {
+    let r = try decoder.decode(PrivateFeedImage.self, from: data)
+    return r.items.compactMap(\.feedimage)
 }
