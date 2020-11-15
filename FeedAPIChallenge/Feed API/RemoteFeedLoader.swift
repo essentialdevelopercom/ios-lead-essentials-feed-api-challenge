@@ -30,8 +30,8 @@ public final class RemoteFeedLoader: FeedLoader {
                 }
 
                 do {
-                    try JSONSerialization.jsonObject(with: data)
-                    completion(.success([]))
+                    let root = try JSONDecoder().decode(Root.self, from: data)
+                    completion(.success(root.feed))
                 } catch {
                     completion(.failure(Error.invalidData))
                 }
@@ -40,5 +40,22 @@ public final class RemoteFeedLoader: FeedLoader {
                 completion(.failure(Error.connectivity))
             }
         }
+    }
+}
+
+private struct Root: Decodable {
+    let items:  [Item]
+
+    var feed: [FeedImage] { items.map{ $0.item } }
+}
+
+private struct Item: Decodable {
+    let image_id: UUID
+    let image_desc: String?
+    let image_loc: String?
+    let image_url: URL
+
+    var item: FeedImage {
+        FeedImage(id: image_id, description: image_desc, location: image_loc, url: image_url)
     }
 }
