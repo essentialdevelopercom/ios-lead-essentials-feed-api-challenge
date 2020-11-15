@@ -31,6 +31,7 @@ public final class RemoteFeedLoader: FeedLoader {
 
                 do {
                     try JSONSerialization.jsonObject(with: data)
+                    completion(.success([]))
                 } catch {
                     completion(.failure(Error.invalidData))
                 }
