@@ -57,15 +57,15 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
 		}
 	}
 
-//	func test_load_deliversInvalidDataErrorOn200HTTPResponseWithInvalidJSON() {
-//		let (sut, client) = makeSUT()
-//
-//        expect(sut, toCompleteWith: .failure(.invalidData), when: {
-//			let invalidJSON = Data("invalid json".utf8)
-//			client.complete(withStatusCode: 200, data: invalidJSON)
-//		})
-//	}
-//
+	func test_load_deliversInvalidDataErrorOn200HTTPResponseWithInvalidJSON() {
+		let (sut, client) = makeSUT()
+
+        expect(sut, toCompleteWith: .failure(.invalidData), when: {
+			let invalidJSON = Data("invalid json".utf8)
+			client.complete(withStatusCode: 200, data: invalidJSON)
+		})
+	}
+
 //	func test_load_deliversSuccessWithNoItemsOn200HTTPResponseWithEmptyJSONList() {
 //		let (sut, client) = makeSUT()
 //
@@ -74,7 +74,7 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
 //			client.complete(withStatusCode: 200, data: emptyListJSON)
 //		})
 //	}
-//
+
 //	func test_load_deliversSuccessWithItemsOn200HTTPResponseWithJSONItems() {
 //		let (sut, client) = makeSUT()
 //
