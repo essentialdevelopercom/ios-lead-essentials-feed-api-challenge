@@ -30,7 +30,6 @@ public final class RemoteFeedLoader: FeedLoader {
                 catch _ {
                     completion(.failure(Error.invalidData))
                 }
-            break
             case .failure(_):
                 completion(.failure(Error.connectivity))
             }
