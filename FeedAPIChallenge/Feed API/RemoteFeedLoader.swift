@@ -59,7 +59,7 @@ private func makeFeedImages(
 }
 
 struct PrivateFeedImage: Decodable {
-	let items: [_FeeedImage]
+	let items: [_FeedImage]
 	/**
 	a decoable form XXX API
 	{
@@ -68,7 +68,7 @@ struct PrivateFeedImage: Decodable {
 	"image_loc": "a location",
 	"image_url": "https://a-image.url",
 	}     */
-	struct _FeeedImage: Decodable {
+	struct _FeedImage: Decodable {
 		let image_id: String
 		let image_desc: String?
 		let image_loc: String?
