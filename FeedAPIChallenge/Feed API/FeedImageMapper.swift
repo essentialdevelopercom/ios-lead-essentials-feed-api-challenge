@@ -15,17 +15,17 @@ class FeedImageMapper {
     }
     
     private struct FeedImageApiRoot: Decodable{
-        let items: [FeedImageApiModel]
+        private let items: [FeedImageApiModel]
         var feedImagesArray: [FeedImage] {
             return items.map({$0.toFeedImage()})
         }
     }
     
     private struct FeedImageApiModel: Decodable {
-        let image_id: UUID
-        let image_desc: String?
-        let image_loc: String?
-        let image_url: URL
+        private let image_id: UUID
+        private let image_desc: String?
+        private let image_loc: String?
+        private let image_url: URL
         
         func toFeedImage() -> FeedImage {
             return FeedImage(id: image_id, description: image_desc, location: image_loc, url: image_url)
