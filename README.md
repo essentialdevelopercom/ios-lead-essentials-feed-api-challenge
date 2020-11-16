@@ -62,9 +62,9 @@ The goal of this exercise is to get you used to the TDD flow.
 
 We've provided you with appropriate tests to guide and validate your solution. You need to make all the tests pass, one by one, by implementing the `load` method in the existing `RemoteFeedLoader` class.
 
-1) Fork the latest version of the challenge repo.
+1) Fork the latest version of the challenge repo. Here's <a href="https://guides.github.com/activities/forking" target="_blank">how forking works</a>.
 
-2) Open the `FeedAPIChallenge.xcodeproj` project.
+2) Open the `FeedAPIChallenge.xcodeproj` project on Xcode 12.
 
 3) There are two main folders in the project:
 	- The `FeedAPIChallenge` folder contains the production types, including the `RemoteFeedLoader` and dependencies for requesting and loading the feed remotely. ***You only need to change the `RemoteFeedLoader.swift` file to implement the `load` method.***
@@ -75,7 +75,9 @@ We've provided you with appropriate tests to guide and validate your solution. Y
 
 5) While developing your solutions, run all tests with CMD+U. 
 
-6) When all tests are passing and you're done implementing your solution, create a Pull Request from your branch to the main challenge repo.
+6) When all tests are passing and you're done implementing your solution, create a Pull Request from your branch to the main challenge repo **with the title: "Your Name - Feed API Challenge**.
+
+**7) Post a comment in the challenge page in the academy with the link to your PR, so we can review your solution and provide feedback.**
 
 
 ## Guidelines
@@ -94,4 +96,4 @@ We've provided you with appropriate tests to guide and validate your solution. Y
 
 7) Aim to write self-documenting code by providing context and detail when naming your components, avoiding explanations in comments.
 
-8) Strive to produce a clean solution as it can be **an ideal addition to your project portfolio**!
+Happy coding!
