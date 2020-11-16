@@ -55,7 +55,7 @@ private func makeFeedImages(
 	_ data: Data
 ) throws -> [FeedImage] {
 	let r = try decoder.decode(PrivateFeedImage.self, from: data)
-	return r.items.compactMap(\.feedimage)
+	return r.items.map(\.feedimage)
 }
 
 struct PrivateFeedImage: Decodable {
@@ -69,19 +69,17 @@ struct PrivateFeedImage: Decodable {
 	"image_url": "https://a-image.url",
 	}     */
 	struct _FeedImage: Decodable {
-		let image_id: String
+		let image_id: UUID
 		let image_desc: String?
 		let image_loc: String?
-		let image_url: String
+		let image_url: URL
 		
-		var feedimage: FeedImage? {
-			guard let id = UUID(uuidString: image_id),
-				  let url = URL(string: image_url) else { return nil }
+		var feedimage: FeedImage {
 			return FeedImage(
-				id: id,
+				id: image_id,
 				description: image_desc,
 				location: image_loc,
-				url: url
+				url: image_url
 			)
 		}
 	}
