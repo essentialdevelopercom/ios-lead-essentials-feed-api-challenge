@@ -25,7 +25,7 @@ public final class RemoteFeedLoader: FeedLoader {
 			switch result {
 			case let .success((data, response)):
 				completion(FeedLoader.Result {
-					try mapToFeedImage((data, response))
+					try mapToFeedImage(data, response)
 				})
 			case .failure:
 				completion(.failure(Error.connectivity))
@@ -34,8 +34,7 @@ public final class RemoteFeedLoader: FeedLoader {
 	}
 }
 
-private func mapToFeedImage(_ result: (Data, HTTPURLResponse)) throws -> [FeedImage] {
-	let (data, response) = result
+private func mapToFeedImage(_ data: Data, _ response: HTTPURLResponse) throws -> [FeedImage] {
 	try throwIfNot200(response: response)
 	
 	do {
