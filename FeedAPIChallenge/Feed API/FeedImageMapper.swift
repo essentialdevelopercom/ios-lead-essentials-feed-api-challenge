@@ -23,8 +23,8 @@ class FeedImageMapper {
     
     private struct FeedImageApiModel: Decodable {
         let image_id: UUID
-        let image_desc: String
-        let image_loc: String
+        let image_desc: String?
+        let image_loc: String?
         let image_url: URL
         
         func toFeedImage() -> FeedImage {
