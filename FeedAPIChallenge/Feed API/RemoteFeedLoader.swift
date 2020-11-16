@@ -18,6 +18,7 @@ public final class RemoteFeedLoader: FeedLoader {
 		self.client = client
 	}
 	
+    //Loads image_id, image_description, image_location, image_url defined in FeedImage struct and FeedLoader protocol using Swift.Result<FeedImage>
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
         client.get(from: url){[weak self] result in
             guard self != nil else { return }
@@ -32,6 +33,8 @@ public final class RemoteFeedLoader: FeedLoader {
         }
         
     }
+    
+    
     
     private struct Root: Decodable {
       private var items: [Image]

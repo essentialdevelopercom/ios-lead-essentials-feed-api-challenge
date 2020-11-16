@@ -19,6 +19,7 @@ internal final class FeedImageMapper {
     }
     
     private struct Item : Decodable{
+        
      let id : UUID
      let description : String?
      let location : String?
