@@ -25,30 +25,34 @@ public final class RemoteFeedLoader: FeedLoader {
                 completion(.failure(Error.connectivity))
             
             case let .success((data, response)):
-                
-                guard response.statusCode == 200 else {
-                    completion(.failure(Error.invalidData))
-                    return
-                }
-                
-                guard let remoteFeed = try? JSONDecoder().decode(RemoteFeed.self, from: data) else {
-                    completion(.failure(Error.invalidData))
-                    return 
-                }
-                
-                let feedItems = remoteFeed.items.map { image in
-                    FeedImage(
-                        id: UUID(uuidString: image.image_id)!,
-                        description: image.image_desc,
-                        location: image.image_loc,
-                        url: URL(string: image.image_url)!
-                    )
-                }
-                                    
-                completion(.success(feedItems))
+                let result = self.parseRemoteResponse(data: data, response: response)
+                completion(result)
                 
             }
         }
+    }
+    
+    private func parseRemoteResponse(data: Data, response: HTTPURLResponse) -> FeedLoader.Result {
+            
+        guard response.statusCode == 200 else {
+            return .failure(Error.invalidData)
+        }
+        
+        guard let remoteFeed = try? JSONDecoder().decode(RemoteFeed.self, from: data) else {
+            return .failure(Error.invalidData)
+        }
+        
+        let feedItems = remoteFeed.items.map { image in
+            FeedImage(
+                id: UUID(uuidString: image.image_id)!,
+                description: image.image_desc,
+                location: image.image_loc,
+                url: URL(string: image.image_url)!
+            )
+        }
+
+        return .success(feedItems)
+        
     }
     
     private struct RemoteFeed: Decodable {
