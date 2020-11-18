@@ -30,7 +30,7 @@ public final class RemoteFeedLoader: FeedLoader {
                     return
                 }
                 
-                guard (try? JSONDecoder().decode(FeedItems.self, from: data)) != nil else {
+                guard (try? JSONDecoder().decode(RemoteFeed.self, from: data)) != nil else {
                     completion(.failure(Error.invalidData))
                     return 
                 }
@@ -41,13 +41,13 @@ public final class RemoteFeedLoader: FeedLoader {
         }
     }
     
-    private struct FeedItems: Decodable {
-        struct FeedItem: Decodable {
+    private struct RemoteFeed: Decodable {
+        struct RemoteFeedItem: Decodable {
             let image_id: String
             let image_desc: String
             let image_loc: String
             let image_url: String
         }
-        let items: [FeedItem]
+        let items: [RemoteFeedItem]
     }
 }
