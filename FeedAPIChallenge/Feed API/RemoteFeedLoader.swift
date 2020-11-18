@@ -25,21 +25,25 @@ public final class RemoteFeedLoader: FeedLoader {
                 completion(.failure(Error.connectivity))
             
             case let .success((data, response)):
-                let result = self.parseRemoteResponse(data: data, response: response)
+                let result = RemoteResponseParser.parse(data: data, response: response)
                 completion(result)
                 
             }
         }
     }
     
-    private func parseRemoteResponse(data: Data, response: HTTPURLResponse) -> FeedLoader.Result {
+}
+
+private struct RemoteResponseParser {
+    
+    static func parse(data: Data, response: HTTPURLResponse) -> FeedLoader.Result {
             
         guard response.statusCode == 200 else {
-            return .failure(Error.invalidData)
+            return .failure(RemoteFeedLoader.Error.invalidData)
         }
         
         guard let remoteFeed = try? JSONDecoder().decode(RemoteFeed.self, from: data) else {
-            return .failure(Error.invalidData)
+            return .failure(RemoteFeedLoader.Error.invalidData)
         }
         
         let feedItems = remoteFeed.items.map { image in
