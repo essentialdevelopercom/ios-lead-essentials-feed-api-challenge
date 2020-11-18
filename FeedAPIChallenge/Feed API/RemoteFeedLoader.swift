@@ -30,10 +30,24 @@ public final class RemoteFeedLoader: FeedLoader {
                     return
                 }
                 
-                if (try? JSONSerialization.jsonObject(with: data, options: [])) == nil {
+                guard (try? JSONDecoder().decode(FeedItems.self, from: data)) != nil else {
                     completion(.failure(Error.invalidData))
+                    return 
                 }
+                
+                completion(.success([]))
+                
             }
         }
+    }
+    
+    private struct FeedItems: Decodable {
+        struct FeedItem: Decodable {
+            let image_id: String
+            let image_desc: String
+            let image_loc: String
+            let image_url: String
+        }
+        let items: [FeedItem]
     }
 }
