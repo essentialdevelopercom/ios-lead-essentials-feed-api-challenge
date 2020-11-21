@@ -24,13 +24,34 @@ public final class RemoteFeedLoader: FeedLoader {
                 case .failure:
                     completion(.failure(Error.connectivity))
 
-                case let .success((_, response)):
+                case let .success((data, response)):
                     guard response.statusCode == 200
                     else {
                         completion(.failure(Error.invalidData))
                         break
                     }
+                    completion(data.decodeFeedImages())
             }
         }
+    }
+}
+
+private extension Data {
+    func decodeFeedImages() -> FeedLoader.Result  {
+
+      .failure(RemoteFeedLoader.Error.invalidData)
+
+
+    }
+}
+
+private struct RemoteFeedJSON: Decodable {
+    let items: [RemoteFeedImage]
+
+    struct RemoteFeedImage: Decodable {
+        let image_id: UUID
+        let image_desc: String?
+        let image_loc: String?
+        let image_url: URL
     }
 }
