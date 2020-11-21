@@ -42,9 +42,14 @@ private extension Data {
         guard let feed = try? JSONDecoder().decode(RemoteFeedJSON.self, from: self)
         else { return .failure(RemoteFeedLoader.Error.invalidData) }
 
+        let images = feed.items.map {
+            FeedImage(id: $0.image_id,
+                      description: $0.image_desc,
+                      location: $0.image_loc,
+                      url: $0.image_url)
+        }
 
-
-        return .success([FeedImage]())
+        return .success(images)
     }
 }
 
