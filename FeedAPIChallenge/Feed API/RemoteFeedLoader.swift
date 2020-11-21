@@ -39,9 +39,12 @@ public final class RemoteFeedLoader: FeedLoader {
 private extension Data {
     func decodeFeedImages() -> FeedLoader.Result  {
 
-      .failure(RemoteFeedLoader.Error.invalidData)
+        guard let feed = try? JSONDecoder().decode(RemoteFeedJSON.self, from: self)
+        else { return .failure(RemoteFeedLoader.Error.invalidData) }
 
 
+
+        return .success([FeedImage]())
     }
 }
 
