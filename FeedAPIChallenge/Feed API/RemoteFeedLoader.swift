@@ -30,7 +30,7 @@ public final class RemoteFeedLoader: FeedLoader {
             case let .success((data, response)):
                 if response.statusCode != self?.statusCodeOk {
                     completion(.failure(Error.invalidData))
-                } else if JSONSerialization.isValidJSONObject(data) {
+                } else if (try? JSONSerialization.jsonObject(with: data, options: [])) != nil {
                     
                 } else {
                     completion(.failure(Error.invalidData))
