@@ -8,12 +8,7 @@ public final class RemoteFeedLoader: FeedLoader {
     private let url: URL
     private let client: HTTPClient
     private let statusCodeOk: Int = 200
-    
-    public enum Error: Swift.Error {
-        case connectivity
-        case invalidData
-    }
-        
+            
     public init(url: URL, client: HTTPClient) {
         self.url = url
         self.client = client
@@ -55,5 +50,34 @@ public final class RemoteFeedLoader: FeedLoader {
             feedimageList.append(feedImage)
         })
         return feedimageList
+    }
+}
+
+
+extension RemoteFeedLoader {
+    
+    public enum Error: Swift.Error {
+        case connectivity
+        case invalidData
+    }
+
+    private struct FeedItemRoot: Codable {
+        
+        let items: [FeedImageModel]
+    }
+
+    private struct FeedImageModel: Codable {
+        
+        let imageId: UUID
+        var desc: String?
+        var location: String?
+        let url: String
+        
+        enum CodingKeys: String, CodingKey {
+            case imageId = "image_id"
+            case desc = "image_desc"
+            case location = "image_loc"
+            case url = "image_url"
+        }
     }
 }
