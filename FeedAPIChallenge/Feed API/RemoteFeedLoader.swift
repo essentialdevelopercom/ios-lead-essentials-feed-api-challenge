@@ -32,7 +32,20 @@ public final class RemoteFeedLoader: FeedLoader {
                     completion(.failure(Error.invalidData))
                 
                 } else if (try? JSONSerialization.jsonObject(with: data, options: [])) != nil {
-                    completion(.success([]))
+                    do {
+                        let decoder = JSONDecoder()
+                        let feedItemRoot = try decoder.decode(FeedItemRoot.self, from: data)
+                        
+                        var feedimageList: [FeedImage] = []
+                        
+                        feedItemRoot.items.forEach({ item in
+                            let feedImage = FeedImage(id: item.imageId, description: item.desc, location: item.location, url: URL(string: item.url)!)
+                            feedimageList.append(feedImage)
+                        })
+                        completion(.success(feedimageList))
+                    } catch {
+                        return
+                    }
                 } else {
                     completion(.failure(Error.invalidData))
                 }
