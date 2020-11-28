@@ -4,6 +4,13 @@
 
 import Foundation
 
+struct RemoteFeedImage: Codable {
+	let image_id: UUID
+	let image_desc: String?
+	let image_loc: String?
+	let image_url: String
+}
+
 public final class RemoteFeedLoader: FeedLoader {
 	private let url: URL
 	private let client: HTTPClient
@@ -23,10 +30,14 @@ public final class RemoteFeedLoader: FeedLoader {
 			switch result {
 			case .failure(_):
 				completion(.failure(Error.connectivity))
-			case let .success((_, response)):
+			case let .success((data, response)):
 				switch response.statusCode {
 				case 200:
-					break
+					do {
+						let _ = try JSONDecoder().decode(RemoteFeedImage.self, from: data)
+					} catch {
+						completion(.failure(Error.invalidData))
+					}
 				default:
 					completion(.failure(Error.invalidData))
 				}
