@@ -39,9 +39,7 @@ public final class RemoteFeedLoader: FeedLoader {
 				case 200:
 					do {
 						let remoteFeedImages = try JSONDecoder().decode(RemoteFeedImages.self, from: data)
-						let feedImages: [FeedImage] = remoteFeedImages.items.compactMap { remoteFeedImage in
-							guard let imageUrl = URL(string: remoteFeedImage.image_url) else { return nil }
-							return FeedImage(id: remoteFeedImage.image_id, description: remoteFeedImage.image_desc, location: remoteFeedImage.image_loc, url: imageUrl) }
+						let feedImages: [FeedImage] = remoteFeedImages.items.compactMap(RemoteFeedLoader.convertToLocalFeedImage)
 						completion(.success(feedImages))
 					} catch {
 						completion(.failure(Error.invalidData))
@@ -51,5 +49,10 @@ public final class RemoteFeedLoader: FeedLoader {
 				}
 			}
 		}
+	}
+	
+	private static func convertToLocalFeedImage(remoteFeedImage: RemoteFeedImage) -> FeedImage? {
+		guard let imageUrl = URL(string: remoteFeedImage.image_url) else { return nil }
+		return FeedImage(id: remoteFeedImage.image_id, description: remoteFeedImage.image_desc, location: remoteFeedImage.image_loc, url: imageUrl)
 	}
 }
