@@ -4,6 +4,10 @@
 
 import Foundation
 
+struct RemoteFeedImages: Codable {
+	let items: [RemoteFeedImage]
+}
+
 struct RemoteFeedImage: Codable {
 	let image_id: UUID
 	let image_desc: String?
@@ -34,7 +38,11 @@ public final class RemoteFeedLoader: FeedLoader {
 				switch response.statusCode {
 				case 200:
 					do {
-						let _ = try JSONDecoder().decode(RemoteFeedImage.self, from: data)
+						let remoteFeedImages = try JSONDecoder().decode(RemoteFeedImages.self, from: data)
+						let feedImages: [FeedImage] = remoteFeedImages.items.compactMap { remoteFeedImage in
+							guard let imageUrl = URL(string: remoteFeedImage.image_url) else { return nil }
+							return FeedImage(id: remoteFeedImage.image_id, description: remoteFeedImage.image_desc, location: remoteFeedImage.image_loc, url: imageUrl) }
+						completion(.success(feedImages))
 					} catch {
 						completion(.failure(Error.invalidData))
 					}
