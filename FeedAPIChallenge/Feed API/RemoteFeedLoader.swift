@@ -30,18 +30,20 @@ public final class RemoteFeedLoader: FeedLoader {
 					return
 				}
 				
-				completion(.success(dto.toModels()))
+				completion(.success(dto.items.toModels()))
 			}
 		}
 	}
 }
 
+extension Array where Element == RemoteFeedImage {
+	func toModels() -> [FeedImage] {
+		return map { FeedImage(id: $0.id, description: $0.description, location: $0.location, url: $0.url)}
+	}
+}
+
 private struct RemoteDTO: Decodable {
 	let items: [RemoteFeedImage]
-	
-	func toModels() -> [FeedImage] {
-		return items.map { FeedImage(id: $0.id, description: $0.description, location: $0.location, url: $0.url)}
-	}
 }
 
 private struct RemoteFeedImage: Decodable {
