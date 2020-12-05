@@ -24,7 +24,7 @@ public final class RemoteFeedLoader: FeedLoader {
 			case .success((_, _)):
 				break
 			case .failure(_):				
-				break
+				completion(.failure(Error.connectivity))
 			}
 		}
 	}
