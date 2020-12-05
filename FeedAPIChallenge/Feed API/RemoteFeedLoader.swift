@@ -24,7 +24,7 @@ public final class RemoteFeedLoader: FeedLoader {
 			
 			switch result {
 			case let .success((data, response)):
-				completion(RemoteFeedLoader.map(data, from: response))
+				completion(RemoteFeedLoader.mapResult(from: data, response))
 				
 			case .failure:
 				completion(.failure(Error.connectivity))
@@ -34,7 +34,7 @@ public final class RemoteFeedLoader: FeedLoader {
 	
 	// MARK: - Helpers
 	
-	private static func map(_ data: Data, from response: HTTPURLResponse) -> FeedLoader.Result {
+	private static func mapResult(from data: Data, _ response: HTTPURLResponse) -> FeedLoader.Result {
 		guard response.statusCode == 200, let dto = try? JSONDecoder().decode(RemoteDTO.self, from: data) else {
 			return .failure(Error.invalidData)
 		}
@@ -45,7 +45,7 @@ public final class RemoteFeedLoader: FeedLoader {
 
 private extension Array where Element == RemoteFeedImage {
 	func toModels() -> [FeedImage] {
-		return map { FeedImage(id: $0.id, description: $0.description, location: $0.location, url: $0.url)}
+		return map { FeedImage(id: $0.id, description: $0.description, location: $0.location, url: $0.url) }
 	}
 }
 
