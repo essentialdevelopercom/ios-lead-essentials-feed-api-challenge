@@ -25,14 +25,19 @@ public final class RemoteFeedLoader: FeedLoader {
 				completion(.failure(Error.connectivity))
 			
 			case let .success((data, response)):
-				guard response.statusCode == 200, let dto = try? JSONDecoder().decode(RemoteDTO.self, from: data) else {
-					completion(.failure(Error.invalidData))
-					return
-				}
-				
-				completion(.success(dto.items.toModels()))
+				completion(RemoteFeedLoader.map(data, from: response))
 			}
 		}
+	}
+	
+	// MARK: - Helpers
+	
+	private static func map(_ data: Data, from response: HTTPURLResponse) -> FeedLoader.Result {
+		guard response.statusCode == 200, let dto = try? JSONDecoder().decode(RemoteDTO.self, from: data) else {
+			return .failure(Error.invalidData)
+		}
+		
+		return .success(dto.items.toModels())
 	}
 }
 
