@@ -26,15 +26,34 @@ public final class RemoteFeedLoader: FeedLoader {
 					completion(.failure(Error.invalidData))
 				} else {
 					// check for valid json format
-					guard (try? JSONSerialization.jsonObject(with: data, options: .allowFragments)) != nil else {
+					guard let items = try? JSONDecoder().decode(RemoteFeedResponse.self, from: data) else {
 						completion(.failure(Error.invalidData))
 						return
 					}
-					completion(.success([]))
+					completion(.success(items.feedImages))
 				}
 			case .failure(_):				
 				completion(.failure(Error.connectivity))
 			}
 		}
+	}
+}
+
+private struct RemoteFeedResponse: Decodable {
+	let items: [RemoteFeedImage]
+
+	var feedImages: [FeedImage] {
+		return items.map { $0.toFeedImage() }
+	}
+}
+
+private struct RemoteFeedImage: Decodable {
+	let image_id: UUID
+	let image_desc: String?
+	let image_loc: String?
+	let image_url: URL
+
+	func toFeedImage() -> FeedImage {
+		return FeedImage(id: image_id, description: image_desc, location: image_loc, url: image_url)
 	}
 }
