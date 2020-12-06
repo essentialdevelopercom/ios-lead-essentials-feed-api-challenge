@@ -17,8 +17,6 @@ public final class RemoteFeedLoader: FeedLoader {
 		self.url = url
 		self.client = client
 	}
-
-    private static var OK_200: Int { return 200 }
 	
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
         client.get(from: url) { [weak self] result in
