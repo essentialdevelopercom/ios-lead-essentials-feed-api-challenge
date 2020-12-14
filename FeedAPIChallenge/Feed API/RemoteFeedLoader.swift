@@ -33,10 +33,9 @@ public final class RemoteFeedLoader: FeedLoader {
 					return completion(.failure(Error.invalidData))
 				}
 				return completion(.success(feedImages))
-			default:
-				break
+			case .failure:
+				return completion(.failure(Error.connectivity))
 			}
-			completion(.failure(Error.connectivity))
 		}
 	}
 
