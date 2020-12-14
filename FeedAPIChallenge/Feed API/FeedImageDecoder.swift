@@ -39,7 +39,7 @@ final class FeedImageDecoder {
 		}
 	}
 	
-	static func decode(data: Data) -> [FeedImage]? {
+	static func decodeImages(from data: Data) -> [FeedImage]? {
 		try? JSONDecoder().decode(Root.self, from: data).feedImages
 	}
 }

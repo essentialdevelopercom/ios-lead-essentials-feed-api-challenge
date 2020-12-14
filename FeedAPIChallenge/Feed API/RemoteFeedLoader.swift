@@ -29,7 +29,7 @@ public final class RemoteFeedLoader: FeedLoader {
 			switch result {
 			case let .success((data, httpResponse)):
 				guard httpResponse.statusCode == HTTPStatusCode.OK,
-							let feedImages = FeedImageDecoder.decode(data: data) else {
+							let feedImages = FeedImageDecoder.decodeImages(from: data) else {
 					return completion(.failure(Error.invalidData))
 				}
 				return completion(.success(feedImages))
