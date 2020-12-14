@@ -27,14 +27,15 @@ public final class RemoteFeedLoader: FeedLoader {
 			switch result {
 			case let .success((data, httpResponse)):
 				guard httpResponse.statusCode == HTTPStatusCode.OK,
-							let _ = try? JSONSerialization.jsonObject(with: data, options: .mutableLeaves) else {
+							let feedImages = FeedImageDecoder.decode(data: data) else {
 					return completion(.failure(Error.invalidData))
 				}
-				return completion(.success([]))
+				return completion(.success(feedImages))
 			default:
 				break
 			}
 			completion(.failure(Error.connectivity))
 		}
 	}
+
 }
