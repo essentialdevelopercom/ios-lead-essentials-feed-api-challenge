@@ -17,7 +17,7 @@ final class FeedImageDecoder {
 			items.map { $0.feedImage }
 		}
 	}
-
+	
 	private struct Item: Decodable {
 		let id: UUID
 		let description: String?
@@ -40,9 +40,6 @@ final class FeedImageDecoder {
 	}
 	
 	static func decode(data: Data) -> [FeedImage]? {
-		(
-			try? JSONDecoder().decode(Root.self, from: data)
-		)?
-		.feedImages
+		try? JSONDecoder().decode(Root.self, from: data).feedImages
 	}
 }
