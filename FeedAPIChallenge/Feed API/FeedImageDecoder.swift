@@ -10,6 +10,7 @@ import Foundation
 
 final class FeedImageDecoder {
 	
+	// MARK: Private helpers
 	private struct Root: Decodable {
 		let items: [Item]
 		
@@ -39,6 +40,7 @@ final class FeedImageDecoder {
 		}
 	}
 	
+	// MARK: Static methods
 	static func decodeImages(from data: Data) -> [FeedImage]? {
 		try? JSONDecoder().decode(Root.self, from: data).feedImages
 	}
