@@ -5,32 +5,30 @@
 import Foundation
 
 public final class RemoteFeedLoader: FeedLoader {
-	private let url: URL
-	private let client: HTTPClient
-	
-	public enum Error: Swift.Error {
-		case connectivity
-		case invalidData
-	}
-		
-	public init(url: URL, client: HTTPClient) {
-		self.url = url
-		self.client = client
-	}
-	
-	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
+    private let url: URL
+    private let client: HTTPClient
+
+    public enum Error: Swift.Error {
+        case connectivity
+        case invalidData
+    }
+
+    public init(url: URL, client: HTTPClient) {
+        self.url = url
+        self.client = client
+    }
+
+    public func load(completion: @escaping (FeedLoader.Result) -> Void) {
         client.get(from: url) { [weak self] result in
+            guard let self = self else { return }
             switch result {
-            case .success(let result):
-                let items = self?.convert(data: result.0)
-                switch (items, result.1.statusCode) {
-                case (nil, 200):
-                    completion(Result.failure(Error.invalidData))
-                case (_, 200):
-                    completion(Result.success(items!))
-                default:
-                    completion(Result.failure(Error.invalidData))
+            case .success((let data, let response)):
+                guard let items = self.convert(data: data),
+                    response.statusCode == 200 else {
+                        completion(Result.failure(Error.invalidData))
+                        return
                 }
+                completion(Result.success(items))
             case .failure(_):
                 completion(Result.failure(Error.connectivity))
             }
@@ -44,15 +42,12 @@ public final class RemoteFeedLoader: FeedLoader {
                 return nil
         }
 
-        let feedImages: [FeedImage] = items.compactMap { dic in
-            FeedImage.item(from: dic)
-        }
-        return feedImages
+        return items.compactMap { FeedImage.feedImage(from: $0) }
     }
 }
 
 private extension FeedImage {
-    static func item(from dic: [String: Any]) -> FeedImage? {
+    static func feedImage(from dic: [String: Any]) -> FeedImage? {
         guard let imageIdString = dic["image_id"] as? String,
             let uuid = UUID(uuidString: imageIdString),
             let urlString = dic["image_url"] as? String,
