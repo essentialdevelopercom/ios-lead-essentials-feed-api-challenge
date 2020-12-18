@@ -21,9 +21,12 @@ public final class RemoteFeedLoader: FeedLoader {
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
         client.get(from: url) { result in
             switch result {
-            case .success(let data, let response):
-                switch response.statusCode {
-                case 200:
+            case let .success(data, response):
+                let json = try? JSONSerialization.jsonObject(with: data, options: .allowFragments)
+                switch (json, response.statusCode) {
+                case (nil, 200):
+                    completion(Result.failure(Error.invalidData))
+                case (_, 200):
                     completion(Result.success([]))
                 default:
                     completion(Result.failure(Error.invalidData))
