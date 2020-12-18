@@ -19,15 +19,15 @@ public final class RemoteFeedLoader: FeedLoader {
 	}
 	
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
-        client.get(from: url) { result in
+        client.get(from: url) { [weak self] result in
             switch result {
-            case let .success(data, response):
-                let json = try? JSONSerialization.jsonObject(with: data, options: .allowFragments)
-                switch (json, response.statusCode) {
+            case .success(let result):
+                let items = self?.convert(data: result.0)
+                switch (items, result.1.statusCode) {
                 case (nil, 200):
                     completion(Result.failure(Error.invalidData))
                 case (_, 200):
-                    completion(Result.success([]))
+                    completion(Result.success(items!))
                 default:
                     completion(Result.failure(Error.invalidData))
                 }
@@ -35,5 +35,33 @@ public final class RemoteFeedLoader: FeedLoader {
                 completion(Result.failure(Error.connectivity))
             }
         }
+    }
+
+    private func convert(data: Data?) -> [FeedImage]? {
+        guard let data = data,
+            let json = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: [[String: Any]]],
+            let items = json["items"] else {
+                return nil
+        }
+
+        let feedImages: [FeedImage] = items.compactMap { dic in
+            FeedImage.item(from: dic)
+        }
+        return feedImages
+    }
+}
+
+private extension FeedImage {
+    static func item(from dic: [String: Any]) -> FeedImage? {
+        guard let imageIdString = dic["image_id"] as? String,
+            let uuid = UUID(uuidString: imageIdString),
+            let urlString = dic["image_url"] as? String,
+            let url = URL(string: urlString) else {
+                return nil
+        }
+        return FeedImage(id: uuid,
+                         description: dic["image_desc"] as? String,
+                         location: dic["image_loc"] as? String,
+                         url: url)
     }
 }
