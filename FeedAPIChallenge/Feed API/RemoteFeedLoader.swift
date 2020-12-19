@@ -19,8 +19,16 @@ public final class RemoteFeedLoader: FeedLoader {
 	}
 	
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
-		client.get(from: url) { _ in
-			// noop
+		client.get(from: url) { [weak self] result in
+			guard let self = self else { return }
+			completion(self.map(result))
 		}
+	}
+	
+	private func map(_ result: HTTPClient.Result) -> FeedLoader.Result {
+		if case .failure = result {
+			return .failure(Error.connectivity)
+		}
+		fatalError()
 	}
 }
