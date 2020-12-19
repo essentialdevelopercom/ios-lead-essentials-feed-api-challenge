@@ -27,22 +27,21 @@ public final class RemoteFeedLoader: FeedLoader {
 	
 	private enum StatusCode: Int {
 		case OK = 200
+		init?(_ int: Int) { self.init(rawValue: int) }
 	}
 	
 	private func map(_ result: HTTPClient.Result) -> FeedLoader.Result {
 		switch result {
 		case .failure:
 			return .failure(Error.connectivity)
+		
 		case let .success((data, response)):
-			switch StatusCode(rawValue: response.statusCode) {
-			case .OK:
-				if (try? JSONDecoder().decode(Root.self, from: data)) != nil {
-					return .success([])
-				}
-				return .failure(Error.invalidData)
-			default:
-				return .failure(Error.invalidData)
+			if .OK == StatusCode(response.statusCode),
+			   (try? JSONDecoder().decode(Root.self, from: data)) != nil {
+				return .success([])
 			}
+			
+			return .failure(Error.invalidData)
 		}
 	}
 	
