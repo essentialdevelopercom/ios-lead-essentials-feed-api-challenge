@@ -24,18 +24,13 @@ public final class RemoteFeedLoader: FeedLoader {
 			completion(self.map(result))
 		}
 	}
-	
-	private enum StatusCode: Int {
-		case OK = 200
-		init?(_ int: Int) { self.init(rawValue: int) }
-	}
-	
+		
 	private func map(_ result: HTTPClient.Result) -> FeedLoader.Result {
 		switch result {
 		
 		case let .success((data, response)):
-			guard .OK == StatusCode(response.statusCode),
-				  let decoded = DecodedFeedImages(data) else {
+			guard let decoded = DecodedFeedImages(statusCode: response.statusCode,
+												  data: data) else {
 				return .failure(Error.invalidData)
 			}
 			
@@ -48,12 +43,20 @@ public final class RemoteFeedLoader: FeedLoader {
 	}
 }
 
+fileprivate enum StatusCode: Int {
+	case OK = 200
+	init?(_ int: Int) { self.init(rawValue: int) }
+}
+
 fileprivate struct DecodedFeedImages {
 
 	let images: [FeedImage]
 	
-	init?(_ data: Data) {
-		guard let images = Self.decodeFeedImages(from: data) else { return nil }
+	init?(statusCode: Int, data: Data) {
+		guard StatusCode(statusCode) == .OK,
+			  let images = Self.decodeFeedImages(from: data) else {
+			return nil
+		}
 		self.images = images
 	}
 	
