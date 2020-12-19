@@ -28,17 +28,16 @@ public final class RemoteFeedLoader: FeedLoader {
 	private func map(_ result: HTTPClient.Result) -> FeedLoader.Result {
 		switch result {
 		
+		case .failure:
+			return .failure(Error.connectivity)
+
 		case let .success((data, response)):
-			guard let decoded = DecodedFeedImages(statusCode: response.statusCode,
-												  data: data) else {
+			guard StatusCode(response.statusCode) == .OK,
+				  let decoded = DecodedFeedImages(data: data) else {
 				return .failure(Error.invalidData)
 			}
 			
 			return .success(decoded.images)
-			
-		case .failure:
-			return .failure(Error.connectivity)
-			
 		}
 	}
 }
@@ -52,9 +51,8 @@ fileprivate struct DecodedFeedImages {
 
 	let images: [FeedImage]
 	
-	init?(statusCode: Int, data: Data) {
-		guard StatusCode(statusCode) == .OK,
-			  let images = Self.decodeFeedImages(from: data) else {
+	init?(data: Data) {
+		guard let images = Self.decodeFeedImages(from: data) else {
 			return nil
 		}
 		self.images = images
