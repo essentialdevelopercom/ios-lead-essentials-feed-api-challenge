@@ -61,11 +61,11 @@ public final class RemoteFeedLoader: FeedLoader {
 	image_url	URL
 
 	*/
-	public struct RemoteFeedImage: Decodable {
-		public let image_id: UUID
-		public let image_desc: String?
-		public let image_loc: String?
-		public let image_url: URL
+	private struct RemoteFeedImage: Decodable {
+		let image_id: UUID
+		let image_desc: String?
+		let image_loc: String?
+		let image_url: URL
 	}
 	
 	/*
