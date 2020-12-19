@@ -26,9 +26,11 @@ public final class RemoteFeedLoader: FeedLoader {
 	}
 	
 	private func map(_ result: HTTPClient.Result) -> FeedLoader.Result {
-		if case .failure = result {
+		switch result {
+		case .failure:
 			return .failure(Error.connectivity)
+		case .success:
+			return .failure(Error.invalidData)
 		}
-		fatalError()
 	}
 }
