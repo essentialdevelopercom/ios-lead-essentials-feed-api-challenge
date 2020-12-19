@@ -63,15 +63,13 @@ fileprivate struct DecodedFeedImages {
 		return decoded.feedImages
 	}
 	
+	//Remote Feed Image Spec:
 	/*
-	Remote Feed Image Spec:
-
 	Property	Type
 	image_id	UUID
 	image_desc	String (optional)
 	image_loc	String (optional)
 	image_url	URL
-
 	*/
 	private struct RemoteFeedImage: Decodable {
 		let image_id: UUID
@@ -87,10 +85,9 @@ fileprivate struct DecodedFeedImages {
 		}
 	}
 	
+	
+	// Payload contract:
 	/*
-	Payload contract:
-
-
 	200 RESPONSE
 
 	{
