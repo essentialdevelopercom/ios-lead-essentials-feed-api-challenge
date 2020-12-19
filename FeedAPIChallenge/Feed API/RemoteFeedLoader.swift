@@ -32,16 +32,18 @@ public final class RemoteFeedLoader: FeedLoader {
 	
 	private func map(_ result: HTTPClient.Result) -> FeedLoader.Result {
 		switch result {
-		case .failure:
-			return .failure(Error.connectivity)
 		
 		case let .success((data, response)):
-			if .OK == StatusCode(response.statusCode),
-			   let decoded = try? JSONDecoder().decode(Root.self, from: data) {
-				return .success(decoded.feedImages)
+			guard .OK == StatusCode(response.statusCode),
+				  let decoded = try? JSONDecoder().decode(Root.self, from: data) else {
+				return .failure(Error.invalidData)
 			}
 			
-			return .failure(Error.invalidData)
+			return .success(decoded.feedImages)
+			
+		case .failure:
+			return .failure(Error.connectivity)
+			
 		}
 	}
 	
