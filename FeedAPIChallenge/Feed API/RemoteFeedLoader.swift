@@ -30,7 +30,7 @@ public final class RemoteFeedLoader: FeedLoader {
 		})
 	}
 	
-	func map(_ data: Data, _ response: HTTPURLResponse) -> FeedLoader.Result {
+	private func map(_ data: Data, _ response: HTTPURLResponse) -> FeedLoader.Result {
 		if response.statusCode == 200, let root = try? JSONDecoder().decode(Root.self, from: data) {
 			return .success(root.items.map{$0.item})
 		} else {
@@ -40,12 +40,12 @@ public final class RemoteFeedLoader: FeedLoader {
 	
 }
 
-struct Root: Decodable {
+private struct Root: Decodable {
 	var items: [RemoteFeedImage]
 
 }
 
-struct RemoteFeedImage: Decodable {
+private struct RemoteFeedImage: Decodable {
 	let image_id: UUID
 	let image_desc: String?
 	let image_loc: String?
