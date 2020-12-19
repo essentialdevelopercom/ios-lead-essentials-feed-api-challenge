@@ -35,16 +35,21 @@ public final class RemoteFeedLoader: FeedLoader {
 		
 		case let .success((data, response)):
 			guard .OK == StatusCode(response.statusCode),
-				  let decoded = try? JSONDecoder().decode(Root.self, from: data) else {
+				  let images = decodeFeedImages(from: data) else {
 				return .failure(Error.invalidData)
 			}
 			
-			return .success(decoded.feedImages)
+			return .success(images)
 			
 		case .failure:
 			return .failure(Error.connectivity)
 			
 		}
+	}
+	
+	private func decodeFeedImages(from data: Data) -> [FeedImage]? {
+		guard let decoded = try? JSONDecoder().decode(Root.self, from: data) else { return nil }
+		return decoded.feedImages
 	}
 	
 	/*
