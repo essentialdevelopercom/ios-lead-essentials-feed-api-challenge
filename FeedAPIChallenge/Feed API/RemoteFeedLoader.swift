@@ -37,8 +37,14 @@ public final class RemoteFeedLoader: FeedLoader {
 		
 		case let .success((data, response)):
 			if .OK == StatusCode(response.statusCode),
-			   (try? JSONDecoder().decode(Root.self, from: data)) != nil {
-				return .success([])
+			   let decoded = try? JSONDecoder().decode(Root.self, from: data) {
+				let items = decoded.items.map {
+					FeedImage(id: $0.image_id,
+							  description: $0.image_desc,
+							  location: $0.image_loc,
+							  url: $0.image_url)
+				}
+				return .success(items)
 			}
 			
 			return .failure(Error.invalidData)
