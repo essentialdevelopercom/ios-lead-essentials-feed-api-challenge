@@ -31,27 +31,28 @@ public final class RemoteFeedLoader: FeedLoader {
 				guard let root = try? JSONDecoder().decode(Root.self, from: data) else {
 					return completion(.failure(Error.invalidData))
 				}
-
-				let images = root.items.map({
-					FeedImage(id: $0.id,
-							  description: $0.description,
-							  location: $0.location,
-							  url: $0.url)
-				})
-				completion(.success(images))
+				completion(.success(root.images))
 			}
 		}
 	}
 }
 
 private struct Root: Decodable {
-	let items: [Item]
+	private let items: [Item]
+
+	var images: [FeedImage] {
+		return items.map({$0.image})
+	}
 }
 
 private struct Item: Decodable {
 
-	let id: UUID
-	let description: String?
-	let location: String?
-	let url: URL
+	private let id: UUID
+	private let description: String?
+	private let location: String?
+	private let url: URL
+
+	var image: FeedImage {
+		return FeedImage(id: id, description: description, location: location, url: url)
+	}
 }
