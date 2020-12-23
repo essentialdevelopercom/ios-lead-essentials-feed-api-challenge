@@ -12,7 +12,7 @@ public final class RemoteFeedLoader: FeedLoader {
 		case connectivity
 		case invalidData
 	}
-	
+
 	public init(url: URL, client: HTTPClient) {
 		self.url = url
 		self.client = client
@@ -24,11 +24,26 @@ public final class RemoteFeedLoader: FeedLoader {
 			switch result {
 			case .failure(_):
 				completion(.failure(Error.connectivity))
-			case let .success((_, response)):
+			case let .success((data, response)):
 				guard response.statusCode == 200 else {
+					return completion(.failure(Error.invalidData))
+				}
+				guard let _ = try? JSONDecoder().decode(Root.self, from: data) else {
 					return completion(.failure(Error.invalidData))
 				}
 			}
 		}
 	}
+}
+
+private struct Root: Codable {
+	let items: [Item]
+}
+
+private struct Item: Codable {
+
+	let id: UUID
+	let description: String?
+	let location: String?
+	let url: URL
 }
