@@ -36,11 +36,11 @@ public final class RemoteFeedLoader: FeedLoader {
 	}
 }
 
-private struct Root: Codable {
+private struct Root: Decodable {
 	let items: [Item]
 }
 
-private struct Item: Codable {
+private struct Item: Decodable {
 
 	let id: UUID
 	let description: String?
