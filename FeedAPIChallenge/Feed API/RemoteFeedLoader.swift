@@ -13,11 +13,33 @@ public final class RemoteFeedLoader: FeedLoader {
 		case invalidData
 	}
 	
-	struct Root: Decodable {
+	
+	
+	public init(url: URL, client: HTTPClient) {
+		self.url = url
+		self.client = client
+	}
+	
+	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
+		client.get(from: url) { result in
+			switch result {
+			case .success((let data, let response)):
+				completion(FeedImageMapper.map(data, response: response))
+			case .failure:
+				completion(.failure(Error.connectivity))
+			}
+		}
+	}
+
+}
+
+class FeedImageMapper {
+	
+	private struct Root: Decodable {
 		let items: [Item]
 	}
 	
-	struct Item: Decodable {
+	private struct Item: Decodable {
 		
 		let imageID: UUID
 		let imageDescription: String?
@@ -30,30 +52,13 @@ public final class RemoteFeedLoader: FeedLoader {
 			case imageLocation = "image_loc"
 			case imageURL = "image_url"
 		}
-		
 	}
 	
-	public init(url: URL, client: HTTPClient) {
-		self.url = url
-		self.client = client
-	}
+	private static let OK_STATUS = 200
 	
-	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
-		client.get(from: url) { result in
-			switch result {
-			case .success((let data, let response)):
-				completion(RemoteFeedLoader.mapSuccessResult(data, response))
-			case .failure:
-				completion(.failure(Error.connectivity))
-			}
-		}
-	}
-	
-	static func mapSuccessResult(_ data: Data, _ response: HTTPURLResponse) -> FeedLoader.Result {
-		if response.statusCode != 200 {
-			return .failure(Error.invalidData)
-		}
-		if let decodedList = try? JSONDecoder().decode(Root.self, from: data) {
+	internal static func map(_ data: Data, response: HTTPURLResponse) -> RemoteFeedLoader.Result {
+		if response.statusCode == OK_STATUS,
+		   let decodedList = try? JSONDecoder().decode(Root.self, from: data) {
 			let feedImages = decodedList.items.map {
 				FeedImage(id: $0.imageID,
 						  description: $0.imageDescription,
@@ -61,9 +66,8 @@ public final class RemoteFeedLoader: FeedLoader {
 						  url: $0.imageURL)
 			}
 			return .success(feedImages)
-		} else {
-			return .failure(Error.invalidData)
 		}
+		return .failure(RemoteFeedLoader.Error.invalidData)
 	}
 	
 }
