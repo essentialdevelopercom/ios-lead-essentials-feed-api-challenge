@@ -25,16 +25,16 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
 		XCTAssertTrue(client.requestedURLs.isEmpty)
 	}
 	
-	//	func test_loadTwice_requestsDataFromURLTwice() {
-	//		let url = URL(string: "https://a-given-url.com")!
-	//		let (sut, client) = makeSUT(url: url)
-	//
-	//		sut.load { _ in }
-	//		sut.load { _ in }
-	//
-	//		XCTAssertEqual(client.requestedURLs, [url, url])
-	//	}
-	//
+	func test_loadTwice_requestsDataFromURLTwice() {
+		let url = URL(string: "https://a-given-url.com")!
+		let (sut, client) = makeSUT(url: url)
+
+		sut.load { _ in }
+		sut.load { _ in }
+
+		XCTAssertEqual(client.requestedURLs, [url, url])
+	}
+	
 	//	func test_load_deliversConnectivityErrorOnClientError() {
 	//		let (sut, client) = makeSUT()
 	//
@@ -112,7 +112,9 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
 	
 	// MARK: - Helpers
 	
-	private func makeSUT(url: URL = URL(string: "https://a-url.com")!, file: StaticString = #filePath, line: UInt = #line) -> (sut: RemoteFeedLoader, client: HTTPClientSpy) {
+	private func makeSUT(url: URL = URL(string: "https://a-url.com")!,
+						 file: StaticString = #filePath,
+						 line: UInt = #line) -> (sut: RemoteFeedLoader, client: HTTPClientSpy) {
 		let client = HTTPClientSpy()
 		let sut = RemoteFeedLoader(url: url, client: client)
 		trackForMemoryLeaks(sut, file: file, line: line)
@@ -120,7 +122,10 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
 		return (sut, client)
 	}
 	
-	private func makeItem(id: UUID, description: String? = nil, location: String? = nil, imageURL: URL) -> (model: FeedImage, json: [String: Any]) {
+	private func makeItem(id: UUID,
+						  description: String? = nil,
+						  location: String? = nil,
+						  imageURL: URL) -> (model: FeedImage, json: [String: Any]) {
 		let item = FeedImage(id: id, description: description, location: location, url: imageURL)
 		
 		let json = [
