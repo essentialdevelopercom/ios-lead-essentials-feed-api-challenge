@@ -7,17 +7,6 @@ import FeedAPIChallenge
 
 class LoadFeedFromRemoteUseCaseTests: XCTestCase {
 	
-	//  ***********************
-	//
-	//  Follow the TDD process:
-	//
-	//  1. Uncomment and run one test at a time (run tests with CMD+U).
-	//  2. Do the minimum to make the test pass and commit.
-	//  3. Refactor if needed and commit again.
-	//
-	//  Repeat this process until all tests are passing.
-	//
-	//  ***********************
 	
 	func test_init_doesNotRequestDataFromURL() {
 		let (_, client) = makeSUT()
@@ -57,23 +46,23 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
 		}
 	}
 	
-		func test_load_deliversInvalidDataErrorOn200HTTPResponseWithInvalidJSON() {
-			let (sut, client) = makeSUT()
+	func test_load_deliversInvalidDataErrorOn200HTTPResponseWithInvalidJSON() {
+		let (sut, client) = makeSUT()
+
+		expect(sut, toCompleteWith: .failure(.invalidData), when: {
+			let invalidJSON = Data("invalid data".utf8)
+			client.complete(withStatusCode: 200, data: invalidJSON)
+		})
+	}
 	
-	        expect(sut, toCompleteWith: .failure(.invalidData), when: {
-				let invalidJSON = Data("invalid data".utf8)
-				client.complete(withStatusCode: 200, data: invalidJSON)
-			})
-		}
-	
-	//	func test_load_deliversSuccessWithNoItemsOn200HTTPResponseWithEmptyJSONList() {
-	//		let (sut, client) = makeSUT()
-	//
-	//		expect(sut, toCompleteWith: .success([]), when: {
-	//			let emptyListJSON = makeItemsJSON([])
-	//			client.complete(withStatusCode: 200, data: emptyListJSON)
-	//		})
-	//	}
+	func test_load_deliversSuccessWithNoItemsOn200HTTPResponseWithEmptyJSONList() {
+		let (sut, client) = makeSUT()
+
+		expect(sut, toCompleteWith: .success([]), when: {
+			let emptyListJSON = makeItemsJSON([])
+			client.complete(withStatusCode: 200, data: emptyListJSON)
+		})
+	}
 	//
 	//	func test_load_deliversSuccessWithItemsOn200HTTPResponseWithJSONItems() {
 	//		let (sut, client) = makeSUT()

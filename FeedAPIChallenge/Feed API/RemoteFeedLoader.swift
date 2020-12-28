@@ -29,6 +29,8 @@ public final class RemoteFeedLoader: FeedLoader {
 				let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
 				if json == nil {
 					completion(.failure(Error.invalidData))
+				} else {
+					completion(.success([]))
 				}
 			case .failure:
 				completion(.failure(Error.connectivity))
