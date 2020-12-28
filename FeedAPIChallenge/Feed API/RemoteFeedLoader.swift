@@ -21,20 +21,23 @@ public final class RemoteFeedLoader: FeedLoader {
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
 		client.get(from: url) { result in
 			switch result {
-			case .success((let data , let response)):
-				if response.statusCode != 200 {
-					completion(.failure(Error.invalidData))
-					return
-				}
-				let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
-				if json == nil {
-					completion(.failure(Error.invalidData))
-				} else {
-					completion(.success([]))
-				}
+			case .success((let data, let response)):
+				completion(RemoteFeedLoader.mapSuccessResult(data, response))
 			case .failure:
 				completion(.failure(Error.connectivity))
 			}
+		}
+	}
+	
+	static func mapSuccessResult(_ data: Data, _ response: HTTPURLResponse) -> FeedLoader.Result {
+		if response.statusCode != 200 {
+			return .failure(Error.invalidData)
+		}
+		let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
+		if json == nil {
+			return .failure(Error.invalidData)
+		} else {
+			return .success([])
 		}
 	}
 	
