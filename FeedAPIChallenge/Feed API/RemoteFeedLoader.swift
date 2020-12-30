@@ -26,9 +26,10 @@ public final class RemoteFeedLoader: FeedLoader {
 		client.get(from: url) { [weak self] result in
 			guard let `self` = self else { return }
 			switch result {
-			case .success(let (_, response)):
-				if response.statusCode != self.OK_HTTP {
+			case .success(let (data, response)):
+				guard JSONSerialization.isValidJSONObject(data), response.statusCode == self.OK_HTTP else {
 					completion(.failure(Error.invalidData))
+					return
 				}
 				break
 			case .failure(_):
