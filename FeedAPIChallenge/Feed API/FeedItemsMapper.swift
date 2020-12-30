@@ -27,7 +27,7 @@ internal final class FeedItemsMapper {
 	
 	private static var OK_200: Int { return 200 }
 	
-	static func map(_ data: Data, response: HTTPURLResponse) throws -> [FeedImage] {
+	internal static func map(_ data: Data, response: HTTPURLResponse) throws -> [FeedImage] {
 		let decoder = JSONDecoder()
 		decoder.keyDecodingStrategy = .convertFromSnakeCase
 		
