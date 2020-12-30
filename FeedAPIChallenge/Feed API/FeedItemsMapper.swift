@@ -8,7 +8,7 @@
 
 import Foundation
 
-final class FeedItemsMapper {
+internal final class FeedItemsMapper {
 	
 	private struct Root: Decodable {
 		let items: [Image]
@@ -34,7 +34,9 @@ final class FeedItemsMapper {
 		guard response.statusCode == OK_200 else {
 			throw RemoteFeedLoader.Error.invalidData
 		}
-		return try decoder.decode(Root.self, from: data).items.map { $0.item }
+		
+		let root = try decoder.decode(Root.self, from: data)
+		return root.items.map { $0.item }
 	}
 	
 }
