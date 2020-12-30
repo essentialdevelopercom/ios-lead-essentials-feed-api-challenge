@@ -27,14 +27,24 @@ public final class RemoteFeedLoader: FeedLoader {
 			guard let `self` = self else { return }
 			switch result {
 			case .success(let (data, response)):
-				guard JSONSerialization.isValidJSONObject(data), response.statusCode == self.OK_HTTP else {
+				guard  response.statusCode == self.OK_HTTP else {
 					completion(.failure(Error.invalidData))
 					return
+				}
+				do {
+					let root = try JSONDecoder().decode(FeedImageRoot.self, from: data)
+					completion(.success(root.items))
+				} catch {
+					completion(.failure(Error.invalidData))
 				}
 				break
 			case .failure(_):
 				completion(.failure(Error.connectivity))
 			}
 		}
+	}
+	
+	private struct FeedImageRoot: Decodable {
+		var items: [FeedImage]
 	}
 }
