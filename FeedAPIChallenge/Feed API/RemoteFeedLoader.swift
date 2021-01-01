@@ -26,7 +26,7 @@ public final class RemoteFeedLoader: FeedLoader {
 					return completion(.failure(Error.invalidData))
 				}
 				
-				completion(.success([]))
+				completion(.success(root.feed))
 				break
 			case .failure(_):
 				completion(.failure(Error.connectivity))
@@ -37,6 +37,10 @@ public final class RemoteFeedLoader: FeedLoader {
 	
 	private struct Root: Decodable {
 		var items: [Item]
+		
+		var feed: [FeedImage] {
+			return items.map { $0.item }
+		}
 	}
 	
 	private struct Item: Decodable {
