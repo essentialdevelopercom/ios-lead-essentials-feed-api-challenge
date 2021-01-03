@@ -38,7 +38,10 @@ public final class RemoteFeedLoader: FeedLoader {
 		let root = try JSONDecoder().decode(Root.self, from: data)
 		return root.items.map(\.feedImgae)
 	}
-	
+}
+
+// MARK: - API Models
+extension RemoteFeedLoader {
 	private struct Item: Decodable {
 		let image_id: UUID
 		let image_desc: String?
