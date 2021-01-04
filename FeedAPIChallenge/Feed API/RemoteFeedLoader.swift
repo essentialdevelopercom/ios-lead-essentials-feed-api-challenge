@@ -19,13 +19,15 @@ public final class RemoteFeedLoader: FeedLoader {
 	}
 	
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
-		client.get(from: url) { [weak self] result in
+		client.get(from: url) { result in
 			switch result {
 			case .success(let data, let response):
 				if response.statusCode == 200 {
-					if let _ = try? JSONSerialization.jsonObject(with: data) {
-						completion(.success([]))
-					} else {
+					do {
+						let root = try JSONDecoder().decode(Root.self, from: data)
+						let feedImages = root.items.map { $0.toFeedImage() }
+						completion(.success(feedImages))
+					} catch {
 						completion(.failure(Error.invalidData))
 					}
 				} else {
@@ -36,5 +38,21 @@ public final class RemoteFeedLoader: FeedLoader {
 				completion(.failure(Error.connectivity))
 			}
 		}
+	}
+	
+	private struct Root: Decodable {
+		var items: [Item]
+	}
+	
+	private struct Item: Decodable {
+		private let image_id: UUID
+		private let image_desc: String?
+		private let image_loc: String?
+		private let image_url: URL
+		
+		func toFeedImage() -> FeedImage {
+			return FeedImage(id: image_id, description: image_desc, location: image_loc, url: image_url)
+		}
+	
 	}
 }
