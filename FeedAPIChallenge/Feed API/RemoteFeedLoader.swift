@@ -50,7 +50,7 @@ private class FeedImageMapper {
 		}
 	}
 	
-	static func map(_ data: Data, from response: HTTPURLResponse) -> FeedLoader.Result {
+	internal static func map(_ data: Data, from response: HTTPURLResponse) -> FeedLoader.Result {
 		if response.statusCode == 200 {
 			do {
 				let root = try JSONDecoder().decode(Root.self, from: data)
