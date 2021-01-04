@@ -45,15 +45,6 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
 	}
 	
 	//
-	//	func test_load_deliversConnectivityErrorOnClientError() {
-	//		let (sut, client) = makeSUT()
-	//
-	//        expect(sut, toCompleteWith: .failure(.connectivity), when: {
-	//			let clientError = NSError(domain: "Test", code: 0)
-	//			client.complete(with: clientError)
-	//		})
-	//	}
-	//
 	//	func test_load_deliversInvalidDataErrorOnNon200HTTPResponse() {
 	//		let (sut, client) = makeSUT()
 	//
