@@ -2,8 +2,8 @@
 //  FeedItemsMapper.swift
 //  FeedAPIChallenge
 //
-//  Created by Tyler Schwartzman on 12/30/20.
-//  Copyright © 2020 Essential Developer Ltd. All rights reserved.
+//  Created by Tyler Schwartzman on 1/4/21.
+//  Copyright © 2021 Essential Developer Ltd. All rights reserved.
 //
 
 import Foundation
@@ -13,7 +13,7 @@ internal final class FeedItemsMapper {
 	private struct Root: Decodable {
 		let items: [Image]
 	}
-
+	
 	private struct Image: Decodable {
 		let imageId: UUID
 		let imageDesc: String?
