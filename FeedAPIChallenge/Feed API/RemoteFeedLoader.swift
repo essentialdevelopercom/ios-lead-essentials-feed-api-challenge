@@ -22,28 +22,10 @@ public final class RemoteFeedLoader: FeedLoader {
 		client.get(from: url) { result in
 			switch (result) {
 			case let .success((data, response)):
-				guard response.statusCode == 200, let root = try? JSONDecoder().decode(Root.self, from: data) else {
-					return completion(.failure(Error.invalidData))
-				}
-
-				let items = root.items.map { FeedImage(id: $0.image_id, description: $0.image_desc, location: $0.image_loc, url: $0.image_url) }
-
-				completion(.success(items))
+				completion(FeedImagesMapper.map(data, response))
 			case .failure:
 				completion(.failure(Error.connectivity))
 			}
 		}
 	}
-}
-
-
-private struct Root: Decodable {
-	var items: [APIFeedImage]
-}
-
-private struct APIFeedImage: Decodable {
-	var image_id: UUID
-	var image_desc: String?
-	var image_loc: String?
-	var image_url: URL
 }
