@@ -26,7 +26,9 @@ public final class RemoteFeedLoader: FeedLoader {
 					return completion(.failure(Error.invalidData))
 				}
 
-				completion(.success(root.items))
+				let items = root.items.map { FeedImage(id: $0.image_id, description: $0.image_desc, location: $0.image_loc, url: $0.image_url) }
+
+				completion(.success(items))
 			case .failure:
 				completion(.failure(Error.connectivity))
 			}
@@ -36,5 +38,12 @@ public final class RemoteFeedLoader: FeedLoader {
 
 
 private struct Root: Decodable {
-	var items: [FeedImage]
+	var items: [APIFeedImage]
+}
+
+private struct APIFeedImage: Decodable {
+	var image_id: UUID
+	var image_desc: String?
+	var image_loc: String?
+	var image_url: URL
 }
