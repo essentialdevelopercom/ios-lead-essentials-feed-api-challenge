@@ -23,7 +23,7 @@ public final class RemoteFeedLoader: FeedLoader {
 			switch result {
 			case .failure: completion(.failure(Error.connectivity))
 			case let .success((data, response)):
-				guard response.statusCode == 200 else {
+				guard response.isValid() else {
 					completion(.failure(Error.invalidData))
 					return
 				}
@@ -34,5 +34,13 @@ public final class RemoteFeedLoader: FeedLoader {
 				}
 			}
 		}
+	}
+}
+
+private extension HTTPURLResponse {
+	private static var StatusCodeSuccess = 200
+	
+	func isValid() -> Bool {
+		return statusCode == HTTPURLResponse.StatusCodeSuccess
 	}
 }
