@@ -41,8 +41,8 @@ internal final class FeedImagesMapper {
 		return .success(root.feedImages)
 	}
 	
-	private static func jsonDecode<T: Decodable>(from data: Data) -> T? {
-		return try? JSONDecoder().decode(T.self, from: data)
+	private static func jsonDecode(from data: Data) -> Root? {
+		return try? JSONDecoder().decode(Root.self, from: data)
 	}
 }
 
