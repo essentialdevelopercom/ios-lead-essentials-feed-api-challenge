@@ -57,10 +57,14 @@ private final class FeedImagesMapper {
 	
 	internal static func map(_ data: Data, from response: HTTPURLResponse) -> FeedLoader.Result {
 		guard response.isValid(),
-			  let root = try? JSONDecoder().decode(Root.self, from: data) else {
+			  let root: Root = jsonDecode(from: data) else {
 			return .failure(RemoteFeedLoader.Error.invalidData)
 		}
 		return .success(root.feedImages)
+	}
+	
+	private static func jsonDecode<T: Decodable>(from data: Data) -> T? {
+		return try? JSONDecoder().decode(T.self, from: data)
 	}
 }
 
