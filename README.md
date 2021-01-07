@@ -101,3 +101,8 @@ We've provided you with appropriate tests to guide and validate your solution. Y
 7) Aim to write self-documenting code by providing context and detail when naming your components, avoiding explanations in comments.
 
 Happy coding!
+
+## Class Diagram
+
+![](classDiagram.png)
+
