@@ -20,9 +20,19 @@ public final class RemoteFeedLoader: FeedLoader {
 	
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
 		client.get(from: url) { result in
-			switch result {
-			case .success(_): completion(.failure(Error.invalidData))
-			case .failure(_): completion(.failure(Error.connectivity))
+			do {
+				switch result {
+				case .success((let data, let response)):
+					if response.statusCode == 200 {
+						let images = try RemoteImagesLoader.getImages(data)
+						completion(.success(images))
+					} else {
+						completion(.failure(Error.invalidData))
+					}
+				case .failure(_): completion(.failure(Error.connectivity))
+				}
+			} catch {
+				completion(.failure(Error.invalidData))
 			}
 		}
 	}
