@@ -18,10 +18,10 @@ internal final class FeedImageMapper {
   }
 
   struct Item: Decodable {
-    public let image_id: UUID
-    public let image_desc: String?
-    public let image_loc: String?
-    public let image_url: URL
+    private let image_id: UUID
+    private let image_desc: String?
+    private let image_loc: String?
+    private let image_url: URL
 
     var item: FeedImage {
       return FeedImage(id: image_id, description: image_desc, location: image_loc, url: image_url)
