@@ -23,7 +23,7 @@ public final class RemoteFeedLoader: FeedLoader {
       guard self != nil else { return }
       switch result {
       case let .success((data, response)):
-        completion(FeedItemMapper.map(data, from: response))
+        completion(FeedImageMapper.map(data, from: response))
       case .failure:
         completion(.failure(RemoteFeedLoader.Error.connectivity))
       }
