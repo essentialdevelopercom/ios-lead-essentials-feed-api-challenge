@@ -11,7 +11,8 @@ import Foundation
 internal struct FeedImageMapper {
 	
 	internal static func map(_ data: Data) throws -> [FeedImage] {
-		guard let dictionary = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any] else { throw RemoteFeedLoader.Error.invalidData }
-		return (dictionary["items"] as? [[String: Any]] ?? []).compactMap(RemoteImage.init).map { $0.feedImage }
+		guard let dictionary = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any],
+			  let imageItems = dictionary["items"] as? [[String: Any]] else { throw RemoteFeedLoader.Error.invalidData }
+		return imageItems.compactMap(RemoteImage.init).map { $0.feedImage }
 	}
 }
