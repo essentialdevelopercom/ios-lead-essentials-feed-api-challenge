@@ -4,18 +4,16 @@
 
 import Foundation
 
-public typealias WeakHTTPClient = HTTPClient & AnyObject
-
 public final class RemoteFeedLoader: FeedLoader {
 	private let url: URL
-	private weak var client: WeakHTTPClient?
+	private var client: HTTPClient?
 	
 	public enum Error: Swift.Error {
 		case connectivity
 		case invalidData
 	}
 	
-	public init(url: URL, client: WeakHTTPClient?) {
+	public init(url: URL, client: HTTPClient?) {
 		self.url = url
 		self.client = client
 	}
