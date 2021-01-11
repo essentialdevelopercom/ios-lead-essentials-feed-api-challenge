@@ -25,7 +25,7 @@ public final class RemoteFeedLoader: FeedLoader {
 				switch result {
 				case .success((let data, let response)):
 					if response.statusCode == 200 {
-						let images = try RemoteImagesLoader.getImages(data)
+						let images = try FeedImageMapper.map(data)
 						completion(.success(images))
 					} else {
 						completion(.failure(Error.invalidData))

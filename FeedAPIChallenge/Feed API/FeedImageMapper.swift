@@ -1,5 +1,5 @@
 //
-//  RemoteImagesLoader.swift
+//  FeedImageMapper.swift
 //  FeedAPIChallenge
 //
 //  Created by Ivan Ornes on 10/1/21.
@@ -8,9 +8,9 @@
 
 import Foundation
 
-internal struct RemoteImagesLoader {
+internal struct FeedImageMapper {
 	
-	internal static func getImages(_ data: Data) throws -> [FeedImage] {
+	internal static func map(_ data: Data) throws -> [FeedImage] {
 		guard let dictionary = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any] else { return [] }
 		return (dictionary["items"] as? [[String: Any]] ?? []).compactMap(RemoteImage.init).map { $0.feedImage }
 	}
