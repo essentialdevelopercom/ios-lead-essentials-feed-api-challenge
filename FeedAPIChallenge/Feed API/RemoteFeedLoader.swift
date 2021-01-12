@@ -39,33 +39,13 @@ public final class RemoteFeedLoader: FeedLoader {
 		}
 	}
 }
-
+	
 extension RemoteFeedLoader {
 	func mapFeedImage(_ feedData: Data) -> FeedLoader.Result {
-		do {
-			if let json = try JSONSerialization.jsonObject(with: feedData, options: []) as? [String: Any],
-			   let items = json["items"] as? [[String: Any]] {
-				
-				var feedItems: [FeedImage] = []
-				items.forEach({dictionary in
-					if let imageId = dictionary["image_id"] as? String,
-					   let imageUrlString = dictionary["image_url"] as? String,
-					   let uid = UUID(uuidString: imageId),
-					   let imageUrl = URL(string: imageUrlString) {
-						
-						let imageDescription = dictionary["image_desc"] as? String
-						let imageLocation = dictionary["image_loc"] as? String
-						feedItems.append(FeedImage(id: uid,
-										 description: imageDescription,
-										 location: imageLocation,
-										 url: imageUrl))
-					}
-				})
-				return .success(feedItems)
-			}
-		} catch {
+		let decoder = JSONDecoder()
+		guard let feedImages = try? decoder.decode(FeedItems.self, from: feedData).images else {
 			return .failure(Error.invalidData)
 		}
-		return .failure(Error.invalidData)
+		return .success(feedImages)
 	}
 }
