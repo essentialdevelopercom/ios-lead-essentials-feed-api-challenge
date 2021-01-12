@@ -31,6 +31,8 @@ public final class RemoteFeedLoader: FeedLoader {
 	}
 }
 
+// Seprates API implementation and mapping from feed loader
+// 	such that we can use any Mapper and API without changing RemoteFeedLoader
 internal struct RemoteFeedLoaderMapper {
 	static func map(_ data: Data, from response: HTTPURLResponse) -> RemoteFeedLoader.Result {
 		guard response.statusCode == 200, let feed = try? JSONDecoder().decode(Feed.self, from: data) else {
