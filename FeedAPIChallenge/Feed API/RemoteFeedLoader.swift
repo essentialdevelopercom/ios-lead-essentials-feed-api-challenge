@@ -31,8 +31,6 @@ public final class RemoteFeedLoader: FeedLoader {
 	}
 }
 
-// Seprates API implementation and mapping from feed loader
-// 	such that we can use any Mapper and API without changing RemoteFeedLoader
 internal struct RemoteFeedLoaderMapper {
 	private static var OK_200 = 200
 	
