@@ -8,11 +8,26 @@
 
 import Foundation
 
+internal struct RemoteImageResponse: Decodable {
+	private let items: [RemoteImage]
+}
+
+internal extension RemoteImageResponse {
+	var feedItems: [FeedImage] { items.map { $0.feedImage } }
+}
+
 internal struct RemoteImage: Decodable {
 	private let id: UUID
 	private let description: String?
 	private let location: String?
 	private let url: URL
+	
+	private enum CodingKeys : String, CodingKey {
+		case id = "image_id"
+		case description = "image_desc"
+		case location = "image_loc"
+		case url = "image_url"
+	}
 	
 	internal init(_ data: [String: Any]) throws {
 		guard let idString = data["image_id"] as? String,
