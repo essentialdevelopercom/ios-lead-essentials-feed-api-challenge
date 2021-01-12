@@ -49,8 +49,8 @@ internal struct RemoteFeedLoaderMapper {
 	
 	private struct FeedItem: Decodable {
 		let image_id: UUID
-		let image_desc: String
-		let image_loc: String
+		let image_desc: String?
+		let image_loc: String?
 		let image_url: URL
 		
 		var feedImage: FeedImage {
