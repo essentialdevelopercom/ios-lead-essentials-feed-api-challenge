@@ -22,21 +22,18 @@ public final class RemoteFeedLoader: FeedLoader {
 		client.get(from: url) { [weak self] result in
 			guard self != nil else { return }
 			switch result {
-			case .success(let data, let response):
-				if response.statusCode != 200 {
-					completion(.failure(RemoteFeedLoader.Error.invalidData))
-				} else {
-					do {
-						let images = try JSONDecoder().decode([FeedImage].self, from: data)
-						completion(.success(images))
-					} catch {
-						completion(.failure(RemoteFeedLoader.Error.invalidData))
-					}
-				}
+			case .success((let data, let response)):
+				completion(RemoteFeedLoader.map(data, from: response))
 			default:
 				completion(.failure(RemoteFeedLoader.Error.connectivity))
 			}
 		}
 	}
+	
+	private static func map(_ data: Data, from response: HTTPURLResponse) -> RemoteFeedLoader.Result {
+		guard response.statusCode != 200, let images = try? JSONDecoder().decode([FeedImage].self, from: data) else {
+			return .failure(RemoteFeedLoader.Error.invalidData)
+		}
+		return .success(images)
+	}
 }
-
