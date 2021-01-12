@@ -25,8 +25,9 @@ public final class RemoteFeedLoader: FeedLoader {
 			guard let strongSelf = self else { return }
 			switch result {
 			case .success(let feedData):
-				if feedData.1.statusCode == RemoteFeedLoader.OK_200 {
-					completion(strongSelf.mapFeedImage(feedData.0))
+				let (data,response) = feedData
+				if response.statusCode == RemoteFeedLoader.OK_200 {
+					completion(strongSelf.mapFeedImage(data))
 				}
 				else {
 					completion(.failure(Error.invalidData))
@@ -46,22 +47,24 @@ extension RemoteFeedLoader {
 			   let items = json["items"] as? [[String: Any]] {
 				
 				var feedItems: [FeedImage] = []
-				items.forEach({
-					if let image_id = $0["image_id"] as? String,
-					   let image_url = $0["image_url"] as? String {
-						let image_desc = $0["image_desc"] as? String
-						let image_loc = $0["image_loc"] as? String
-							
+				items.forEach({dictionary in
+					if let imageId = dictionary["image_id"] as? String,
+					   let imageUrlString = dictionary["image_url"] as? String,
+					   let uid = UUID(uuidString: imageId),
+					   let imageUrl = URL(string: imageUrlString) {
 						
-						feedItems.append(FeedImage(id: UUID(uuidString: image_id)!,
-										 description: image_desc,
-										 location: image_loc,
-										 url: URL(string: image_url)!))
+						let imageDescription = dictionary["image_desc"] as? String
+						let imageLocation = dictionary["image_loc"] as? String
+						feedItems.append(FeedImage(id: uid,
+										 description: imageDescription,
+										 location: imageLocation,
+										 url: imageUrl))
 					}
 				})
 				return .success(feedItems)
 			}
 		} catch {
+			return .failure(Error.invalidData)
 		}
 		return .failure(Error.invalidData)
 	}
