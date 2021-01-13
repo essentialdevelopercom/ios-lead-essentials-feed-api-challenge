@@ -29,10 +29,16 @@ class FeedImageMapper{
 	}
 	
 	static func map( _ data: Data, _ response: HTTPURLResponse) -> FeedLoader.Result {
-		if response.statusCode == 200, let root = try? JSONDecoder().decode(root.self, from: data){
+		if response.success(), let root = try? JSONDecoder().decode(root.self, from: data){
 			return .success(root.feedItems)
 		}else{
 			return .failure(RemoteFeedLoader.Error.invalidData)
 		}
+	}
+}
+
+private extension HTTPURLResponse{
+	func success() -> Bool{
+		return self.statusCode == 200
 	}
 }
