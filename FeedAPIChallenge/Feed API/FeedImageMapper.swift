@@ -38,7 +38,11 @@ class FeedImageMapper{
 }
 
 private extension HTTPURLResponse{
+	private var successStatusCode: Int{
+		200
+	}
+	
 	func success() -> Bool{
-		return self.statusCode == 200
+		return self.statusCode == successStatusCode
 	}
 }
