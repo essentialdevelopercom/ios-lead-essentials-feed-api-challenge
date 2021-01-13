@@ -9,7 +9,22 @@ public final class RemoteFeedLoader: FeedLoader {
 	private let client: HTTPClient
 	
 	private struct root: Decodable{
-		let items: [FeedImage]
+		let items: [Image]
+		
+		var feedItems: [FeedImage]{
+			items.map {$0.feedImage}
+		}
+	}
+	
+	private struct Image: Decodable {
+		let image_id: UUID
+		let image_desc: String?
+		let image_loc: String?
+		let image_url: URL
+		
+		var feedImage: FeedImage {
+			return FeedImage(id: image_id, description: image_desc, location: image_loc, url: image_url)
+		}
 	}
 	
 	public enum Error: Swift.Error {
@@ -36,7 +51,7 @@ public final class RemoteFeedLoader: FeedLoader {
 	
 	private func map( _ data: Data, _ response: HTTPURLResponse) -> FeedLoader.Result {
 		if response.statusCode == 200, let root = try? JSONDecoder().decode(root.self, from: data){
-			return .success(root.items)
+			return .success(root.feedItems)
 		}else{
 			return .failure(Error.invalidData)
 		}
