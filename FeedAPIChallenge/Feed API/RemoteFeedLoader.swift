@@ -8,6 +8,10 @@ public final class RemoteFeedLoader: FeedLoader {
 	private let url: URL
 	private let client: HTTPClient
 	
+	private struct root: Decodable{
+		let items: [FeedImage]
+	}
+	
 	public enum Error: Swift.Error {
 		case connectivity
 		case invalidData
@@ -23,8 +27,15 @@ public final class RemoteFeedLoader: FeedLoader {
 			switch result{
 			case .failure:
 				completion(.failure(Error.connectivity))
-			default:
-				completion(.failure(Error.invalidData))
+			case let .success((data, response)):
+				if response.statusCode != 200{
+					return completion(.failure(Error.invalidData))
+				}
+				if let _ = try? JSONDecoder().decode(root.self, from: data){
+					return completion(.success([]))
+				}else{
+					return completion(.failure(Error.invalidData))
+				}
 			}
 		}
 	}
