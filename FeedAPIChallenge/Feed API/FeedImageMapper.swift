@@ -8,12 +8,12 @@
 
 import Foundation
 
-class FeedImageMapper{
-	private struct root: Decodable{
+class FeedImageMapper {
+	private struct Root: Decodable {
 		let items: [Image]
 		
-		var feedItems: [FeedImage]{
-			items.map {$0.feedImage}
+		var feedItems: [FeedImage] {
+			items.map { $0.feedImage }
 		}
 	}
 	
@@ -29,19 +29,19 @@ class FeedImageMapper{
 	}
 	
 	static func map( _ data: Data, _ response: HTTPURLResponse) -> FeedLoader.Result {
-		if response.success(), let root = try? JSONDecoder().decode(root.self, from: data){
+		if response.success(), let root = try? JSONDecoder().decode(Root.self, from: data) {
 			return .success(root.feedItems)
 		}
 		return .failure(RemoteFeedLoader.Error.invalidData)
 	}
 }
 
-private extension HTTPURLResponse{
-	private var successStatusCode: Int{
+private extension HTTPURLResponse {
+	private var successStatusCode: Int {
 		200
 	}
 	
-	func success() -> Bool{
+	func success() -> Bool {
 		return self.statusCode == successStatusCode
 	}
 }
