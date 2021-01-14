@@ -27,6 +27,7 @@ public final class RemoteFeedLoader: FeedLoader {
                 guard response.statusCode == 200, let _ = try? JSONDecoder().decode(Items.self, from: data) else {
                     return completion(.failure(Error.invalidData))
                 }
+                completion(.success([]))
             }
         }
     }
