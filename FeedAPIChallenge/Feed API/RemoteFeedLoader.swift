@@ -22,7 +22,7 @@ public final class RemoteFeedLoader: FeedLoader {
 		client.get(from: url) { result in
 			switch result {
 			case .success((_, _)):
-				completion(.success([]))
+				completion(.failure(Error.invalidData))
 			case .failure(_):
 				completion(.failure(Error.connectivity))
 			}
