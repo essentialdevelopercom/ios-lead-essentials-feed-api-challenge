@@ -21,10 +21,12 @@ public final class RemoteFeedLoader: FeedLoader {
 	
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
 		client.get(from: url) { [weak self] result in
+			guard let self = self else { return }
+
 			switch result {
 			case let .success((data, response)):
-				if response.statusCode == self?.OK200,
-					let feedItems = try? self?.loadFeedItems(from: data) {
+				if response.statusCode == self.OK200,
+					let feedItems = try? self.loadFeedItems(from: data) {
 					completion(.success(feedItems))
 				} else {
 					completion(.failure(Error.invalidData))
