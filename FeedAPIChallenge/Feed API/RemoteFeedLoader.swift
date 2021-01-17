@@ -18,14 +18,13 @@ public final class RemoteFeedLoader: FeedLoader {
 		self.client = client
 	}
 	
-	static let OK_200 = 200
+	private static let OK_200 = 200
 	
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
 		client.get(from: url) {[weak self] result in
 			guard let strongSelf = self else { return }
 			switch result {
-			case .success(let feedData):
-				let (data,response) = feedData
+			case let .success((data,response)):
 				if response.statusCode == RemoteFeedLoader.OK_200,
 				   let data = try? strongSelf.mapFeedImage(data) {
 					completion(.success(data))
