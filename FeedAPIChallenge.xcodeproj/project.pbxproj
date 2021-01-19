@@ -70,6 +70,7 @@
 				08BBFF532492A46F00141A91 /* Products */,
 			);
 			sourceTree = "<group>";
+			usesTabs = 1;
 		};
 		08BBFF532492A46F00141A91 /* Products */ = {
 			isa = PBXGroup;

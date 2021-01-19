@@ -64,12 +64,16 @@ We've provided you with appropriate tests to guide and validate your solution. Y
 
 1) Fork the latest version of the challenge repo. Here's <a href="https://guides.github.com/activities/forking" target="_blank">how forking works</a>.
 
-2) Open the `FeedAPIChallenge.xcodeproj` project on Xcode 12.
+2) Open the `FeedAPIChallenge.xcodeproj` project on Xcode 12.2 (you can use other Xcode versions by switching to the appropriate branch, e.g., `xcode11`/`xcode12`).
 
 3) There are two main folders in the project:
-	- The `FeedAPIChallenge` folder contains the production types, including the `RemoteFeedLoader` and dependencies for requesting and loading the feed remotely. ***You only need to change the `RemoteFeedLoader.swift` file to implement the `load` method.***
+	- The `FeedAPIChallenge` folder contains the production types, including the `RemoteFeedLoader` and dependencies for requesting and loading the feed remotely. 
+
+		- ⚠️ Important: ***You should only change the `RemoteFeedLoader.swift` file to implement the `load` method.***
 	
-	- The `Tests` folder contains the test cases. ***You only need to change the `LoadFeedFromRemoteUseCaseTests.swift` file to implement all test cases.***
+	- The `Tests` folder contains the test cases. 
+
+		- ⚠️ Important: ***You should only change the `LoadFeedFromRemoteUseCaseTests.swift` file to implement all test cases.***
 
 4) Use the `Tests/LoadFeedFromRemoteUseCaseTests.swift` to validate your implementation. Uncomment and implement one test at a time following the TDD process: Make the test pass, commit, and move to the next one. 
 
