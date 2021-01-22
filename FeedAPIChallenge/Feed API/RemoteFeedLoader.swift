@@ -21,16 +21,21 @@ public final class RemoteFeedLoader: FeedLoader {
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
 		client.get(from: url) { result in
 			switch result {
-			case let .success((_ , response)):
-				if response.statusCode != 200 {
+			case let .success((data , response)):
+				guard response.statusCode == 200, let _ = try? JSONDecoder().decode(Root.self, from: data) else {
 					completion(.failure(RemoteFeedLoader.Error.invalidData))
-				} else {
-					completion(.failure(RemoteFeedLoader.Error.connectivity))
+					return
 				}
+				
+				completion(.failure(RemoteFeedLoader.Error.connectivity))
 			default:
 				completion(.failure(RemoteFeedLoader.Error.connectivity))
 			}
 			
 		}
+	}
+	
+	private struct Root: Decodable {
+		let items: [FeedImage]
 	}
 }
