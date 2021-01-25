@@ -23,7 +23,7 @@ public final class RemoteFeedLoader: FeedLoader {
 			guard self != nil else { return }
 			switch result {
 				case let .success((data,response)):
-					completion(FeedImageLoader.map(data: data, response: response))
+					completion(FeedImageMapper.map(data: data, response: response))
 				case .failure:
 					completion(.failure(Error.connectivity))
 			}
@@ -31,7 +31,7 @@ public final class RemoteFeedLoader: FeedLoader {
 	}
 }
 
-struct FeedImageLoader {
+struct FeedImageMapper {
 
 	private struct Root: Decodable {
 
