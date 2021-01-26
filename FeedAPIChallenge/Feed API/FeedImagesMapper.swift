@@ -9,7 +9,7 @@
 import Foundation
 
 final class FeedImagesMapper {
-	static var OK_200: Int { return 200 }
+	private static var OK_200: Int { return 200 }
 
 	private struct Root: Decodable {
 		let items: [RemoteFeedImage]
