@@ -8,7 +8,7 @@
 
 import Foundation
 
-class FeedImagesMapper {
+final class FeedImagesMapper {
 	static var OK_200: Int { return 200 }
 
 	private struct Root: Decodable {
