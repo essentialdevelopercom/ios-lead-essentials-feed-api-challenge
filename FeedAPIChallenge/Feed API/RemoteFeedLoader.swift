@@ -40,18 +40,25 @@ private struct RemoteFeedResponseRootObject: Decodable {
 	
 	var images: [FeedImage] {
 		items.compactMap { item in
-			FeedImage(id: item.image_id,
-					  description: item.image_desc,
-					  location: item.image_loc,
-					  url: item.image_url)
+			FeedImage(id: item.id,
+					  description: item.description,
+					  location: item.location,
+					  url: item.url)
 			
 		}
 	}
 }
 
 private struct RemoteFeedResponseImageObject: Decodable {
-	let image_id: UUID
-	let image_desc: String?
-	let image_loc: String?
-	let image_url: URL
+	let id: UUID
+	let description: String?
+	let location: String?
+	let url: URL
+	
+	enum CodingKeys: String, CodingKey {
+		case id = "image_id"
+		case description = "image_desc"
+		case location = "image_loc"
+		case url = "image_url"
+	}
 }
