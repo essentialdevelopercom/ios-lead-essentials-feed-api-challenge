@@ -6,8 +6,10 @@
 import Foundation
 
 internal struct RemoteFeedMapper {
+	private static let OK_200 = 200
+	
 	static func map(_ data: Data, response: HTTPURLResponse) -> FeedLoader.Result {
-		guard response.statusCode == 200,
+		guard response.statusCode == OK_200,
 			  let feed = try? JSONDecoder().decode(RootObject.self, from: data) else {
 			return .failure(RemoteFeedLoader.Error.invalidData)
 		}
