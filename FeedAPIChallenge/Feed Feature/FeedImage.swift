@@ -4,7 +4,7 @@
 
 import Foundation
 
-public struct FeedImage: Hashable {
+public struct FeedImage: Hashable, Decodable {
 	public let id: UUID
 	public let description: String?
 	public let location: String?
@@ -15,5 +15,14 @@ public struct FeedImage: Hashable {
 		self.description = description
 		self.location = location
 		self.url = url
+	}
+}
+
+extension FeedImage {
+	enum CodingKeys: String, CodingKey {
+		case id = "image_id"
+		case description = "image_desc"
+		case location = "image_loc"
+		case url = "image_url"
 	}
 }
