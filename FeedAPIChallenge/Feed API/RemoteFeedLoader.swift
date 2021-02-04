@@ -19,14 +19,14 @@ public final class RemoteFeedLoader: FeedLoader {
 	}
 	
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
-		self.client.get(from: self.url) { [weak self] result in
+		self.client.get(from: self.url) { result in
 			switch result {
 			case .failure:
 				completion(.failure(Error.connectivity))
 			case let .success((data, response)):
 				switch response.statusCode {
 				case 200:
-					if let images = self?.images(from: data) {
+					if let images = FeedImageMapper.feedImages(from: data) {
 						completion(.success(images))
 					} else {
 						completion(.failure(Error.invalidData))
@@ -37,11 +37,22 @@ public final class RemoteFeedLoader: FeedLoader {
 			}
 		}
 	}
+}
 
-	// MARK: Private methods
+private struct FeedImageMapper {
+	static func feedImages(from data: Data) -> [FeedImage]? {
+		guard let root = try? JSONSerialization.jsonObject(with: data) as? [String: [[String: String]]],
+			  let items = root["items"]
+		else { return nil }
 
-	private func images(from data: Data) -> [FeedImage]? {
-		let root = try? JSONSerialization.jsonObject(with: data) as? [String: [FeedImage]]
-		return root?["items"]
+		return items.compactMap {
+			guard let uuIdString = $0["image_id"],
+				  let uuId = UUID(uuidString: uuIdString),
+				  let urlString = $0["image_url"],
+				  let url = URL(string: urlString)
+			else { return nil }
+
+			return FeedImage(id: uuId, description: $0["image_desc"], location: $0["image_loc"], url: url)
+		}
 	}
 }
