@@ -25,35 +25,44 @@ public final class RemoteFeedLoader: FeedLoader {
 			case .failure:
 				completion(.failure(Error.connectivity))
 			case let .success((data, response)):
-				switch response.statusCode {
-				case 200:
-					if let images = FeedImageMapper.feedImages(from: data) {
-						completion(.success(images))
-					} else {
-						completion(.failure(Error.invalidData))
-					}
-				default:
-					completion(.failure(Error.invalidData))
-				}
+				let result = FeedImageMapper.result(from: data, response: response)
+				completion(result)
 			}
 		}
 	}
 }
 
 private struct FeedImageMapper {
-	static func feedImages(from data: Data) -> [FeedImage]? {
-		guard let root = try? JSONSerialization.jsonObject(with: data) as? [String: [[String: String]]],
-			  let items = root["items"]
-		else { return nil }
+	private static let HTTP_OK = 200
 
-		return items.compactMap {
-			guard let uuIdString = $0["image_id"],
-				  let uuId = UUID(uuidString: uuIdString),
-				  let urlString = $0["image_url"],
-				  let url = URL(string: urlString)
-			else { return nil }
+	static func result(from data: Data, response: HTTPURLResponse) -> FeedLoader.Result {
+		guard response.statusCode == Self.HTTP_OK
+		else { return .failure(RemoteFeedLoader.Error.invalidData) }
 
-			return FeedImage(id: uuId, description: $0["image_desc"], location: $0["image_loc"], url: url)
+		do {
+			let jsonRoot = try JSONDecoder.init().decode(JSONRoot.self, from: data)
+			let images = jsonRoot.items.map { FeedImage(id: $0.id, description: $0.description, location: $0.location, url: $0.url) }
+			return .success(images)
+		} catch {
+			return .failure(RemoteFeedLoader.Error.invalidData)
+		}
+	}
+
+	private struct JSONRoot: Decodable {
+		let items: [FeedImageJSONObject]
+	}
+
+	private struct FeedImageJSONObject: Decodable {
+		let id: UUID
+		let description: String?
+		let location: String?
+		let url: URL
+
+		private enum CodingKeys: String, CodingKey {
+			case id = "image_id"
+			case description = "image_desc"
+			case location = "image_loc"
+			case url = "image_url"
 		}
 	}
 }
