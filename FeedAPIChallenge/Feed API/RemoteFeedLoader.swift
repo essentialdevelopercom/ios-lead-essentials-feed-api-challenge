@@ -47,10 +47,35 @@ public final class RemoteFeedLoader: FeedLoader {
 	
 	private static func decodeFeed(from data: Data) throws -> [FeedImage] {
 		do {
-			_ = try JSONSerialization.jsonObject(with: data)
-			return []
+			let root = try JSONDecoder().decode(Root.self, from: data)
+			return root.feed
 		} catch {
 			throw Error.invalidData
 		}
+	}
+}
+
+private struct Root: Decodable {
+	
+	struct Item: Decodable {
+		let image_id: UUID
+		let image_desc: String?
+		let image_loc: String?
+		let image_url: URL
+	}
+		
+	let items: [Item]
+	
+	fileprivate var feed: [FeedImage] {
+		return items.map(FeedImage.init)
+	}
+}
+
+extension FeedImage {
+	fileprivate init(item: Root.Item) {
+		id = item.image_id
+		description = item.image_desc
+		location = item.image_loc
+		url = item.image_url
 	}
 }
