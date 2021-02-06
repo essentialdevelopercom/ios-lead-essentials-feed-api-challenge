@@ -19,7 +19,9 @@ public final class RemoteFeedLoader: FeedLoader {
 	}
 	
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
-		client.get(from: url) { clientResult in
+		client.get(from: url) { [weak self] clientResult in
+			guard self != nil else { return }
+
 			do {
 				let feed = try Self.process(clientResult)
 				completion(.success(feed))
