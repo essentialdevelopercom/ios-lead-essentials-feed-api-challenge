@@ -68,11 +68,22 @@ private final class FeedImageMapper {
 	}
 
 	static func map(_ data: Data, _ response: HTTPURLResponse) throws -> [FeedImage] {
-		guard response.statusCode == 200 else {
+		guard response.httpStatusCode == .OK else {
 			throw RemoteFeedLoader.Error.invalidData
 		}
 
 		let root = try JSONDecoder().decode(Root.self, from: data)
 		return root.feed
+	}
+}
+
+private extension HTTPURLResponse {
+	enum StatusCode: Int {
+		case OK = 200
+		case UNKNOWN
+	}
+
+	var httpStatusCode: StatusCode {
+		StatusCode(rawValue: statusCode) ?? .UNKNOWN
 	}
 }
