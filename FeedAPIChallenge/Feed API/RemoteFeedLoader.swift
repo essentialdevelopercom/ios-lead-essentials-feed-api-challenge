@@ -12,13 +12,22 @@ public final class RemoteFeedLoader: FeedLoader {
 		case connectivity
 		case invalidData
 	}
+	public typealias Result = FeedLoader.Result
 	
 	public init(url: URL, client: HTTPClient) {
 		self.url = url
 		self.client = client
 	}
 	
-	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
-		
+	public func load(completion: @escaping (Result) -> Void) {
+		client.get(from:  url) { [weak self] result in
+			guard self != nil else { return }
+			switch result {
+			case .success((_, _)):
+				break
+			case .failure:
+				completion(.failure(Error.connectivity))
+			}
+		}
 	}
 }
