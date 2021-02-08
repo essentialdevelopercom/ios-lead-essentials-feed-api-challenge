@@ -7,6 +7,9 @@ import Foundation
 public final class RemoteFeedLoader: FeedLoader {
 	private struct RemoteFeedImage: Decodable {
 		let image_id: UUID
+		let image_desc: String?
+		let image_loc: String?
+		let image_url: URL
 	}
 	
 	private struct Root: Decodable {
@@ -45,12 +48,11 @@ public final class RemoteFeedLoader: FeedLoader {
 // MARK: - Private
 private extension RemoteFeedLoader {
 	static func map(data: Data, response: HTTPURLResponse) -> FeedLoader.Result {
-		do {
-			_ = try JSONDecoder().decode(Root.self, from: data)
-			return .success([])
-		} catch {
-			return .failure(Error.invalidData)
-		}
+		return Result {
+			try JSONDecoder()
+				.decode(Root.self, from: data)
+				.items.map { FeedImage(id: $0.image_id, description: $0.image_desc, location: $0.image_loc, url: $0.image_url) }
+		}.mapError { _ in Error.invalidData }
 	}
 }
 
