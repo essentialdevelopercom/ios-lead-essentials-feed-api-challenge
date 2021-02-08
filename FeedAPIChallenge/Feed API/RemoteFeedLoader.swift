@@ -32,12 +32,8 @@ public final class RemoteFeedLoader: FeedLoader {
 			case let .success((_, response)) where !response.isOK:
 				completion(.failure(Error.invalidData))
 				
-			case let .success((data, _)):
-				do {
-					_ = try JSONDecoder().decode(Root.self, from: data)
-				} catch {
-					completion(.failure(Error.invalidData))
-				}
+			case let .success((data, response)):
+				completion(Self.map(data: data, response: response))
 				
 			case .failure:
 				completion(.failure(Error.connectivity))
@@ -47,6 +43,17 @@ public final class RemoteFeedLoader: FeedLoader {
 }
 
 // MARK: - Private
+private extension RemoteFeedLoader {
+	static func map(data: Data, response: HTTPURLResponse) -> FeedLoader.Result {
+		do {
+			_ = try JSONDecoder().decode(Root.self, from: data)
+			return .success([])
+		} catch {
+			return .failure(Error.invalidData)
+		}
+	}
+}
+
 private extension HTTPURLResponse {
 	var isOK: Bool { statusCode == 200 }
 }
