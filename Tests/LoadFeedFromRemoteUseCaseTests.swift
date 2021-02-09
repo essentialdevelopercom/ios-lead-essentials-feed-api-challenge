@@ -19,24 +19,12 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
 	//
 	//  ***********************
 	
-	func test_init_doesNotRequestDataFromURL() {
-		let (_, client) = makeSUT()
-		
-		XCTAssertTrue(client.requestedURLs.isEmpty)
-	}
-	
 	func test_loadTwice_requestsDataFromURLTwice() {
-		// Given
 		let url = URL(string: "https://a-given-url.com")!
 		let (sut, client) = makeSUT(url: url)
-		let error = NSError(domain: "", code: 0)
 		
-		expect(sut, toCompleteWith: .failure(.connectivity)) {
-			client.complete(with: error, at: 0)
-		}
-		expect(sut, toCompleteWith: .failure(.connectivity)) {
-			client.complete(with: error, at: 1)
-		}
+		sut.load { _ in }
+		sut.load { _ in }
 		
 		XCTAssertEqual(client.requestedURLs, [url, url])
 	}
