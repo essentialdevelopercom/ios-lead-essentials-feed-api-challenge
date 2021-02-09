@@ -20,18 +20,28 @@ public final class RemoteFeedLoader: FeedLoader {
 	
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
 		client.get(from: url) { result in
-			switch result {
-			case .success((let data, let response)):
-				if response.statusCode == 200,
-				   let _ = try? JSONSerialization.jsonObject(with: data) {
-					completion(.success([]))
-				} else {
-					completion(.failure(Error.invalidData))
-				}
-			default:
-				completion(.failure(Error.connectivity))
-				
-			}
+			RemoteFeedLoader.mapHTTPClientresult(result, completion)
 		}
+	}
+	
+	
+	private static func mapHTTPClientresult(_ result: HTTPClient.Result, _ completion: @escaping (FeedLoader.Result)-> Void) {
+		switch result {
+		case .success((let data, let httpResponse)):
+			mapSuccessData(data, httpResponse, completion)
+		case .failure(_):
+			completion(.failure(Error.connectivity))
+		}
+		
+	}
+	
+	private static func mapSuccessData(_ data: Data, _ response:HTTPURLResponse, _ completion: (FeedLoader.Result)-> Void) {
+		do {
+			completion(.success(try FeedImageMapper.map(data, response)))
+		} catch {
+			completion(.failure(Error.invalidData))
+		}
+		
+		
 	}
 }
