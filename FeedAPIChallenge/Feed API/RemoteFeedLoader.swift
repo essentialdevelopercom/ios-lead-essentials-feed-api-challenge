@@ -39,15 +39,15 @@ private struct FeedImageResponse: Decodable {
 	let items: [FeedImageItemResponse]
 	
 	var feedImages: [FeedImage] {
-		items.compactMap { $0.feedImage }
+		items.map { $0.feedImage }
 	}
 }
 
 private struct FeedImageItemResponse: Decodable {
-	let id: String
+	let id: UUID
 	let description: String?
 	let location: String?
-	let url: String
+	let url: URL
 	
 	enum CodingKeys: String, CodingKey {
 		case id = "image_id"
@@ -56,14 +56,10 @@ private struct FeedImageItemResponse: Decodable {
 		case url = "image_url"
 	}
 	
-	var feedImage: FeedImage? {
-		guard let imageId = UUID(uuidString: id),
-			  let imageURL = URL(string: url) else {
-			return nil
-		}
-		return FeedImage(id: imageId,
+	var feedImage: FeedImage {
+		return FeedImage(id: id,
 				  description: description,
 				  location: location,
-				  url: imageURL)
+				  url: url)
 	}
 }
