@@ -48,6 +48,13 @@ private struct FeedImageItemResponse: Decodable {
 	let location: String?
 	let url: String
 	
+	enum CodingKeys: String, CodingKey {
+		case id = "image_id"
+		case description = "image_desc"
+		case location = "image_loc"
+		case url = "image_url"
+	}
+	
 	var feedImage: FeedImage? {
 		guard let imageId = UUID(uuidString: id),
 			  let imageURL = URL(string: url) else {
