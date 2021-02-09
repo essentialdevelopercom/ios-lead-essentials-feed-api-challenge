@@ -25,35 +25,35 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
 		XCTAssertTrue(client.requestedURLs.isEmpty)
 	}
 	
-		func test_loadTwice_requestsDataFromURLTwice() {
-			// Given
-			let url = URL(string: "https://a-given-url.com")!
-			let (sut, client) = makeSUT(url: url)
-			let exp = expectation(description: "wait for completion")
-			exp.expectedFulfillmentCount = 2
-			let error = NSError(domain: "", code: 0)
-			
-			// When
-			sut.load { _ in exp.fulfill() }
-			client.complete(with: error, at: 0)
-			
-			sut.load { _ in exp.fulfill() }
-			client.complete(with: error, at: 1)
+	func test_loadTwice_requestsDataFromURLTwice() {
+		// Given
+		let url = URL(string: "https://a-given-url.com")!
+		let (sut, client) = makeSUT(url: url)
+		let exp = expectation(description: "wait for completion")
+		exp.expectedFulfillmentCount = 2
+		let error = NSError(domain: "", code: 0)
+		
+		// When
+		sut.load { _ in exp.fulfill() }
+		client.complete(with: error, at: 0)
+		
+		sut.load { _ in exp.fulfill() }
+		client.complete(with: error, at: 1)
+		
+		// Then
+		wait(for: [exp], timeout: 1.0)
+		XCTAssertEqual(client.requestedURLs, [url, url])
+	}
 	
-			// Then
-			wait(for: [exp], timeout: 1.0)
-			XCTAssertEqual(client.requestedURLs, [url, url])
-		}
-	//
-	//	func test_load_deliversConnectivityErrorOnClientError() {
-	//		let (sut, client) = makeSUT()
-	//
-	//        expect(sut, toCompleteWith: .failure(.connectivity), when: {
-	//			let clientError = NSError(domain: "Test", code: 0)
-	//			client.complete(with: clientError)
-	//		})
-	//	}
-	//
+	func test_load_deliversConnectivityErrorOnClientError() {
+		let (sut, client) = makeSUT()
+		
+		expect(sut, toCompleteWith: .failure(.connectivity), when: {
+			let clientError = NSError(domain: "Test", code: 0)
+			client.complete(with: clientError)
+		})
+	}
+	
 	//	func test_load_deliversInvalidDataErrorOnNon200HTTPResponse() {
 	//		let (sut, client) = makeSUT()
 	//
