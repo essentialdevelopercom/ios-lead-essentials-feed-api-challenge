@@ -19,13 +19,13 @@ public final class RemoteFeedLoader: FeedLoader {
 	}
 	
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
-		client.get(from: url) { result in
-			RemoteFeedLoader.mapHTTPClientresult(result, completion)
+		client.get(from: url) { [weak self] result in
+			self?.mapHTTPClientresult(result, completion)
 		}
 	}
 	
 	
-	private static func mapHTTPClientresult(_ result: HTTPClient.Result, _ completion: @escaping (FeedLoader.Result)-> Void) {
+	private func mapHTTPClientresult(_ result: HTTPClient.Result, _ completion: @escaping (FeedLoader.Result)-> Void) {
 		switch result {
 		case .success((let data, let httpResponse)):
 			mapSuccessData(data, httpResponse, completion)
@@ -35,7 +35,7 @@ public final class RemoteFeedLoader: FeedLoader {
 		
 	}
 	
-	private static func mapSuccessData(_ data: Data, _ response:HTTPURLResponse, _ completion: (FeedLoader.Result)-> Void) {
+	private func mapSuccessData(_ data: Data, _ response:HTTPURLResponse, _ completion: (FeedLoader.Result)-> Void) {
 		do {
 			completion(.success(try FeedImageMapper.map(data, response)))
 		} catch {
