@@ -3,6 +3,10 @@
 //
 
 import Foundation
+public enum HTTPClientResult {
+	case success(HTTPURLResponse)
+	case failure(Error)
+}
 
 public final class RemoteFeedLoader: FeedLoader {
 	private let url: URL
@@ -24,7 +28,7 @@ public final class RemoteFeedLoader: FeedLoader {
 			guard self != nil else { return }
 			switch result {
 			case .success((_, _)):
-				break
+				completion(.failure(Error.invalidData))
 			case .failure:
 				completion(.failure(Error.connectivity))
 			}
