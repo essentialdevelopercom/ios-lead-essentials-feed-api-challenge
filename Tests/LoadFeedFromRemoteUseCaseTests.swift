@@ -29,19 +29,15 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
 		// Given
 		let url = URL(string: "https://a-given-url.com")!
 		let (sut, client) = makeSUT(url: url)
-		let exp = expectation(description: "wait for completion")
-		exp.expectedFulfillmentCount = 2
 		let error = NSError(domain: "", code: 0)
 		
-		// When
-		sut.load { _ in exp.fulfill() }
-		client.complete(with: error, at: 0)
+		expect(sut, toCompleteWith: .failure(.connectivity)) {
+			client.complete(with: error, at: 0)
+		}
+		expect(sut, toCompleteWith: .failure(.connectivity)) {
+			client.complete(with: error, at: 1)
+		}
 		
-		sut.load { _ in exp.fulfill() }
-		client.complete(with: error, at: 1)
-		
-		// Then
-		wait(for: [exp], timeout: 1.0)
 		XCTAssertEqual(client.requestedURLs, [url, url])
 	}
 	
