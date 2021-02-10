@@ -34,7 +34,7 @@ public final class RemoteFeedLoader: FeedLoader {
 		}
 	}
 	
-	private func mapSuccessData(_ data: Data, _ response:HTTPURLResponse, _ completion: (FeedLoader.Result)-> Void) {
+	private func mapSuccessData(_ data: Data, _ response: HTTPURLResponse, _ completion: (FeedLoader.Result) -> Void) {
 		do {
 			completion(.success(try FeedImageMapper.map(data, response)))
 		} catch {
