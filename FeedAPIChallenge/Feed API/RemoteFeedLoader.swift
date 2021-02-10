@@ -32,7 +32,6 @@ public final class RemoteFeedLoader: FeedLoader {
 		case .failure(_):
 			completion(.failure(Error.connectivity))
 		}
-		
 	}
 	
 	private func mapSuccessData(_ data: Data, _ response:HTTPURLResponse, _ completion: (FeedLoader.Result)-> Void) {
@@ -41,7 +40,5 @@ public final class RemoteFeedLoader: FeedLoader {
 		} catch {
 			completion(.failure(Error.invalidData))
 		}
-		
-		
 	}
 }
