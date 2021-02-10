@@ -5,6 +5,9 @@
 import Foundation
 
 public final class RemoteFeedLoader: FeedLoader {
+	private enum Constants {
+		static let OK = 200
+	}
 	private let url: URL
 	private let client: HTTPClient
 	
@@ -17,14 +20,14 @@ public final class RemoteFeedLoader: FeedLoader {
 		self.url = url
 		self.client = client
 	}
-	
+
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
 		client.get(from: url) { result in
 			switch result {
 				case .failure:
 				completion(.failure(RemoteFeedLoader.Error.connectivity))
-				case .success(_, let response):
-					if response.statusCode != 200 {
+				case .success((_, let response)):
+					if response.statusCode != Constants.OK {
 						completion(.failure(RemoteFeedLoader.Error.invalidData))
 					}
 			}
