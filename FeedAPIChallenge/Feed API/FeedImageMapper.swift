@@ -35,5 +35,4 @@ final class FeedImageMapper {
 	private static func mapToFeedImage(_ item: Item) -> FeedImage {
 		FeedImage(id: item.image_id, description: item.image_desc, location: item.image_loc, url: item.image_url)
 	}
-	
 }
