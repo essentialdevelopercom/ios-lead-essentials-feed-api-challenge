@@ -12,6 +12,7 @@ final class FeedImageMapper {
 	private enum HttpStatus: Int {
 		case ok = 200
 	}
+	
 	private struct Items: Decodable {
 		let items: [Item]
 	}
