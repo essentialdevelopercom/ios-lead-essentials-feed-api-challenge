@@ -20,12 +20,12 @@ public final class RemoteFeedLoader: FeedLoader {
 	
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
 		client.get(from: url) { [weak self] result in
-			self?.mapHTTPClientresult(result, completion)
+			self?.mapHTTPClientResult(result, completion)
 		}
 	}
 	
 	
-	private func mapHTTPClientresult(_ result: HTTPClient.Result, _ completion: @escaping (FeedLoader.Result)-> Void) {
+	private func mapHTTPClientResult(_ result: HTTPClient.Result, _ completion: @escaping (FeedLoader.Result) -> Void) {
 		switch result {
 		case .success((let data, let httpResponse)):
 			mapSuccessData(data, httpResponse, completion)
