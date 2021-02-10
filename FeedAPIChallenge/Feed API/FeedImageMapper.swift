@@ -28,7 +28,7 @@ final class FeedImageMapper {
 			throw RemoteFeedLoader.Error.invalidData
 		}
 		let root = try JSONDecoder().decode(Items.self, from: data)
-		return root.items.map { mapToFeedImage($0) }
+		return root.items.map(mapToFeedImage)
 	}
 	
 	private static func mapToFeedImage(_ item: Item) -> FeedImage {
