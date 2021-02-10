@@ -7,7 +7,8 @@
 //
 
 import Foundation
-class FeedImageMapper {
+
+final class FeedImageMapper {
 	private enum HttpStatus: Int {
 		case ok = 200
 	}
