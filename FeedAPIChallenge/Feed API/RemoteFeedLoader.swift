@@ -3,10 +3,7 @@
 //
 
 import Foundation
-public enum HTTPClientResult {
-	case success(HTTPURLResponse)
-	case failure(Error)
-}
+
 
 public final class RemoteFeedLoader: FeedLoader {
 	private let url: URL
