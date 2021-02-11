@@ -1,5 +1,5 @@
 //
-//  FeedItemsMapper.swift
+//  FeedImageMapper.swift
 //  FeedAPIChallenge
 //
 //  Created by John Roque Jorillo on 2/11/21.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-internal final class FeedItemMapper {
+internal final class FeedImageMapper {
 	
 	private struct Root: Decodable {
 		internal let items: [Item]
