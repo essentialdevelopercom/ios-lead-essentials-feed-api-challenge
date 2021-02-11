@@ -29,10 +29,13 @@ public final class RemoteFeedLoader: FeedLoader {
 				case .success((let data, let response)):
 					if response.statusCode != Constants.OK {
 						completion(.failure(RemoteFeedLoader.Error.invalidData))
+						return
 					}
 					if String(decoding: data, as: UTF8.self) == "invalid json" {
 						completion(.failure(RemoteFeedLoader.Error.invalidData))
+						return
 					}
+					completion(.success([]))
 			}
 		}
 	}
