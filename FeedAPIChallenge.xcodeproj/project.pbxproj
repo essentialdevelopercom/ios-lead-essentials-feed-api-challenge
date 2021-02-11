@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		033D2FB025D58862004FFAFA /* FeedImageMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 033D2FAF25D58862004FFAFA /* FeedImageMapper.swift */; };
 		08A499BC2492A9A4004C7F18 /* LoadFeedFromRemoteUseCaseTests+Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08A499BB2492A9A4004C7F18 /* LoadFeedFromRemoteUseCaseTests+Helpers.swift */; };
 		08BBFF5C2492A46F00141A91 /* FeedAPIChallenge.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 08BBFF522492A46F00141A91 /* FeedAPIChallenge.framework */; };
 		08BBFF702492A4C700141A91 /* RemoteFeedLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08BBFF6C2492A4C700141A91 /* RemoteFeedLoader.swift */; };
@@ -29,6 +30,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		033D2FAF25D58862004FFAFA /* FeedImageMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedImageMapper.swift; sourceTree = "<group>"; };
 		08A499BB2492A9A4004C7F18 /* LoadFeedFromRemoteUseCaseTests+Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LoadFeedFromRemoteUseCaseTests+Helpers.swift"; sourceTree = "<group>"; };
 		08BBFF522492A46F00141A91 /* FeedAPIChallenge.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = FeedAPIChallenge.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		08BBFF562492A46F00141A91 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -114,6 +116,7 @@
 		08BBFF7B2492A54B00141A91 /* Feed API */ = {
 			isa = PBXGroup;
 			children = (
+				033D2FAF25D58862004FFAFA /* FeedImageMapper.swift */,
 				08BBFF6F2492A4C700141A91 /* HTTPClient.swift */,
 				08BBFF6C2492A4C700141A91 /* RemoteFeedLoader.swift */,
 			);
@@ -238,6 +241,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				033D2FB025D58862004FFAFA /* FeedImageMapper.swift in Sources */,
 				08BBFF702492A4C700141A91 /* RemoteFeedLoader.swift in Sources */,
 				08BBFF732492A4C700141A91 /* HTTPClient.swift in Sources */,
 				08BBFF822492A5C100141A91 /* FeedLoader.swift in Sources */,
