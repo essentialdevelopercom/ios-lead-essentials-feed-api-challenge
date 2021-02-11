@@ -1,7 +1,7 @@
 import Foundation
 
 struct FeedImageMapper {
-	private enum Constants {
+	private enum StatusCode {
 		static let OK = 200
 	}
 	
@@ -29,8 +29,9 @@ struct FeedImageMapper {
 			case imageURL = "image_url"
 		}
 	}
+	
 	static func map(_ data: Data, from response: HTTPURLResponse) -> RemoteFeedLoader.Result {
-		guard response.statusCode == Constants.OK,
+		guard response.statusCode == StatusCode.OK,
 			  let root = try? JSONDecoder().decode(Root.self, from: data) else {
 			return .failure(RemoteFeedLoader.Error.invalidData)
 		}
