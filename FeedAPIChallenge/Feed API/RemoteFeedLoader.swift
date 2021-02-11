@@ -4,7 +4,6 @@
 
 import Foundation
 
-
 public final class RemoteFeedLoader: FeedLoader {
 	private let url: URL
 	private let client: HTTPClient
@@ -13,13 +12,13 @@ public final class RemoteFeedLoader: FeedLoader {
 		case connectivity
 		case invalidData
 	}
+	
 	public typealias Result = FeedLoader.Result
 	
 	public init(url: URL, client: HTTPClient) {
 		self.url = url
 		self.client = client
 	}
-		
 	
 	public func load(completion: @escaping (Result) -> Void) {
 		client.get(from:  url) { [weak self] result in
@@ -40,14 +39,14 @@ public final class RemoteFeedLoader: FeedLoader {
 
 private struct Root: Decodable {
 	var items: [Item]
- }
+}
 
 private struct Item: Decodable {
 	let image_id: UUID
 	let image_desc: String?
 	let image_loc: String?
 	let image_url: URL
-
+	
 	var item: FeedImage {
 		FeedImage(id: image_id, description: image_desc, location: image_loc, url: image_url)
 	}
