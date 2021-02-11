@@ -15,7 +15,7 @@ internal final class FeedImageMapper: Decodable {
 		items.map { FeedImage(id: $0.id,
 							  description: $0.description,
 							  location: $0.location,
-							  url: $0.url)}
+							  url: $0.url) }
 	}
 	
 	private struct ImageItem: Decodable {
