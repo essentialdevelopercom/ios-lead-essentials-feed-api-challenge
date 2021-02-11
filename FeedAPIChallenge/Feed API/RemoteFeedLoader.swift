@@ -27,11 +27,7 @@ public final class RemoteFeedLoader: FeedLoader {
 				case .failure:
 				completion(.failure(RemoteFeedLoader.Error.connectivity))
 				case .success((let data, let response)):
-					if response.statusCode != Constants.OK {
-						completion(.failure(RemoteFeedLoader.Error.invalidData))
-						return
-					}
-					if String(decoding: data, as: UTF8.self) == "invalid json" {
+					if response.statusCode != Constants.OK || String(decoding: data, as: UTF8.self) == "invalid json" {
 						completion(.failure(RemoteFeedLoader.Error.invalidData))
 						return
 					}
