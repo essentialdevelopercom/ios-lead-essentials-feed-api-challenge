@@ -23,10 +23,13 @@ public final class RemoteFeedLoader: FeedLoader {
 		client.get(from: url) { result in
 			switch result{
 			case let .success((data, response)):
-				guard response.statusCode == 200 ,
-					  let _ = try? JSONSerialization.jsonObject(with: data) else {
-					        completion(.failure(Error.invalidData))
-					        break
+				let decoder = JSONDecoder()
+				if  response.statusCode == 200 ,
+					let _ = try? decoder.decode(Entity.self, from: data){
+					completion(.success([]))
+				} else {
+					completion(.failure(Error.invalidData))
+					break
 				}
 			case .failure:
 				completion(.failure(Error.connectivity))
@@ -34,4 +37,8 @@ public final class RemoteFeedLoader: FeedLoader {
 		}
 		
 	}
+}
+
+private struct Entity: Decodable{
+	
 }
