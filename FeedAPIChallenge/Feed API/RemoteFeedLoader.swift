@@ -19,18 +19,28 @@ public final class RemoteFeedLoader: FeedLoader {
 	}
 	
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
-		client.get(from: url) { result in
-			switch result {
-			case .failure:
+		client.get(from: url) {[weak self] result in
+			guard let self = self else { return }
+			if let (data, response) = try? result.get() {
+				completion(self.toFeedLoaderResult(data, response))
+			}else{
 				completion(.failure(Error.connectivity))
-			case let .success((data, response)):
-				let decoder = JSONDecoder()
-				if let root = try? decoder.decode(Root.self, from: data), response.statusCode == 200 {
-					completion(.success(root.items.map({FeedImage(id: $0.image_id, description: $0.image_desc, location: $0.image_loc, url: $0.image_url)})))
-				}else{
-					completion(.failure(Error.invalidData))
-				}
 			}
+		}
+	}
+	private func toFeedLoaderResult(_ data: Data, _ response: HTTPURLResponse) -> FeedLoader.Result {
+		if response.statusCode == validStatusCode {
+			return convert(data)
+		}else{
+			return .failure(Error.invalidData)
+		}
+	}
+	private var validStatusCode: Int { 200 }
+	private func convert(_ data: Data) -> FeedLoader.Result {
+		if let root = try? JSONDecoder().decode(Root.self, from: data) {
+			return .success(root.items.map({$0.feedImage}))
+		}else{
+			return .failure(Error.invalidData)
 		}
 	}
 }
@@ -42,4 +52,8 @@ private struct Item: Decodable {
 	let image_url: URL
 	let image_desc: String?
 	let image_loc: String?
+	
+	var feedImage: FeedImage {
+		FeedImage(id: image_id, description: image_desc, location: image_loc, url: image_url)
+	}
 }
