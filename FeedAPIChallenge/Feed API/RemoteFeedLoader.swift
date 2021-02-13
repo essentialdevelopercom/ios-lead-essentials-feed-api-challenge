@@ -23,9 +23,17 @@ public final class RemoteFeedLoader: FeedLoader {
 			switch result {
 			case .failure:
 				completion(.failure(Error.connectivity))
-			case .success:
-				completion(.failure(Error.invalidData))
+			case let .success((data, response)):
+				let decoder = JSONDecoder()
+				if let _ = try? decoder.decode(Entity.self, from: data), response.statusCode == 200 {
+					completion(.success([]))
+				}else{
+					completion(.failure(Error.invalidData))
+				}
 			}
 		}
 	}
+}
+private struct Entity: Decodable {
+	
 }
