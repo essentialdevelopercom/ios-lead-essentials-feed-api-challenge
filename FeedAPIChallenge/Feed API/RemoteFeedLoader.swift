@@ -25,8 +25,8 @@ public final class RemoteFeedLoader: FeedLoader {
 				completion(.failure(Error.connectivity))
 			case let .success((data, response)):
 				let decoder = JSONDecoder()
-				if let _ = try? decoder.decode(Entity.self, from: data), response.statusCode == 200 {
-					completion(.success([]))
+				if let root = try? decoder.decode(Root.self, from: data), response.statusCode == 200 {
+					completion(.success(root.items.map({FeedImage(id: $0.image_id, description: $0.image_desc, location: $0.image_loc, url: $0.image_url)})))
 				}else{
 					completion(.failure(Error.invalidData))
 				}
@@ -34,6 +34,12 @@ public final class RemoteFeedLoader: FeedLoader {
 		}
 	}
 }
-private struct Entity: Decodable {
-	
+private struct Root: Decodable {
+	let items: [Item]
+}
+private struct Item: Decodable {
+	let image_id: UUID
+	let image_url: URL
+	let image_desc: String?
+	let image_loc: String?
 }
