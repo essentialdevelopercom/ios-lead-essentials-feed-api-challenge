@@ -26,12 +26,11 @@ public final class RemoteFeedLoader: FeedLoader {
 				completion(.failure(Error.connectivity))
 			case .success((let data, let response)):
 				if response.statusCode == 200 {
-					do {
-						let _ = try self?.feedFromData(data)
-						completion(.success([]))
-					} catch  {
-						completion(.failure(Error.invalidData))
-					}
+						guard let remoteFeedItems = self?.remoteFeedItems(from: data) else {
+							completion(.failure(Error.invalidData))
+							return
+						}
+						completion(.success(remoteFeedItems.toFeedItems()))
 				} else {
 					completion(.failure(Error.invalidData))
 				}
@@ -39,17 +38,28 @@ public final class RemoteFeedLoader: FeedLoader {
 		})
 	}
 	
-	private func feedFromData(_ data: Data) throws{
+	private func remoteFeedItems(from data: Data) -> RemoteFeedItems?{
 		let decoder = JSONDecoder()
-		guard let _ = try? decoder.decode(RemoteFeedItems.self, from: data) else {
-			throw Error.invalidData
+		return try? decoder.decode(RemoteFeedItems.self, from: data)
+	}
+}
+
+private struct RemoteFeedItems: Decodable {
+	let items: [RemoteFeed]
+	
+	func toFeedItems() -> [FeedImage] {
+		return items.map { (remoteFeed) -> FeedImage in
+			return FeedImage(id: remoteFeed.image_id,
+							 description: remoteFeed.image_desc,
+							 location: remoteFeed.image_loc,
+							 url: remoteFeed.image_url)
 		}
 	}
 }
-private struct RemoteFeedItems: Decodable {
-	let items: [RemoteFeed]
-}
 
 private struct RemoteFeed: Decodable {
-	
+	let image_id: UUID
+	let image_desc: String?
+	let image_loc: String?
+	let image_url: URL
 }
