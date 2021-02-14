@@ -27,7 +27,8 @@ public final class RemoteFeedLoader: FeedLoader {
 			case .success((let data, let response)):
 				if response.statusCode == 200 {
 					do {
-						try self?.feedFromData(data)
+						let _ = try self?.feedFromData(data)
+						completion(.success([]))
 					} catch  {
 						completion(.failure(Error.invalidData))
 					}
@@ -40,10 +41,13 @@ public final class RemoteFeedLoader: FeedLoader {
 	
 	private func feedFromData(_ data: Data) throws{
 		let decoder = JSONDecoder()
-		guard let _ = try? decoder.decode(RemoteFeed.self, from: data) else {
+		guard let _ = try? decoder.decode(RemoteFeedItems.self, from: data) else {
 			throw Error.invalidData
 		}
 	}
+}
+private struct RemoteFeedItems: Decodable {
+	let items: [RemoteFeed]
 }
 
 private struct RemoteFeed: Decodable {
