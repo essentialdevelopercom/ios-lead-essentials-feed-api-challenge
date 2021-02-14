@@ -24,21 +24,18 @@ public final class RemoteFeedLoader: FeedLoader {
 			switch result {
 			case .failure(_):
 				completion(.failure(Error.connectivity))
-			case .success((let data, let response)):
-				completion(self.remoteFeedResponseResult(from: data, response: response))
+			case .success((let data, let httpResponse)):
+				completion(self.remoteFeedResponseResult(from: data, response: httpResponse))
 			}
 		})
 	}
 	
 	private func remoteFeedResponseResult(from data: Data, response: HTTPURLResponse) -> FeedLoader.Result {
-		if response.statusCode == 200 {
-			guard let remoteFeedItems = remoteFeedItems(from: data) else {
-				return .failure(Error.invalidData)
-			}
-			return .success(remoteFeedItems.toFeedItems())
-		} else {
+		guard response.statusCode == 200,
+			  let remoteFeedItems = remoteFeedItems(from: data) else  {
 			return .failure(Error.invalidData)
 		}
+		return .success(remoteFeedItems.toFeedImageItems())
 	}
 	
 	private func remoteFeedItems(from data: Data) -> RemoteFeedItems?{
@@ -50,7 +47,7 @@ public final class RemoteFeedLoader: FeedLoader {
 private struct RemoteFeedItems: Decodable {
 	let items: [RemoteFeed]
 	
-	func toFeedItems() -> [FeedImage] {
+	func toFeedImageItems() -> [FeedImage] {
 		return items.map { (remoteFeed) -> FeedImage in
 			return FeedImage(id: remoteFeed.image_id,
 							 description: remoteFeed.image_desc,
