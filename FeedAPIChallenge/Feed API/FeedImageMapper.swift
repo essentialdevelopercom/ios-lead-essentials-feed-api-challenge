@@ -8,7 +8,6 @@
 
 import Foundation
 
-
 final class FeedImageMapper{
 	
 	private struct Entity: Decodable{
