@@ -20,22 +20,25 @@ public final class RemoteFeedLoader: FeedLoader {
 	
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
 		client.get(from: url, completion: { [weak self] (result) in
-			guard self != nil else { return }
+			guard let self = self else { return }
 			switch result {
 			case .failure(_):
 				completion(.failure(Error.connectivity))
 			case .success((let data, let response)):
-				if response.statusCode == 200 {
-					guard let remoteFeedItems = self?.remoteFeedItems(from: data) else {
-						completion(.failure(Error.invalidData))
-						return
-					}
-					completion(.success(remoteFeedItems.toFeedItems()))
-				} else {
-					completion(.failure(Error.invalidData))
-				}
+				completion(self.remoteFeedResponseResult(from: data, response: response))
 			}
 		})
+	}
+	
+	private func remoteFeedResponseResult(from data: Data, response: HTTPURLResponse) -> FeedLoader.Result {
+		if response.statusCode == 200 {
+			guard let remoteFeedItems = remoteFeedItems(from: data) else {
+				return .failure(Error.invalidData)
+			}
+			return .success(remoteFeedItems.toFeedItems())
+		} else {
+			return .failure(Error.invalidData)
+		}
 	}
 	
 	private func remoteFeedItems(from data: Data) -> RemoteFeedItems?{
