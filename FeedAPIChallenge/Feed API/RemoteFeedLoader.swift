@@ -29,8 +29,10 @@ public final class RemoteFeedLoader: FeedLoader {
 			}
 		})
 	}
-	
-	private func remoteFeedResponseResult(from data: Data, response: HTTPURLResponse) -> FeedLoader.Result {
+}
+
+private extension RemoteFeedLoader {
+	func remoteFeedResponseResult(from data: Data, response: HTTPURLResponse) -> FeedLoader.Result {
 		guard response.statusCode == 200,
 			  let remoteFeedItems = remoteFeedItems(from: data) else  {
 			return .failure(Error.invalidData)
@@ -38,7 +40,7 @@ public final class RemoteFeedLoader: FeedLoader {
 		return .success(remoteFeedItems.toFeedImageItems())
 	}
 	
-	private func remoteFeedItems(from data: Data) -> RemoteFeedItems?{
+	func remoteFeedItems(from data: Data) -> RemoteFeedItems?{
 		let decoder = JSONDecoder()
 		return try? decoder.decode(RemoteFeedItems.self, from: data)
 	}
