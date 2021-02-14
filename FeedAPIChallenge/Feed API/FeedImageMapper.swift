@@ -10,11 +10,11 @@ import Foundation
 
 final class FeedImageMapper{
 	
-	private struct Entity: Decodable{
+	private struct Entity: Decodable {
 		let items:[ImageItem]
 		
-		var feed: [FeedImage]{
-			items.map{
+		var feed: [FeedImage] {
+			items.map {
 				FeedImage(id: $0.id,
 						  description: $0.description,
 						  location: $0.location,
@@ -23,13 +23,13 @@ final class FeedImageMapper{
 		}
 	}
 	
-	private struct ImageItem: Decodable{
+	private struct ImageItem: Decodable {
 		let id: UUID
 		let description: String?
 		let location: String?
 		let url: URL
 		
-		private enum CodingKeys:String, CodingKey{
+		private enum CodingKeys:String, CodingKey {
 			case id = "image_id"
 			case description = "image_desc"
 			case location = "image_loc"
@@ -39,7 +39,7 @@ final class FeedImageMapper{
 	
 	private static var validStatusCode: Int {  return 200 }
 	
-	static func map(_ data: Data, from response: HTTPURLResponse) -> FeedLoader.Result{
+	static func map(_ data: Data, from response: HTTPURLResponse) -> FeedLoader.Result {
 		
 		guard response.statusCode == validStatusCode,
 			  let images = try? JSONDecoder().decode(Entity.self, from: data) else {
