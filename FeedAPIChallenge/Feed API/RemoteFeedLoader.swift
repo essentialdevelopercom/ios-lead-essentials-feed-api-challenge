@@ -26,11 +26,11 @@ public final class RemoteFeedLoader: FeedLoader {
 				completion(.failure(Error.connectivity))
 			case .success((let data, let response)):
 				if response.statusCode == 200 {
-						guard let remoteFeedItems = self?.remoteFeedItems(from: data) else {
-							completion(.failure(Error.invalidData))
-							return
-						}
-						completion(.success(remoteFeedItems.toFeedItems()))
+					guard let remoteFeedItems = self?.remoteFeedItems(from: data) else {
+						completion(.failure(Error.invalidData))
+						return
+					}
+					completion(.success(remoteFeedItems.toFeedItems()))
 				} else {
 					completion(.failure(Error.invalidData))
 				}
