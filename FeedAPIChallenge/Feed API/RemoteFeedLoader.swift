@@ -23,30 +23,35 @@ public final class RemoteFeedLoader: FeedLoader {
 			guard let self = self else { return }
 			if let (data, response) = try? result.get() {
 				completion(self.toFeedLoaderResult(data, response))
-			}else{
+			} else {
 				completion(.failure(Error.connectivity))
 			}
 		}
 	}
+	
 	private func toFeedLoaderResult(_ data: Data, _ response: HTTPURLResponse) -> FeedLoader.Result {
 		if response.statusCode == validStatusCode {
 			return convert(data)
-		}else{
+		} else {
 			return .failure(Error.invalidData)
 		}
 	}
+	
 	private var validStatusCode: Int { 200 }
+	
 	private func convert(_ data: Data) -> FeedLoader.Result {
 		if let root = try? JSONDecoder().decode(Root.self, from: data) {
 			return .success(root.items.map({$0.feedImage}))
-		}else{
+		} else {
 			return .failure(Error.invalidData)
 		}
 	}
 }
+
 private struct Root: Decodable {
 	let items: [Item]
 }
+
 private struct Item: Decodable {
 	let image_id: UUID
 	let image_url: URL
