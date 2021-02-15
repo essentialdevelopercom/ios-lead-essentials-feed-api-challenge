@@ -45,16 +45,16 @@ public final class RemoteFeedLoader: FeedLoader {
 	}
 	
 	private struct Item: Decodable {
-		public let id: UUID
-		public let description: String?
-		public let location: String?
-		public let url: URL
+		public let image_id: UUID
+		public let image_desc: String?
+		public let image_loc: String?
+		public let image_url: URL
 		
 		var item: FeedImage {
-			return FeedImage(id: id,
-							 description: description,
-							 location: location,
-							 url: url)
+			return FeedImage(id: image_id,
+							 description: image_desc,
+							 location: image_loc,
+							 url: image_url)
 		}
 	}
 }
