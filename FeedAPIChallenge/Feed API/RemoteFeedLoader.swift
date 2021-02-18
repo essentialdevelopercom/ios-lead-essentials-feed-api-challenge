@@ -35,7 +35,7 @@ internal struct RemoteFeedLoaderMapper {
 	private static var OK_200 = 200
 	
 	static func map(_ data: Data, from response: HTTPURLResponse) -> RemoteFeedLoader.Result {
-		guard response.statusCode == RemoteFeedLoaderMapper.OK_200, let feed = try? JSONDecoder().decode(Feed.self, from: data) else {
+		guard response.statusCode == OK_200, let feed = try? JSONDecoder().decode(Feed.self, from: data) else {
 			return .failure(RemoteFeedLoader.Error.invalidData)
 		}
 		return .success(feed.images)
