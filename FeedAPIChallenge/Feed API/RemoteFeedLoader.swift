@@ -31,14 +31,21 @@ public final class RemoteFeedLoader: FeedLoader {
 				
 				do {
 					let loaderResponse = try JSONDecoder().decode(FeedLoaderResponse.self, from: data)
-					let feedImages: [FeedImage] = loaderResponse.items.map { _ in
-						FeedImage(
-							id: UUID(),
-							description: nil,
-							location: nil,
-							url: URL(string: "absolute")!
+					let feedImages: [FeedImage] = loaderResponse.items.map { item in
+						guard let id = UUID(uuidString: item.id),
+							  let url = URL(string: item.url) else {
+							completion(.failure(Error.invalidData))
+							return nil
+						}
+						
+						return FeedImage(
+							id: id,
+							description: item.description,
+							location: item.location,
+							url: url
 						)
-					}
+					}.compactMap { $0 }
+					
 					completion(.success(feedImages))
 				} catch {
 					completion(.failure(Error.invalidData))
@@ -53,8 +60,8 @@ public final class RemoteFeedLoader: FeedLoader {
 	
 	private struct ResponseItem: Decodable {
 		let id: String
-		let description: String
-		let location: String
+		let description: String?
+		let location: String?
 		let url: String
 		
 		enum CodingKeys: String, CodingKey {
