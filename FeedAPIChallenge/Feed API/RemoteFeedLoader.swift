@@ -14,13 +14,13 @@ public final class RemoteFeedLoader: FeedLoader {
 	}
 
 	struct Image: Decodable {
-		let id: UUID
-		let description: String?
-		let location: String?
-		let url: URL
+		let imageId: UUID
+		let imageDesc: String?
+		let imageLoc: String?
+		let imageUrl: URL
 
 		var feedImage: FeedImage {
-			FeedImage(id: id, description: description, location: location, url: url)
+			FeedImage(id: imageId, description: imageDesc, location: imageLoc, url: imageUrl)
 		}
 	}
 
@@ -43,12 +43,17 @@ public final class RemoteFeedLoader: FeedLoader {
 			case .failure:
 				completion(.failure(Error.connectivity))
 			case let .success((data, response)):
-				guard response.statusCode == 200,
-					  let _ = try? JSONDecoder().decode(Root.self, from: data) else {
+				guard response.statusCode == 200 else {
 					completion(.failure(Error.invalidData))
 					return
 				}
-				completion(.success([FeedImage]()))
+				let decoder = JSONDecoder()
+				decoder.keyDecodingStrategy = .convertFromSnakeCase
+				guard let images = try? decoder.decode(Root.self, from: data) else {
+					completion(.failure(Error.invalidData))
+					return
+				}
+				completion(.success(images.feedImages))
 			}
 		}
 	}
