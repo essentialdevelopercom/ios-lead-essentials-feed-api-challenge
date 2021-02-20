@@ -5,7 +5,7 @@
 import Foundation
 
 public final class RemoteFeedLoader: FeedLoader {
-	struct Root: Decodable {
+	private struct Root: Decodable {
 		let items: [Image]
 
 		var feedImages: [FeedImage] {
@@ -13,7 +13,7 @@ public final class RemoteFeedLoader: FeedLoader {
 		}
 	}
 
-	struct Image: Decodable {
+	private struct Image: Decodable {
 		let imageId: UUID
 		let imageDesc: String?
 		let imageLoc: String?
