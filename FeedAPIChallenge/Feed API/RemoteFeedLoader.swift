@@ -30,7 +30,7 @@ public final class RemoteFeedLoader: FeedLoader {
 					return
 				}
 				
-				guard let _ = try? JSONDecoder().decode(FeedImageStruct.self, from: data) else {
+				guard let _ = try? JSONDecoder().decode([FeedImageStruct].self, from: data) else {
 					completion(.failure(Error.invalidData))
 					return
 				}
