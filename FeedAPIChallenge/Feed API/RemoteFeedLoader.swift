@@ -8,6 +8,8 @@ public final class RemoteFeedLoader: FeedLoader {
 	private let url: URL
 	private let client: HTTPClient
 	
+	var feedLoaderCompletion : ((FeedLoader.Result) -> Void)?
+	
 	public enum Error: Swift.Error {
 		case connectivity
 		case invalidData
@@ -19,28 +21,29 @@ public final class RemoteFeedLoader: FeedLoader {
 	}
 	
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
-		client.get(from: url) { (result) in
+		feedLoaderCompletion = completion
+		client.get(from: url) { [weak self] (result) in
 			
 			switch result {
 			
 			case .success((let data, let httpResponse)):
 				
 				guard httpResponse.statusCode == 200 else{
-					completion(.failure(Error.invalidData))
+					self?.feedLoaderCompletion?(.failure(Error.invalidData))
 					return
 				}
 				
 				guard let responseData = try? JSONDecoder().decode(FeedImageItemsStruct.self, from: data) else {
-					completion(.failure(Error.invalidData))
+					self?.feedLoaderCompletion?(.failure(Error.invalidData))
 					return
 				}
 				
-				completion(.success(responseData.items.map{ $0.feedImage }))
+				self?.feedLoaderCompletion?(.success(responseData.items.map{ $0.feedImage }))
 				
 			case .failure(let error):
 				
 				if (error as NSError).code == 0 && (error as NSError).domain == "Test" {
-					completion(.failure(Error.connectivity))
+					self?.feedLoaderCompletion?(.failure(Error.connectivity))
 				}
 			}
 			
