@@ -23,8 +23,11 @@ public final class RemoteFeedLoader: FeedLoader {
 			
 			switch result {
 			
-			case .success((_, _)):
-				print("Success")
+			case .success((_, let httpResponse)):
+				
+				if httpResponse.statusCode != 200{
+					completion(.failure(Error.invalidData))
+				}
 				
 			case .failure(let error):
 				
