@@ -30,8 +30,7 @@ public final class RemoteFeedLoader: FeedLoader {
 					return
 				}
 				
-				
-				guard JSONSerialization.isValidJSONObject(data) else {
+				guard let _ = try? JSONDecoder().decode(FeedImageStruct.self, from: data) else {
 					completion(.failure(Error.invalidData))
 					return
 				}
@@ -44,5 +43,17 @@ public final class RemoteFeedLoader: FeedLoader {
 			}
 			
 		}
+	}
+}
+
+private struct FeedImageStruct : Decodable {
+	
+	let image_id : UUID
+	let image_desc : String?
+	let image_loc : String?
+	let image_url : URL
+	
+	var feedImage : FeedImage {
+		return FeedImage(id: image_id, description: image_desc, location: image_loc, url: image_url)
 	}
 }
