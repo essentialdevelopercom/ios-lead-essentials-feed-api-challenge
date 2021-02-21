@@ -32,21 +32,3 @@ public final class RemoteFeedLoader: FeedLoader {
 		}
 	}
 }
-
-struct Root: Decodable {
-	var items: [Feed]
-	var feedItems: [FeedImage] {
-		return items.map { $0.toFeedImage() }
-	}
-	
-	struct Feed: Decodable {
-		var imageId: UUID
-		var imageDesc: String?
-		var imageLoc: String?
-		var imageUrl: URL
-		
-		func toFeedImage() -> FeedImage {
-			return FeedImage(id: imageId, description: imageDesc, location: imageLoc, url: imageUrl)
-		}
-	}
-}

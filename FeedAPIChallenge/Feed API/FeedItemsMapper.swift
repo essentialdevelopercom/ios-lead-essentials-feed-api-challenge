@@ -23,3 +23,26 @@ final class FeedItemsMapper {
 		return .success(root.feedItems)
 	}
 }
+
+private struct Root: Decodable {
+	private var items: [FeedItem]
+	var feedItems: [FeedImage] {
+		return items.map { $0.toFeedImage() }
+	}
+	
+	private struct FeedItem: Decodable {
+		var imageId: UUID
+		var imageDesc: String?
+		var imageLoc: String?
+		var imageUrl: URL
+		
+		func toFeedImage() -> FeedImage {
+			return FeedImage(
+				id: imageId,
+				description: imageDesc,
+				location: imageLoc,
+				url: imageUrl
+			)
+		}
+	}
+}
