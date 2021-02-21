@@ -20,8 +20,6 @@ final class FeedItemsMapper {
 			return .failure(Error.invalidData)
 		}
 		
-		let feedItems = root.items.map({$0.toFeedImage()})
-		
-		return .success(feedItems)
+		return .success(root.feedItems)
 	}
 }
