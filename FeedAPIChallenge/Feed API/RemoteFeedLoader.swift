@@ -23,14 +23,20 @@ public final class RemoteFeedLoader: FeedLoader {
 			switch result {
 			case let .success((data, response)):
 				guard response.statusCode == 200,
-					  let validData = try? JSONSerialization.jsonObject(with: data) else {
+					  let root = try? JSONDecoder().decode(Root.self, from: data) else {
 					completion(.failure(Error.invalidData))
 					return
 				}
-				completion(.success([]))
+				completion(.success(root.items))
 			case .failure:
 				completion(.failure(Error.connectivity))
 			}
 		}
 	}
 }
+
+struct Root: Decodable {
+	var items: [FeedImage]
+}
+
+//FeedAPIChallenge.FeedImage(id: 5A50A434-F426-49E9-86AD-42F277F62122, description: nil, location: nil, url: http://a-url.com)
