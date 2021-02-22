@@ -33,7 +33,7 @@ public final class RemoteFeedLoader: FeedLoader {
 	
 }
 
-class FeedImageMapper {
+final class FeedImageMapper {
 	
 	private struct Root: Decodable {
 		private var items: [Item]
