@@ -34,11 +34,19 @@ private struct Root: Decodable {
 	
 	let items: [Image]
 	
+	var images: [FeedImage] {
+		items.map { $0.image }
+	}
+	
 	struct Image: Decodable {
 		let id: UUID
 		let description: String?
 		let location: String?
 		let url: URL
+		
+		var image: FeedImage {
+			FeedImage(id: id, description: description, location: location, url: url)
+		}
 		
 		enum CodingKeys: String, CodingKey {
 			case id = "image_id"
