@@ -30,6 +30,7 @@ public final class RemoteFeedLoader: FeedLoader {
 			}
 		}
 	}
+	
 }
 
 class FeedImageMapper {
