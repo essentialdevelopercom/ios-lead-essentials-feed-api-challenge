@@ -12,13 +12,13 @@ public final class RemoteFeedLoader: FeedLoader {
 		case connectivity
 		case invalidData
 	}
-		
+	
 	public init(url: URL, client: HTTPClient) {
 		self.url = url
 		self.client = client
 	}
 	
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
-        
-    }
+		
+	}
 }
