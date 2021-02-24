@@ -30,7 +30,7 @@ public final class RemoteFeedLoader: FeedLoader {
 			case .success(let success as DataAndResponse):
 				if success.response.statusCode == RemoteFeedLoader.OK_200,
 					let root = try? JSONDecoder().decode(Root.self, from: success.data) {
-					completion(.success(root.items.map{$0.feedImage}))
+					completion(.success(root.feedImages))
 				} else {
 					completion(.failure(Error.invalidData))
 				}
@@ -40,6 +40,10 @@ public final class RemoteFeedLoader: FeedLoader {
 	
 	struct Root: Decodable {
 		let items: [Item]
+		
+		var feedImages: [FeedImage] {
+			return items.map{$0.feedImage}
+		}
 	}
 	
 	struct Item: Decodable {
