@@ -27,9 +27,8 @@ public final class RemoteFeedLoader: FeedLoader {
 			case .failure:
 				completion(.failure(Error.connectivity))
 			case .success(let success as DataAndResponse):
-				if success.response.statusCode != RemoteFeedLoader.OK_200 {
-					completion(.failure(Error.invalidData))
-				} else if (try? JSONSerialization.jsonObject(with: success.data)) == nil {
+				if success.response.statusCode != RemoteFeedLoader.OK_200 ||
+					(try? JSONSerialization.jsonObject(with: success.data)) == nil {
 					completion(.failure(Error.invalidData))
 				}
 			}
