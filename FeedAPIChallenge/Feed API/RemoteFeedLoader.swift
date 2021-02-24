@@ -27,11 +27,22 @@ public final class RemoteFeedLoader: FeedLoader {
 			case .failure:
 				completion(.failure(Error.connectivity))
 			case .success(let success as DataAndResponse):
-				if success.response.statusCode != RemoteFeedLoader.OK_200 ||
-					(try? JSONSerialization.jsonObject(with: success.data)) == nil {
+				if success.response.statusCode == RemoteFeedLoader.OK_200 ||
+					(try? JSONDecoder().decode(Root.self, from: success.data)) != nil {
 					completion(.failure(Error.invalidData))
 				}
 			}
 		}
+	}
+	
+	struct Root: Decodable {
+		let items: [Item]
+	}
+	
+	struct Item: Decodable {
+		let image_id: String
+		let image_desc: String?
+		let image_loc: String?
+		let image_url: String
 	}
 }
