@@ -27,14 +27,18 @@ public final class RemoteFeedLoader: FeedLoader {
 			switch result {
 			case .failure:
 				completion(.failure(Error.connectivity))
-			case .success(let success as DataAndResponse):
-				if success.response.statusCode == RemoteFeedLoader.OK_200,
-					let root = try? JSONDecoder().decode(Root.self, from: success.data) {
-					completion(.success(root.feedImages))
-				} else {
-					completion(.failure(Error.invalidData))
-				}
+			case .success(let successInfo as DataAndResponse):
+				completion(RemoteFeedLoader.map(successInfo: successInfo))
 			}
+		}
+	}
+	
+	private static func map(successInfo: DataAndResponse) -> FeedLoader.Result {
+		if successInfo.response.statusCode == RemoteFeedLoader.OK_200,
+			let root = try? JSONDecoder().decode(Root.self, from: successInfo.data) {
+			return .success(root.feedImages)
+		} else {
+			return .failure(Error.invalidData)
 		}
 	}
 	
