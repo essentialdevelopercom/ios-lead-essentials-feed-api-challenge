@@ -18,8 +18,7 @@ public final class RemoteFeedLoader: FeedLoader {
 		self.client = client
 	}
 	
-	private static let OK_200 = 200
-	private typealias DataAndResponse = (data: Data, response: HTTPURLResponse)
+	typealias DataAndResponse = (data: Data, response: HTTPURLResponse)
 	
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
 		client.get(from: url) { [weak self] result in
@@ -28,18 +27,23 @@ public final class RemoteFeedLoader: FeedLoader {
 			case .failure:
 				completion(.failure(Error.connectivity))
 			case .success(let successInfo as DataAndResponse):
-				completion(RemoteFeedLoader.map(successInfo: successInfo))
+				completion(RemoteFeedLoaderMapper.map(successInfo: successInfo))
 			}
 		}
 	}
+}
+
+final class RemoteFeedLoaderMapper {
 	
-	private static func map(successInfo: DataAndResponse) -> FeedLoader.Result {
-		guard successInfo.response.statusCode == RemoteFeedLoader.OK_200,
+	static func map(successInfo: RemoteFeedLoader.DataAndResponse) -> FeedLoader.Result {
+		guard successInfo.response.statusCode == RemoteFeedLoaderMapper.OK_200,
 			let root = try? JSONDecoder().decode(Root.self, from: successInfo.data) else {
-			return .failure(Error.invalidData)
+			return .failure(RemoteFeedLoader.Error.invalidData)
 		}
 		return .success(root.feedImages)
 	}
+	
+	private static let OK_200 = 200
 	
 	struct Root: Decodable {
 		let items: [Item]
