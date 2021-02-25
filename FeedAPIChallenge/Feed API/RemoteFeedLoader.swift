@@ -34,12 +34,11 @@ public final class RemoteFeedLoader: FeedLoader {
 	}
 	
 	private static func map(successInfo: DataAndResponse) -> FeedLoader.Result {
-		if successInfo.response.statusCode == RemoteFeedLoader.OK_200,
-			let root = try? JSONDecoder().decode(Root.self, from: successInfo.data) {
-			return .success(root.feedImages)
-		} else {
+		guard successInfo.response.statusCode == RemoteFeedLoader.OK_200,
+			let root = try? JSONDecoder().decode(Root.self, from: successInfo.data) else {
 			return .failure(Error.invalidData)
 		}
+		return .success(root.feedImages)
 	}
 	
 	struct Root: Decodable {
