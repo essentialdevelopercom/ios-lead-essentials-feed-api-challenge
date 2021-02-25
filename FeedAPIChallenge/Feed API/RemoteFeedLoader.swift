@@ -25,8 +25,8 @@ public final class RemoteFeedLoader: FeedLoader {
 				if response.statusCode != 200 {
 					completion(.failure(Error.invalidData))
 				} else {
-					let data = try? JSONSerialization.jsonObject(with: data)
-					if data == nil {
+					let root = try? JSONDecoder().decode(Root.self, from: data)
+					if root == nil {
 						completion(.failure(Error.invalidData))
 					}
 				}
@@ -36,3 +36,22 @@ public final class RemoteFeedLoader: FeedLoader {
 		}
 	}
 }
+
+private struct Root: Decodable {
+	let items: [Item]
+}
+
+private struct Item: Decodable {
+	let id: String
+	let description: String?
+	let location: String?
+	let url: URL
+
+	private enum CodingKeys: String, CodingKey {
+		case id = "image_id"
+		case description = "image_desc"
+		case location = "image_loc"
+		case url = "image_url"
+	}
+}
+
