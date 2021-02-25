@@ -18,16 +18,14 @@ public final class RemoteFeedLoader: FeedLoader {
 		self.client = client
 	}
 	
-	internal typealias DataAndResponse = (data: Data, response: HTTPURLResponse)
-	
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
 		client.get(from: url) { [weak self] result in
 			guard self != nil else { return }
 			switch result {
 			case .failure:
 				completion(.failure(Error.connectivity))
-			case .success(let successInfo as DataAndResponse):
-				completion(RemoteFeedLoaderMapper.map(successInfo: successInfo))
+			case .success((let data, let response)):
+				completion(RemoteFeedLoaderMapper.map(data, response))
 			}
 		}
 	}

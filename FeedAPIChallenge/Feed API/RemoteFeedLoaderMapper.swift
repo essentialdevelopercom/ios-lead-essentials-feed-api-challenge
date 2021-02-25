@@ -10,9 +10,9 @@ import Foundation
 
 internal final class RemoteFeedLoaderMapper {
 	
-	internal static func map(successInfo: RemoteFeedLoader.DataAndResponse) -> FeedLoader.Result {
-		guard successInfo.response.statusCode == RemoteFeedLoaderMapper.OK_200,
-			let root = try? JSONDecoder().decode(Root.self, from: successInfo.data) else {
+	internal static func map(_ data: Data, _ response: HTTPURLResponse) -> FeedLoader.Result {
+		guard response.statusCode == RemoteFeedLoaderMapper.OK_200,
+			let root = try? JSONDecoder().decode(Root.self, from: data) else {
 			return .failure(RemoteFeedLoader.Error.invalidData)
 		}
 		return .success(root.feedImages)
