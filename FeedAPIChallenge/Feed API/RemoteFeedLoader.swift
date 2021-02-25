@@ -45,12 +45,12 @@ public final class RemoteFeedLoader: FeedLoader {
 			case .success(let (data, response)):
 				guard
 					response.statusCode == 200,
-					let _ = try? JSONDecoder().decode(JSONRoot.self, from: data)
+					let jsonRoot = try? JSONDecoder().decode(JSONRoot.self, from: data)
 				else {
 					completion(.failure(Error.invalidData))
 					return
 				}
-				completion(.success([]))
+				completion(.success(jsonRoot.feed))
 			}
 		}
 	}
