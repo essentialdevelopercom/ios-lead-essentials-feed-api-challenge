@@ -18,7 +18,7 @@ internal class FeedImagesMapper {
 		}
 	}
 	
-	struct Image: Decodable {
+	private struct Image: Decodable {
 		public let image_id: UUID
 		public let image_desc: String?
 		public let image_loc: String?
@@ -31,7 +31,7 @@ internal class FeedImagesMapper {
 	
 	private static var OK_200: Int { return 200 }
 	
-	public static func map(data: Data, from response: HTTPURLResponse) -> FeedLoader.Result {
+	internal static func map(data: Data, from response: HTTPURLResponse) -> FeedLoader.Result {
 		guard response.statusCode == OK_200,
 			  let root = try? JSONDecoder().decode(Root.self, from: data) else {
 			return .failure(RemoteFeedLoader.Error.invalidData)
