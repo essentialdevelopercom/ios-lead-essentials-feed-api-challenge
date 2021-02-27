@@ -11,7 +11,7 @@ import Foundation
 internal class FeedImagesMapper {
 	
 	private struct Root: Decodable {
-		public let images: [Image]
+		public let items: [Image]
 	}
 	
 	struct Image: Decodable {
