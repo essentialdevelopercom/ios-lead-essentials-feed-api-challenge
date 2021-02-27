@@ -64,14 +64,10 @@ private class FeedImageMapper {
 	}
 	
 	static func map(data: Data, response: HTTPURLResponse) throws -> [FeedImage] {
-		if response.statusCode == 200  {
-			if let items = try? imageDecoder().decode(Items.self, from: data) {
-				return items.items.map(\.feedImage)
-			} else {
-				throw RemoteFeedLoader.Error.invalidData
-			}
-		} else {
+		guard response.statusCode == 200, let items = try? imageDecoder().decode(Items.self, from: data) else {
 			throw RemoteFeedLoader.Error.invalidData
 		}
+		
+		return items.items.map(\.feedImage)
 	}
 }
