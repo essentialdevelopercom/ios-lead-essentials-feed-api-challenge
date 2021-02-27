@@ -20,9 +20,18 @@ public final class RemoteFeedLoader: FeedLoader {
 	
 	private struct Item: Codable {
 		let imageId: UUID
-		let imageDesc: String
-		let imageLoc: String
+		let imageDesc: String?
+		let imageLoc: String?
 		let imageUrl: URL
+		
+		var feedImage: FeedImage {
+			FeedImage(
+				id: imageId,
+				description: imageDesc,
+				location: imageLoc,
+				url: imageUrl
+			)
+		}
 	}
 	
 	private struct Items: Codable {
@@ -39,8 +48,13 @@ public final class RemoteFeedLoader: FeedLoader {
 		client.get(from: url) {[weak self] response in
 			switch response {
 			case let .success((data, response)):
-				if response.statusCode == 200, let _ = try? self?.imageDecoder().decode(Items.self, from: data) {
-					completion(.success([]))
+				if response.statusCode == 200  {
+					if let items = try? self?.imageDecoder().decode(Items.self, from: data) {
+						let feedImages = items.items.map(\.feedImage)
+						completion(.success(feedImages))
+					} else {
+						completion(.failure(Error.invalidData))
+					}
 				} else {
 					completion(.failure(Error.invalidData))
 				}
