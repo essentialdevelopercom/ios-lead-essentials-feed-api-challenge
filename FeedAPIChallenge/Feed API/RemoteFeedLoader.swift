@@ -24,15 +24,32 @@ public final class RemoteFeedLoader: FeedLoader {
 		client.get(from: url) { result in
 			switch result {
 				case .success(let (data, response)):
-					guard response.statusCode == RemoteFeedLoader.OK_200,
-						  let _ = try? JSONSerialization.jsonObject(with: data) else {
-						completion(.failure(Error.invalidData))
-						return
-					}
+					completion(RemoteFeedLoader.map(data: data, from: response))
 				case .failure:
 					completion(.failure(Error.connectivity))
 			}
 			
 		}
 	}
+	
+	struct Root: Decodable {
+		let images: [Image]
+	}
+	
+	struct Image: Decodable {
+		let image_id: UUID
+		let image_desc: String?
+		let image_loc: String?
+		let image_url: URL
+	}
+	
+	private static func map(data: Data, from response: HTTPURLResponse) -> FeedLoader.Result {
+		guard response.statusCode == RemoteFeedLoader.OK_200,
+			  let _ = try? JSONDecoder().decode(Root.self, from: data) else {
+			return .failure(Error.invalidData)
+		}
+		
+		return .success([])
+	}
+
 }
