@@ -18,11 +18,22 @@ public final class RemoteFeedLoader: FeedLoader {
 		self.client = client
 	}
 	
+	private struct Item: Codable {
+		let image_id: UUID
+		let image_desc: String
+		let image_loc: String
+		let image_url: URL
+	}
+	
+	private struct Items: Codable {
+		let items: [Item]
+	}
+	
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
 		client.get(from: url) { response in
 			switch response {
 			case let .success((data, response)):
-				if response.statusCode == 200, let _ = try? JSONSerialization.jsonObject(with: data, options: []) {
+				if response.statusCode == 200, let _ = try? JSONDecoder().decode(Items.self, from: data) {
 					completion(.success([]))
 				} else {
 					completion(.failure(Error.invalidData))
