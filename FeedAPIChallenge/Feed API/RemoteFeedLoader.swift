@@ -19,10 +19,10 @@ public final class RemoteFeedLoader: FeedLoader {
 	}
 	
 	private struct Item: Codable {
-		let image_id: UUID
-		let image_desc: String
-		let image_loc: String
-		let image_url: URL
+		let imageId: UUID
+		let imageDesc: String
+		let imageLoc: String
+		let imageUrl: URL
 	}
 	
 	private struct Items: Codable {
@@ -30,7 +30,9 @@ public final class RemoteFeedLoader: FeedLoader {
 	}
 	
 	private func imageDecoder() -> JSONDecoder {
-		JSONDecoder()
+		let decoder = JSONDecoder()
+		decoder.keyDecodingStrategy = .convertFromSnakeCase
+		return decoder
 	}
 	
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
