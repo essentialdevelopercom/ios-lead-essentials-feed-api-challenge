@@ -18,6 +18,24 @@ public final class RemoteFeedLoader: FeedLoader {
 		self.client = client
 	}
 	
+	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
+		client.get(from: url) {response in
+			switch response {
+			case let .success((data, response)):
+				do {
+					let items = try FeedImageMapper.map(data: data, response: response)
+					completion(.success(items))
+				} catch {
+					completion(.failure(Error.invalidData))
+				}
+			case .failure:
+				completion(.failure(Error.connectivity))
+			}
+		}
+	}
+}
+
+private class FeedImageMapper {
 	private struct Item: Codable {
 		let imageId: UUID
 		let imageDesc: String?
@@ -38,29 +56,21 @@ public final class RemoteFeedLoader: FeedLoader {
 		let items: [Item]
 	}
 	
-	private func imageDecoder() -> JSONDecoder {
+	private static func imageDecoder() -> JSONDecoder {
 		let decoder = JSONDecoder()
 		decoder.keyDecodingStrategy = .convertFromSnakeCase
 		return decoder
 	}
 	
-	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
-		client.get(from: url) {[weak self] response in
-			switch response {
-			case let .success((data, response)):
-				if response.statusCode == 200  {
-					if let items = try? self?.imageDecoder().decode(Items.self, from: data) {
-						let feedImages = items.items.map(\.feedImage)
-						completion(.success(feedImages))
-					} else {
-						completion(.failure(Error.invalidData))
-					}
-				} else {
-					completion(.failure(Error.invalidData))
-				}
-			case .failure:
-				completion(.failure(Error.connectivity))
+	static func map(data: Data, response: HTTPURLResponse) throws -> [FeedImage] {
+		if response.statusCode == 200  {
+			if let items = try? imageDecoder().decode(Items.self, from: data) {
+				return items.items.map(\.feedImage)
+			} else {
+				throw RemoteFeedLoader.Error.invalidData
 			}
+		} else {
+			throw RemoteFeedLoader.Error.invalidData
 		}
 	}
 }
