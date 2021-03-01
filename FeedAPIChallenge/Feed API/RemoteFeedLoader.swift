@@ -53,10 +53,10 @@ private final class ResultMapper {
 		
 		var feedImage: FeedImage {
 			return FeedImage(
-				id: UUID(),
-				description: nil,
-				location: nil,
-				url: URL(string: "http://another-url.com")!
+				id: id,
+				description: description,
+				location: location,
+				url: url
 			)
 		}
 	}
