@@ -29,6 +29,7 @@ public final class RemoteFeedLoader: FeedLoader {
 							let _ = self?.decode(data: data) else {
 					return completion(.failure(Error.invalidData))
 				}
+				completion(.success([]))
 			}
 		}
 	}
