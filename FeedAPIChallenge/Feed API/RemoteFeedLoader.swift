@@ -22,13 +22,7 @@ public final class RemoteFeedLoader: FeedLoader {
 		client.get(from: url) { result in
 			switch result {
 			case let .success((data, response)):
-				if response.statusCode == 200,
-				   let root = try? JSONDecoder().decode(Root.self, from: data)
-				{
-					completion(.success(root.items.map { $0.feedImage }))
-				} else {
-					completion(.failure(Error.invalidData))
-				}
+				completion(ResultMapper.map(data, response))
 			case .failure:
 				completion(.failure(Error.connectivity))
 			}
@@ -36,30 +30,45 @@ public final class RemoteFeedLoader: FeedLoader {
 	}
 }
 
-private struct Root: Decodable {
-	let items: [Item]
-}
-
-private struct Item: Decodable {
-	let id: UUID
-	let description: String?
-	let location: String?
-	let url: URL
+private final class ResultMapper {
 	
-	enum CodingKeys: String, CodingKey {
-		case id = "image_id"
-		case description = "image_desc"
-		case location = "image_loc"
-		case url = "image_url"
+	static let CodeOK = 200
+	
+	private struct Root: Decodable {
+		let items: [Item]
+	}
+
+	private struct Item: Decodable {
+		let id: UUID
+		let description: String?
+		let location: String?
+		let url: URL
+		
+		enum CodingKeys: String, CodingKey {
+			case id = "image_id"
+			case description = "image_desc"
+			case location = "image_loc"
+			case url = "image_url"
+		}
+		
+		var feedImage: FeedImage {
+			return FeedImage(
+				id: UUID(),
+				description: nil,
+				location: nil,
+				url: URL(string: "http://another-url.com")!
+			)
+		}
 	}
 	
-	var feedImage: FeedImage {
-		return FeedImage(
-			id: UUID(),
-			description: nil,
-			location: nil,
-			url: URL(string: "http://another-url.com")!
-		)
+	static func map(_ data: Data, _ response: HTTPURLResponse) -> FeedLoader.Result {
+		let statusCodeIsOK = response.statusCode == ResultMapper.CodeOK
+		let root = try? JSONDecoder().decode(Root.self, from: data)
+		if statusCodeIsOK, let root = root {
+			return .success(root.items.map { $0.feedImage })
+		} else {
+			return .failure(RemoteFeedLoader.Error.invalidData)
+		}
 	}
 }
 
