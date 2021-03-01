@@ -7,7 +7,7 @@ import Foundation
 public final class RemoteFeedLoader: FeedLoader {
 	private let url: URL
 	private let client: HTTPClient
-	
+
 	public enum Error: Swift.Error {
 		case connectivity
 		case invalidData
@@ -22,8 +22,8 @@ public final class RemoteFeedLoader: FeedLoader {
 		client.get(from: url) { result in
 			switch result {
 			case let .success((data, response)):
-				if response.isOK_200, let _ = try? JSONDecoder().decode(Root.self, from: data) {
-					completion(.success([]))
+				if response.isOK_200, let items = try? JSONDecoder().decode(Root.self, from: data).items {
+					completion(.success(items))
 				} else {
 					completion(.failure(Error.invalidData))
 				}
