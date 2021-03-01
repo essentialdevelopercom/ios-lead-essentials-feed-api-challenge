@@ -57,6 +57,6 @@ private struct RemoteFeedMapper {
 		guard let _ = try? JSONDecoder().decode(Root.self, from: data) else {
 			return .failure(RemoteFeedLoader.Error.invalidData)
 		}
-		return .failure(RemoteFeedLoader.Error.invalidData)
+		return .success([])
 	}
 }
