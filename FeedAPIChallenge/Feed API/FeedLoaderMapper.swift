@@ -31,7 +31,8 @@ public struct FeedLoaderMapper {
 	static var ok_200: Int { return 200 }
 	
 	static  func map(data: Data, response: HTTPURLResponse) -> RemoteFeedLoader.Result {
-		guard response.statusCode == ok_200 else {
+		guard response.statusCode == ok_200,
+			  let _ = try? JSONDecoder().decode(Root.self, from: data) else {
 			return .failure(RemoteFeedLoader.Error.invalidData)
 		}
 		let items = [FeedImage]()
