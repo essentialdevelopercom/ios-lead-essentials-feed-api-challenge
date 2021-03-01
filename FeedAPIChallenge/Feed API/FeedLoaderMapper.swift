@@ -12,7 +12,7 @@ public struct FeedLoaderMapper {
 
 	private struct Root: Decodable {
 		let items: [Item]
-		
+
 		var feed: [FeedImage] {
 			return items.map{ $0.item }
 		}
@@ -27,15 +27,22 @@ public struct FeedLoaderMapper {
 		var item: FeedImage {
 			return FeedImage(id: id, description: description, location: location, url: image)
 		}
+
+		enum CodingKeys: String, CodingKey {
+			case id = "image_id"
+			case description = "image_desc"
+			case location = "image_loc"
+			case image = "image_url"
+		}
 	}
 	static var ok_200: Int { return 200 }
 	
 	static  func map(data: Data, response: HTTPURLResponse) -> RemoteFeedLoader.Result {
 		guard response.statusCode == ok_200,
-			  let _ = try? JSONDecoder().decode(Root.self, from: data) else {
+			  let root = try? JSONDecoder().decode(Root.self, from: data) else {
 			return .failure(RemoteFeedLoader.Error.invalidData)
 		}
-		let items = [FeedImage]()
+		let items = root.feed
 		return .success(items)
 	}
 }
