@@ -8,13 +8,13 @@
 
 import Foundation
 
-public struct FeedLoaderMapper {
+internal struct FeedLoaderMapper {
 
 	private struct Root: Decodable {
 		let items: [Item]
 
 		var feed: [FeedImage] {
-			return items.map{ $0.item }
+			return items.map { $0.item }
 		}
 	}
 
@@ -35,7 +35,7 @@ public struct FeedLoaderMapper {
 			case image = "image_url"
 		}
 	}
-	static var ok_200: Int { return 200 }
+	private static var ok_200: Int { return 200 }
 	
 	static  func map(data: Data, response: HTTPURLResponse) -> RemoteFeedLoader.Result {
 		guard response.statusCode == ok_200,
