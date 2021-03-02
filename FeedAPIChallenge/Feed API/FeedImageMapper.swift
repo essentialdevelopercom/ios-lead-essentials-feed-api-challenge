@@ -1,7 +1,7 @@
 import Foundation
 
 internal final class FeedImageMapper {
-	internal static func map(_ data: Data, withResponse response: HTTPURLResponse) -> FeedLoader.Result {
+	internal static func map(_ data: Data, with response: HTTPURLResponse) -> FeedLoader.Result {
 		if let feedImages = try? JSONDecoder().decode(Root.self, from: data).feedImages, response.isOK_200 {
 			return .success(feedImages)
 		} else {
