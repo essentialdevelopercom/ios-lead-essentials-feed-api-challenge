@@ -32,44 +32,47 @@ public final class RemoteFeedLoader: FeedLoader {
 	}
 	
 	private func result(for data: Data, response: HTTPURLResponse) -> FeedLoader.Result {
-		guard response.statusCode == 200, let root = decode(data) else {
+		guard response.statusCode == 200, let feed = FeedDecoder.decode(data) else {
 			return .failure(Error.invalidData)
 		}
-		return .success(root.feed)
+		return .success(feed)
 	}
 	
-	private func decode(_ data: Data) -> Root? {
-		return try? JSONDecoder().decode(Root.self, from: data)
-	}
-	
-	private struct Root: Decodable {
-		let items: [Item]
-		
-		var feed: [FeedImage]  {
-			return items.map { $0.image }
-		}
-	}
-	
-	private struct Item: Decodable {
-		enum CodingKeys: String, CodingKey {
-			case id = "image_id"
-			case description = "image_desc"
-			case location = "image_loc"
-			case url = "image_url"
+	private class FeedDecoder {
+		private struct Root: Decodable {
+			let items: [Item]
+			
+			var feed: [FeedImage]  {
+				return items.map { $0.image }
+			}
 		}
 		
-		let id: UUID
-		let description: String?
-		let location: String?
-		let url: URL
+		private struct Item: Decodable {
+			enum CodingKeys: String, CodingKey {
+				case id = "image_id"
+				case description = "image_desc"
+				case location = "image_loc"
+				case url = "image_url"
+			}
+			
+			let id: UUID
+			let description: String?
+			let location: String?
+			let url: URL
+			
+			var image: FeedImage {
+				return FeedImage(
+					id: id,
+					description: description,
+					location: location,
+					url: url
+				)
+			}
+		}
 		
-		var image: FeedImage {
-			return FeedImage(
-				id: id,
-				description: description,
-				location: location,
-				url: url
-			)
+		internal static func decode(_ data: Data) -> [FeedImage]? {
+			guard let root = try? JSONDecoder().decode(Root.self, from: data) else { return nil }
+			return root.feed
 		}
 	}
 	
