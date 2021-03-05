@@ -32,7 +32,17 @@ public final class RemoteFeedLoader: FeedLoader {
 				let data = successResult.0
 				
 				do {
-					_ = try JSONDecoder().decode([FeedImage].self, from: data)
+					let topKey = "items"
+					let dict = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
+					guard dict?.keys.firstIndex(of: topKey) != nil,
+						  let items = dict?[topKey] else {
+						completion(.failure(Error.invalidData))
+						return
+					}
+					
+					let serializedData = try JSONSerialization.data(withJSONObject: items, options: .prettyPrinted)
+					let decoded = try JSONDecoder().decode([FeedImage].self, from: serializedData)
+					completion(.success(decoded))
 				} catch {
 					completion(.failure(Error.invalidData))
 				}
