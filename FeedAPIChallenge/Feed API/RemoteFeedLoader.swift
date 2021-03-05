@@ -26,31 +26,59 @@ public final class RemoteFeedLoader: FeedLoader {
 			switch result {
 			case .failure: completion(.failure(Error.connectivity))
 			case .success(let successResult):
+				
 				let response = successResult.1
-				
-				guard response.statusCode == 200 else {
-					completion(.failure(Error.invalidData))
-					return
-				}
-				
 				let data = successResult.0
 				
-				do {
-					let topKey = "items"
-					let dict = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
-					guard dict?.keys.firstIndex(of: topKey) != nil,
-						  let items = dict?[topKey] else {
-						completion(.failure(Error.invalidData))
-						return
-					}
-					
-					let serializedData = try JSONSerialization.data(withJSONObject: items, options: .prettyPrinted)
-					let decoded = try JSONDecoder().decode([FeedImage].self, from: serializedData)
-					completion(.success(decoded))
-				} catch {
-					completion(.failure(Error.invalidData))
-				}
+				let mapper = RemoteFeedMapper()
+				completion(mapper.map(response, data: data))
 			}
+		}
+	}
+}
+
+private struct RemoteFeedMapper {
+	private static let SuccessResponseCode = 200
+	
+	struct FeedRoot: Decodable {
+		let items: [FeedImageDTO]
+	}
+	
+	struct FeedImageDTO: Decodable {
+		enum Keys: String, CodingKey {
+			case id = "image_id"
+			case location = "image_loc"
+			case url = "image_url"
+			case description = "image_desc"
+		}
+		
+		public let id: UUID
+		public let description: String?
+		public let location: String?
+		public let url: URL
+		
+		public init(from decoder: Decoder) throws {
+			let container = try decoder.container(keyedBy: FeedImageDTO.Keys.self)
+			id = try container.decode(UUID.self, forKey: .id)
+			description = try container.decodeIfPresent(String.self, forKey: .description)
+			location = try container.decodeIfPresent(String.self, forKey: .location)
+			url = try container.decode(URL.self, forKey: .url)
+		}
+	}
+	
+	func map(_ response: HTTPURLResponse, data: Data) -> FeedLoader.Result {
+		guard response.statusCode == RemoteFeedMapper.SuccessResponseCode else {
+			return .failure(RemoteFeedLoader.Error.invalidData)
+		}
+		
+		do {
+			let decoded = try JSONDecoder().decode(FeedRoot.self, from: data)
+			return .success(decoded.items.map { FeedImage(id: $0.id,
+														  description: $0.description,
+														  location: $0.location,
+														  url: $0.url) })
+		} catch {
+			return .failure(RemoteFeedLoader.Error.invalidData)
 		}
 	}
 }
