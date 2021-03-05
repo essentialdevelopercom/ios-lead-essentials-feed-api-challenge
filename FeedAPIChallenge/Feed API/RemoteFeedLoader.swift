@@ -28,6 +28,14 @@ public final class RemoteFeedLoader: FeedLoader {
 					completion(.failure(Error.invalidData))
 					return
 				}
+				
+				let data = successResult.0
+				
+				do {
+					_ = try JSONDecoder().decode([FeedImage].self, from: data)
+				} catch {
+					completion(.failure(Error.invalidData))
+				}
 			}
 		}
 	}
