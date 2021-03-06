@@ -33,7 +33,7 @@ public final class RemoteFeedLoader: FeedLoader {
 
 private final class ResultMapper {
 	
-	static let CodeOK = 200
+	private static let CodeOK = 200
 	
 	private struct Root: Decodable {
 		let items: [Item]
