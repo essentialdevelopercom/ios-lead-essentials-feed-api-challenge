@@ -26,7 +26,7 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
 	}
 	
 	func test_loadTwice_requestsDataFromURLTwice() {
-		let url = anyURL()
+		let url = makeURL("https://a-given-url.com")
 		let (sut, client) = makeSUT(url: url)
 		
 		sut.load { _ in }
@@ -79,13 +79,13 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
 		
 		let item1 = makeItem(
 			id: UUID(),
-			imageURL: URL(string: "http://a-url.com")!)
+			imageURL: makeURL("http://a-url.com"))
 		
 		let item2 = makeItem(
 			id: UUID(),
 			description: "a description",
 			location: "a location",
-			imageURL: URL(string: "http://another-url.com")!)
+			imageURL: makeURL("http://another-url.com"))
 		
 		let items = [item1.model, item2.model]
 		
@@ -96,7 +96,7 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
 	}
 	
 	func test_load_doesNotDeliverResultAfterSUTInstanceHasBeenDeallocated() {
-		let url = URL(string: "http://any-url.com")!
+		let url = makeURL("http://any-url.com")
 		let client = HTTPClientSpy()
 		var sut: RemoteFeedLoader? = RemoteFeedLoader(url: url, client: client)
 		
@@ -137,8 +137,8 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
 		return try! JSONSerialization.data(withJSONObject: json)
 	}
 	
-	private func anyURL() -> URL {
-		return URL(string: "https://a-given-url.com")!
+	private func makeURL(_ string : String) -> URL {
+		return URL(string: string)!
 	}
 	
 	private func anyError() -> NSError {
