@@ -26,7 +26,7 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
 	}
 	
 	func test_loadTwice_requestsDataFromURLTwice() {
-		let url = anyURL()
+		let url = URL(string: "https://a-given-url.com")!
 		let (sut, client) = makeSUT(url: url)
 		
 		sut.load { _ in }
@@ -37,8 +37,9 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
 	
 	func test_load_deliversConnectivityErrorOnClientError() {
 		let (sut, client) = makeSUT()
-		let clientError = anyError()
+		
 		expect(sut, toCompleteWith: .failure(.connectivity), when: {
+			let clientError = NSError(domain: "Test", code: 0)
 			client.complete(with: clientError)
 		})
 	}
@@ -137,11 +138,4 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
 		return try! JSONSerialization.data(withJSONObject: json)
 	}
 	
-	private func anyURL() -> URL {
-		return URL(string: "https://a-given-url.com")!
-	}
-	
-	private func anyError() -> NSError {
-		return NSError(domain: "Test", code: 0)
-	}
 }
