@@ -10,28 +10,28 @@ import Foundation
 
 internal final class FeedImageItemsMapper {
 	
-	private struct Item : Decodable {
-		var image_id : UUID
-		var image_desc : String?
-		var image_loc : String?
-		var image_url : URL
+	private struct Item: Decodable {
+		var image_id: UUID
+		var image_desc: String?
+		var image_loc: String?
+		var image_url: URL
 		
-		var item : FeedImage {
+		var item: FeedImage {
 			return FeedImage(id: image_id, description: image_desc, location: image_loc, url: image_url)
 		}
 	}
 	
-	private struct Root : Decodable {
-		var items : [Item]
+	private struct Root: Decodable {
+		var items: [Item]
 		
-		var images : [FeedImage] {
+		var images: [FeedImage] {
 			items.map({ $0.item })
 		}
 	}
 	
-	private static var OK_200 : Int { return 200 }
-   
-	internal static func map(data : Data, from response : HTTPURLResponse) -> FeedLoader.Result {
+	private static var OK_200: Int { return 200 }
+	
+	internal static func map(data: Data, from response: HTTPURLResponse) -> FeedLoader.Result {
 		
 		guard response.statusCode == OK_200,
 			  let root = try? JSONDecoder().decode(Root.self, from: data) else {
