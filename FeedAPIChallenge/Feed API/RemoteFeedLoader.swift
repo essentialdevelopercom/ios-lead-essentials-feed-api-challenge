@@ -17,8 +17,16 @@ public final class RemoteFeedLoader: FeedLoader {
 		self.url = url
 		self.client = client
 	}
-	
-	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
 		
+	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
+		client.get(from: url) { [weak self] (result) in
+			guard self != nil else { return }
+			switch result {
+			case let .success((data, response)):
+				completion(FeedImageItemsMapper.map(data: data, from: response))
+			case .failure(_):
+				completion(.failure(Error.connectivity))
+			}
+		}
 	}
 }
