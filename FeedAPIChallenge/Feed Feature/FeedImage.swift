@@ -18,6 +18,6 @@ public struct FeedImage: Hashable, Decodable {
 	}
 }
 
-public struct Items: Hashable, Decodable {
+public struct Images: Hashable, Decodable {
 	public let items: [FeedImage]
 }
