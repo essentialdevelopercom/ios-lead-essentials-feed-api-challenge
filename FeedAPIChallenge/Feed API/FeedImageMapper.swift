@@ -11,10 +11,10 @@ import Foundation
 
 struct Root: Decodable {
 	
-	let images: [Image]
+	let items: [Image]
 	
 	var feed: [FeedImage] {
-		images.map { $0.image }
+		items.map { $0.image }
 	}
 }
 
