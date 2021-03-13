@@ -25,11 +25,12 @@ public final class RemoteFeedLoader: FeedLoader {
 				completion(.failure(Error.connectivity))
 				return
 			case .success((let data, let response)):
-				if let images = try? JSONDecoder().decode([FeedImage].self, from: data), (200..<300).contains(response.statusCode) {
-					completion(.success(images))
+				if let images = try? JSONDecoder().decode(Item.self, from: data), response.statusCode == 200 {
+					completion(.success(images.items))
 					return
 				} else {
 					completion(.failure(Error.invalidData))
+					return
 				}
 			}
 		}

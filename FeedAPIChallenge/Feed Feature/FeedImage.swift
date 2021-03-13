@@ -34,3 +34,15 @@ extension FeedImage: Decodable {
 		url = try container.decode(URL.self, forKey: .url)
 	}
 }
+
+struct Item: Decodable {
+	let items: [FeedImage]
+	enum ItemKeys: String, CodingKey {
+		case items
+	}
+	
+	init(from decoder: Decoder) throws {
+		let container = try decoder.container(keyedBy: ItemKeys.self)
+		items = try container.decode([FeedImage].self, forKey: .items)
+	}
+}
