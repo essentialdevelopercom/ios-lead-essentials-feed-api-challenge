@@ -34,7 +34,7 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
 //
 //		XCTAssertEqual(client.requestedURLs, [url, url])
 //	}
-//
+
 //	func test_load_deliversConnectivityErrorOnClientError() {
 //		let (sut, client) = makeSUT()
 //
@@ -113,7 +113,7 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
 //			client.complete(withStatusCode: 200, data: json)
 //		})
 //	}
-//
+
 //	func test_load_doesNotDeliverResultAfterSUTInstanceHasBeenDeallocated() {
 //		let url = URL(string: "http://any-url.com")!
 //		let client = HTTPClientSpy()
