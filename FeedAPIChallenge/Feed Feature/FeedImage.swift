@@ -20,17 +20,17 @@ public struct FeedImage: Hashable {
 // MARK: - Implement Decodable protocol
 extension FeedImage: Decodable {
 	enum FeedImageCodings: String, CodingKey {
-		case id
-		case description
-		case location
-		case url
+		case id = "image_id"
+		case description = "image_desc"
+		case location = "image_loc"
+		case url = "image_url"
 	}
 	// MARK: - Create a FeedImage object
 	public init(from decoder: Decoder) throws {
 		let container = try decoder.container(keyedBy: FeedImageCodings.self)
 		id = try container.decode(UUID.self, forKey: .id)
-		description = try container.decode(String.self, forKey: .description)
-		location = try container.decode(String.self, forKey: .location)
+		description = try? container.decode(String.self, forKey: .description)
+		location = try? container.decode(String.self, forKey: .location)
 		url = try container.decode(URL.self, forKey: .url)
 	}
 }
