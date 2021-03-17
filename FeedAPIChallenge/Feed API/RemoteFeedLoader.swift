@@ -28,17 +28,21 @@ public final class RemoteFeedLoader: FeedLoader {
 			case .success(let(data, response)):
 				
 				guard response.statusCode == 200,
-					  let images = images(from: data) else {
+					  let root = rootObject(from: data) else {
 					completion(.failure(Error.invalidData))
 					return
 				}
 				
-				completion(.success(images))
+				completion(.success(root.items))
 			}
 		}
 	}
 	
-	private func images(from data: Data) -> [FeedImage]? {
-		try? JSONDecoder().decode([FeedImage].self, from: data)
+	private func rootObject(from data: Data) -> Root? {
+		try? JSONDecoder().decode(Root.self, from: data)
+	}
+	
+	private struct Root: Decodable {
+		let items: [FeedImage]
 	}
 }
