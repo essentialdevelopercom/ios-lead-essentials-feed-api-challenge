@@ -33,7 +33,7 @@ public final class RemoteFeedLoader: FeedLoader {
 					return
 				}
 				
-				completion(.success(root.items))
+				completion(.success(root.images))
 			}
 		}
 	}
@@ -43,6 +43,25 @@ public final class RemoteFeedLoader: FeedLoader {
 	}
 	
 	private struct Root: Decodable {
-		let items: [FeedImage]
+		
+		private struct FeedItem: Decodable {
+			let id: UUID
+			let description: String?
+			let location: String?
+			let url: URL
+			
+			private enum CodingKeys: String, CodingKey {
+				case id = "image_id"
+				case description = "image_desc"
+				case location = "image_loc"
+				case url = "image_url"
+			}
+		}
+		
+		private let items: [FeedItem]
+		
+		var images: [FeedImage] {
+			items.map { FeedImage(id: $0.id, description: $0.description, location: $0.location, url: $0.url) }
+		}
 	}
 }
