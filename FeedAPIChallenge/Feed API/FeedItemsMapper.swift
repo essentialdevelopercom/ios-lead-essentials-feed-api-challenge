@@ -33,6 +33,8 @@ final class FeedItemsMapper {
 		}
 	}
 	
+	private init() {}
+	
 	private static func rootObject(from data: Data) -> Root? {
 		try? JSONDecoder().decode(Root.self, from: data)
 	}
