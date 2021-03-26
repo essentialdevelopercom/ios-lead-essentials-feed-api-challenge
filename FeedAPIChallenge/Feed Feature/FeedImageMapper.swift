@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct FeedImageMapper {
+internal struct FeedImageMapper {
 	struct Root: Codable {
 		
 		var items: [Item]
@@ -19,10 +19,10 @@ public struct FeedImageMapper {
 	}
 	
 	struct Item: Codable {
-		public var id: UUID
-		public var description: String?
-		public var location: String?
-		public var url: URL
+		var id: UUID
+		var description: String?
+		var location: String?
+		var url: URL
 		
 		var item: FeedImage {
 			FeedImage(id: id, description: description, location: location, url: url)
