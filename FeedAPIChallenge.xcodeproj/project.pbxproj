@@ -116,6 +116,7 @@
 		08BBFF7B2492A54B00141A91 /* Feed API */ = {
 			isa = PBXGroup;
 			children = (
+				49F3BD20260E79F6004222CC /* FeedImageDecoding.swift */,
 				08BBFF6F2492A4C700141A91 /* HTTPClient.swift */,
 				08BBFF6C2492A4C700141A91 /* RemoteFeedLoader.swift */,
 			);
@@ -127,7 +128,6 @@
 			children = (
 				08BBFF7D2492A5C100141A91 /* FeedLoader.swift */,
 				08BBFF7F2492A5C100141A91 /* FeedImage.swift */,
-				49F3BD20260E79F6004222CC /* FeedImageDecoding.swift */,
 			);
 			path = "Feed Feature";
 			sourceTree = "<group>";

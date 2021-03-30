@@ -10,16 +10,6 @@ import Foundation
 
 struct FeedImages: Decodable {
 	let items: [FeedImage]
-
-	private enum codingKeys: String, CodingKey {
-		case items
-	}
-	
-	public init(from decoder: Decoder) throws {
-		let container = try decoder.container(keyedBy: codingKeys.self)
-		
-		items = try container.decode([FeedImage].self, forKey: .items)
-	}
 }
 
 extension FeedImage: Decodable {
