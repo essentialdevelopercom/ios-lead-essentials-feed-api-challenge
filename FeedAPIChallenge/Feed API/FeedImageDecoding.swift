@@ -12,8 +12,8 @@ struct FeedImages: Decodable {
 	let items: [FeedImage]
 }
 
-extension FeedImage: Decodable {
-	private enum codingKeys: String, CodingKey {
+struct CodableFeedImage: Decodable {
+	private enum codingKeys: CodingKey {
 		case image_id
 		case image_desc
 		case image_loc
