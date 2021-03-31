@@ -8,24 +8,39 @@
 
 import Foundation
 
-struct FeedImages: Decodable {
-	let items: [FeedImage]
-}
-
-struct CodableFeedImage: Decodable {
-	private enum codingKeys: CodingKey {
-		case image_id
-		case image_desc
-		case image_loc
-		case image_url
+final internal class FeedImageMapper {
+	struct Root: Decodable {
+		let items: [Item]
+		
+		var feedItems: [FeedImage] {
+			items.map { $0.item }
+		}
 	}
 	
-	public init(from decoder: Decoder) throws {
-		let container = try decoder.container(keyedBy: codingKeys.self)
+	struct Item: Decodable {
+		let image_id: UUID
+		let image_desc: String?
+		let image_loc: String?
+		let image_url: URL
 		
-		id = try container.decode(UUID.self, forKey: .image_id)
-		description = try container.decodeIfPresent(String.self, forKey: .image_desc)
-		location = try container.decodeIfPresent(String.self, forKey: .image_loc)
-		url = try container.decode(URL.self, forKey: .image_url)
+		var item: FeedImage {
+			FeedImage(id: image_id, description: image_desc, location: image_loc, url: image_url)
+		}
+	}
+	
+	private static var OK_200: Int { 200 }
+
+	internal static func map(_ data: Data, _ response: HTTPURLResponse) throws -> [FeedImage] {
+		guard response.statusCode == OK_200 else { throw RemoteFeedLoader.Error.invalidData }
+		return try JSONDecoder().decode(Root.self, from: data).items.map { $0.item }
+	}
+	
+	internal static func map(_ data: Data, from response: HTTPURLResponse) -> RemoteFeedLoader.Result {
+		guard response.statusCode == OK_200,
+			  let root = try? JSONDecoder().decode(Root.self, from: data) else {
+			return .failure(RemoteFeedLoader.Error.invalidData)
+		}
+		
+		return .success(root.feedItems)
 	}
 }
