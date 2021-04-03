@@ -13,10 +13,12 @@ internal class FeedMapper {
 	
 	private struct Root: Decodable {
 		let items: [FeedImageItem]
+		var images: [FeedImage] {
+			return items.map { $0.image }
+		}
 	}
 
 	private struct FeedImageItem: Decodable {
-		
 		var image: FeedImage {
 			return FeedImage(id: id, description: description, location: location, url: url)
 		}
@@ -38,7 +40,7 @@ internal class FeedMapper {
 	
 	static func map(_ data: Data, response: HTTPURLResponse) ->  FeedLoader.Result{
 		if let root = try? JSONDecoder().decode(Root.self, from: data), response.statusCode == OK_200 {
-			return .success(root.items.map({ $0.image }))
+			return .success(root.images)
 		} else {
 			return .failure(RemoteFeedLoader.Error.invalidData)
 		}
