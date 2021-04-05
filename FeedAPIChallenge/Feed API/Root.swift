@@ -30,9 +30,9 @@ struct Root: Codable {
 	}
 	
 	static func feedImagesFromData(from data: Data, stausCode: Int)-> FeedLoader.Result {
-		guard stausCode == 200, let root =  try? JSONDecoder().decode(Root.self, from: data) else {
+		guard stausCode == 200, let root = try? JSONDecoder().decode(Root.self, from: data) else {
 			return .failure(RemoteFeedLoader.Error.invalidData)
 		}
-		return .success(root.items.map{ $0.item })
+		return .success(root.items.map(\.item))
 	}
 }
