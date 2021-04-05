@@ -24,7 +24,7 @@ public final class RemoteFeedLoader: FeedLoader {
 			case .success(_):
 				completion(.success([]))
 			case .failure(_):
-				completion(.failure(NSError(domain: "Any error", code: 0))
+				completion(.failure(Error.connectivity)
 				)
 			}
 		}
