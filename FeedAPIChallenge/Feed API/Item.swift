@@ -17,12 +17,12 @@ public struct Root: Decodable {
 
 //internal representation of FeedItem but for the API module
 public struct Item: Decodable {
-	let id: String
-	let description: String?
-	let location: String?
-	let image: URL
+	let imageId: String
+	let imageDesc: String?
+	let imageLoc: String?
+	let imageUrl: URL
 	
 	var item: FeedImage {
-		return FeedImage(id: UUID(uuidString: id)!, description: description, location: location, url: image)
+		return FeedImage(id: UUID(uuidString: imageId)!, description: imageDesc, location: imageLoc, url: imageUrl)
 	}
 }
