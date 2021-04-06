@@ -37,7 +37,6 @@ private struct FeedImageMapper {
 	
 	internal struct Root: Codable {
 		var items: [Item]
-		
 	}
 	
 	internal struct Item: Codable {
