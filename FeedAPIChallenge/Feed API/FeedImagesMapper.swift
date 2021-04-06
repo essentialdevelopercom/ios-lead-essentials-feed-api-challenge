@@ -29,12 +29,16 @@ internal final class FeedImagesMapper {
 		}
 	}
 	
+	// MARK: - Helpers
+	
+	private static var OK_200: Int {return 200}
+	
 	internal static func map(_ data: Data, from response: HTTPURLResponse) -> RemoteFeedLoader.Result {
 		
 		let decoder = JSONDecoder()
 		decoder.keyDecodingStrategy = .convertFromSnakeCase
 		
-		guard response.statusCode == 200, let root = try? decoder.decode(Root.self, from: data) else {
+		guard response.statusCode == OK_200, let root = try? decoder.decode(Root.self, from: data) else {
 			return .failure(RemoteFeedLoader.Error.invalidData)
 		}
 		return (.success(root.feed))
