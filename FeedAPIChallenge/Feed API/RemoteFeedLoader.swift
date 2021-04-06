@@ -23,12 +23,32 @@ public final class RemoteFeedLoader: FeedLoader {
 			switch result {
 			case .failure:
 				completion(.failure(Error.connectivity))
-			case let .success((_, response)):
-				guard response.statusCode == 200 else {
+			case let .success((data, response)):
+				guard response.statusCode == 200, let _ = try? JSONDecoder().decode(FeedImageMapper.Root.self, from: data) else {
 					completion(.failure(Error.invalidData))
 					return
 				}
 			}
 		}
+	}
+}
+
+private struct FeedImageMapper {
+	
+	internal struct Root: Codable {
+		var items: [Item]
+		
+	}
+	
+	internal struct Item: Codable {
+		internal let id: UUID
+		internal let description: String
+		internal let location: String
+		internal let url: URL
+		
+		internal var item: FeedImage {
+			FeedImage(id: id, description: description, location: location, url: url)
+		}
+		
 	}
 }
