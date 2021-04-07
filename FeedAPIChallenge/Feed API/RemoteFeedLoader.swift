@@ -23,7 +23,7 @@ public final class RemoteFeedLoader: FeedLoader {
 		client.get(from: url) { [weak self] (result) in
 			guard self != nil else { return }
 			switch result {
-			case let .success(( data, response)):
+			case let .success((data, response)):
 				completion(Root.feedImagesFromData(from: data, statusCode: response.statusCode))
 			case .failure:
 				completion(.failure(Error.connectivity))
