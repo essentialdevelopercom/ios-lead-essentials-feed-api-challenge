@@ -13,7 +13,7 @@ internal struct FeedImageMapper {
 	private struct Root: Codable {
 		internal var items: [Item]
 		internal var images: [FeedImage] {
-			return items.compactMap({ $0.item })
+			return items.map(\.item)
 		}
 	}
 	
