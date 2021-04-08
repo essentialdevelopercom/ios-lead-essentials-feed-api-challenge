@@ -33,3 +33,22 @@ public final class RemoteFeedLoader: FeedLoader {
 		}
 	}
 }
+
+private struct ImageItems: Decodable {
+	private let items: [ImageItem]
+
+	private var images: [FeedImage] {
+		return items.map { $0.imageItem }
+	}
+
+	private struct ImageItem: Decodable {
+		let id: UUID
+		let description: String?
+		let location: String?
+		let image: URL
+
+		var imageItem: FeedImage {
+			return FeedImage(id: id, description: description, location: location, url: image)
+		}
+	}
+}
