@@ -66,15 +66,11 @@ private final class FeedLoaderResponseHandler {
 	private static let OK_200 = 200
 
 	internal static func map(data: Data, response: HTTPURLResponse) -> FeedLoader.Result {
-		guard response.statusCode == OK_200 else {
+		guard response.statusCode == OK_200,
+		      let root = try? JSONDecoder().decode(Root.self, from: data) else {
 			return .failure(RemoteFeedLoader.Error.invalidData)
 		}
 
-		do {
-			let root = try JSONDecoder().decode(Root.self, from: data)
-			return .success(root.feed)
-		} catch {
-			return .failure(RemoteFeedLoader.Error.invalidData)
-		}
+		return .success(root.feed)
 	}
 }
