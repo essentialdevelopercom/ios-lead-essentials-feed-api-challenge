@@ -23,17 +23,7 @@ public final class RemoteFeedLoader: FeedLoader {
 			guard self != nil else { return }
 			switch result {
 			case .success((let data, let response)):
-				guard response.statusCode == 200 else {
-					completion(.failure(Error.invalidData))
-					return
-				}
-
-				do {
-					let root = try JSONDecoder().decode(Root.self, from: data)
-					completion(.success(root.feed))
-				} catch {
-					completion(.failure(Error.invalidData))
-				}
+				completion(FeedLoaderResponseHandler.map(data: data, response: response))
 			case .failure(_):
 				completion(.failure(Error.connectivity))
 			}
@@ -41,33 +31,50 @@ public final class RemoteFeedLoader: FeedLoader {
 	}
 }
 
-private struct Root: Decodable {
-	let items: [FeedImageAPIModel]
+private final class FeedLoaderResponseHandler {
+	private struct Root: Decodable {
+		private let items: [FeedImageAPIModel]
 
-	var feed: [FeedImage] {
-		items.map { $0.feedImage }
-	}
-}
-
-private struct FeedImageAPIModel: Decodable {
-	let id: UUID
-	let description: String?
-	let location: String?
-	let url: URL
-
-	enum CodingKeys: String, CodingKey {
-		case id = "image_id"
-		case description = "image_desc"
-		case location = "image_loc"
-		case url = "image_url"
+		var feed: [FeedImage] {
+			items.map { $0.feedImage }
+		}
 	}
 
-	var feedImage: FeedImage {
-		return FeedImage(
-			id: id,
-			description: description,
-			location: location,
-			url: url
-		)
+	private struct FeedImageAPIModel: Decodable {
+		let id: UUID
+		let description: String?
+		let location: String?
+		let url: URL
+
+		enum CodingKeys: String, CodingKey {
+			case id = "image_id"
+			case description = "image_desc"
+			case location = "image_loc"
+			case url = "image_url"
+		}
+
+		var feedImage: FeedImage {
+			return FeedImage(
+				id: id,
+				description: description,
+				location: location,
+				url: url
+			)
+		}
+	}
+
+	private static let OK_200 = 200
+
+	internal static func map(data: Data, response: HTTPURLResponse) -> FeedLoader.Result {
+		guard response.statusCode == OK_200 else {
+			return .failure(RemoteFeedLoader.Error.invalidData)
+		}
+
+		do {
+			let root = try JSONDecoder().decode(Root.self, from: data)
+			return .success(root.feed)
+		} catch {
+			return .failure(RemoteFeedLoader.Error.invalidData)
+		}
 	}
 }
