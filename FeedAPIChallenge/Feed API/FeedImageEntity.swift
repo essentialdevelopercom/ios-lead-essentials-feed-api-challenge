@@ -6,11 +6,13 @@
 //  Copyright © 2021 Essential Developer Ltd. All rights reserved.
 //
 
+import Foundation
+
 struct FeedImageEntity: Decodable {
-	let id: String
+	let id: UUID
 	let description: String?
 	let location: String?
-	let imageUrl: String
+	let imageUrl: URL
 }
 
 extension FeedImageEntity {

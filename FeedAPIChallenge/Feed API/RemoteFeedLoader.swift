@@ -23,8 +23,8 @@ public final class RemoteFeedLoader: FeedLoader {
 			switch result {
 			case let .success((data, response)) where response.statusCode == 200:
 				do {
-					_ = try JSONDecoder().decode(Root.self, from: data)
-					completion(.success([]))
+					let root: Root = try JSONDecoder().decode(Root.self, from: data)
+					completion(.success(FeedImageModelMapper.map(from: root.images)))
 				} catch {
 					completion(.failure(Error.invalidData))
 				}
@@ -36,6 +36,21 @@ public final class RemoteFeedLoader: FeedLoader {
 				completion(.failure(Error.connectivity))
 			}
 		}
+	}
+}
+
+private enum FeedImageModelMapper {
+	static func map(from entities: [FeedImageEntity]) -> [FeedImage] {
+		return entities.map(map(from:))
+	}
+
+	static func map(from entity: FeedImageEntity) -> FeedImage {
+		return .init(
+			id: entity.id,
+			description: entity.description,
+			location: entity.location,
+			url: entity.imageUrl
+		)
 	}
 }
 
