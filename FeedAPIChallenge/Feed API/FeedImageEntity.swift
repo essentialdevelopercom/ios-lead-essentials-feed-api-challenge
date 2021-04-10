@@ -12,7 +12,7 @@ struct FeedImageEntity: Decodable {
 	let id: UUID
 	let description: String?
 	let location: String?
-	let imageUrl: URL
+	let url: URL
 }
 
 extension FeedImageEntity {
@@ -20,6 +20,6 @@ extension FeedImageEntity {
 		case id = "image_id"
 		case description = "image_desc"
 		case location = "image_loc"
-		case imageUrl = "image_url"
+		case url = "image_url"
 	}
 }

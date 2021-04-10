@@ -55,7 +55,7 @@ private enum FeedImageModelMapper {
 			id: entity.id,
 			description: entity.description,
 			location: entity.location,
-			url: entity.imageUrl
+			url: entity.url
 		)
 	}
 }
