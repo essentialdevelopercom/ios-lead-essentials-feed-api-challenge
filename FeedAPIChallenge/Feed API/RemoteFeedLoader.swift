@@ -22,13 +22,15 @@ public final class RemoteFeedLoader: FeedLoader {
 		client.get(from: url) { result in
 
 			switch result {
-			case let .success((_, response)):
-				if response.statusCode != 200 {
-					completion(.failure(Error.invalidData))
-				} else {
-					let error = NSError(domain: "Temporary Error", code: 0)
-					completion(.failure(error))
+			case let .success((data, response)):
+
+				guard response.statusCode == 200, let _ = try? JSONDecoder().decode(Root.self, from: data) else {
+					return completion(.failure(Error.invalidData))
 				}
+
+				let error = NSError(domain: "Temporary Error", code: 0)
+				completion(.failure(error))
+
 			case .failure(_):
 				completion(.failure(Error.connectivity))
 			}
