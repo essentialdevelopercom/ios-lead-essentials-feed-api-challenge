@@ -1,5 +1,5 @@
 //
-//  FeedImageEntity.swift
+//  FeedImageMapper.swift
 //  FeedAPIChallenge
 //
 //  Created by Andreas Link on 10.04.21.
