@@ -19,6 +19,9 @@ public final class RemoteFeedLoader: FeedLoader {
 	}
 
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
-		fatalError("Must be implemented")
+		client.get(from: url) { _ in
+			let error = NSError(domain: "Temporary Error", code: 0)
+			completion(.failure(error))
+		}
 	}
 }
