@@ -20,16 +20,11 @@ public final class RemoteFeedLoader: FeedLoader {
 
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
 		client.get(from: url) { [weak self] result in
-			guard self != nil else { return }
+			guard let self = self else { return }
 
 			switch result {
 			case let .success((data, response)) where response.statusCode == 200:
-				do {
-					let root: Root = try JSONDecoder().decode(Root.self, from: data)
-					completion(.success(FeedImageModelMapper.map(from: root.images)))
-				} catch {
-					completion(.failure(Error.invalidData))
-				}
+				completion(self.handleSuccessfulResponseWithStatusCode200(data: data))
 
 			case .success:
 				completion(.failure(Error.invalidData))
@@ -37,6 +32,15 @@ public final class RemoteFeedLoader: FeedLoader {
 			case .failure:
 				completion(.failure(Error.connectivity))
 			}
+		}
+	}
+
+	private func handleSuccessfulResponseWithStatusCode200(data: Data) -> FeedLoader.Result {
+		do {
+			let root: Root = try JSONDecoder().decode(Root.self, from: data)
+			return .success(FeedImageModelMapper.map(from: root.images))
+		} catch {
+			return .failure(Error.invalidData)
 		}
 	}
 }
