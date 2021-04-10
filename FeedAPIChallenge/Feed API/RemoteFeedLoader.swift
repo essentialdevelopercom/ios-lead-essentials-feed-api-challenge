@@ -42,14 +42,14 @@ public final class RemoteFeedLoader: FeedLoader {
 	private func handleSuccessfulResponseWithStatusCode200(data: Data) -> FeedLoader.Result {
 		do {
 			let root: Root = try JSONDecoder().decode(Root.self, from: data)
-			return .success(FeedImageModelMapper.map(from: root.items))
+			return .success(FeedImageMapper.map(from: root.items))
 		} catch {
 			return .failure(Error.invalidData)
 		}
 	}
 }
 
-private enum FeedImageModelMapper {
+private enum FeedImageMapper {
 	static func map(from entities: [FeedImageEntity]) -> [FeedImage] {
 		return entities.map(map(from:))
 	}
