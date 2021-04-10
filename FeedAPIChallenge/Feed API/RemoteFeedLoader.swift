@@ -8,6 +8,10 @@ public final class RemoteFeedLoader: FeedLoader {
 	private let url: URL
 	private let client: HTTPClient
 
+	private enum Constants {
+		static let OK_200: UInt = 200
+	}
+
 	public enum Error: Swift.Error {
 		case connectivity
 		case invalidData
@@ -23,7 +27,7 @@ public final class RemoteFeedLoader: FeedLoader {
 			guard let self = self else { return }
 
 			switch result {
-			case let .success((data, response)) where response.statusCode == 200:
+			case let .success((data, response)) where response.statusCode == Constants.OK_200:
 				completion(self.handleSuccessfulResponseWithStatusCode200(data: data))
 
 			case .success:
