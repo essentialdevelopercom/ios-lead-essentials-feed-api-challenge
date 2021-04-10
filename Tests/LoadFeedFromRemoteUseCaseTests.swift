@@ -83,16 +83,15 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
 		})
 	}
 
-//	func test_load_deliversSuccessWithNoItemsOn200HTTPResponseWithEmptyJSONList() {
-//		let (sut, client) = makeSUT()
-//
-//		expect(sut, toCompleteWith: .success([]), when: {
-//			let emptyListJSON = makeItemsJSON([])
-//			client.complete(withStatusCode: 200, data: emptyListJSON)
-//		})
-//	}
-//
-//
+	func test_load_deliversSuccessWithNoItemsOn200HTTPResponseWithEmptyJSONList() {
+		let (sut, client) = makeSUT()
+
+		expect(sut, toCompleteWith: .success([]), when: {
+			let emptyListJSON = makeItemsJSON([])
+			client.complete(withStatusCode: 200, data: emptyListJSON)
+		})
+	}
+
 //	func test_load_deliversSuccessWithItemsOn200HTTPResponseWithJSONItems() {
 //		let (sut, client) = makeSUT()
 //
@@ -113,6 +112,7 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
 //			client.complete(withStatusCode: 200, data: json)
 //		})
 //	}
+//
 //
 //	func test_load_doesNotDeliverResultAfterSUTInstanceHasBeenDeallocated() {
 //		let url = URL(string: "http://any-url.com")!

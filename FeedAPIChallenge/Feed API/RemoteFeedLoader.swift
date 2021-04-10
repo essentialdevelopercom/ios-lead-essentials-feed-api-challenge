@@ -27,10 +27,7 @@ public final class RemoteFeedLoader: FeedLoader {
 				guard response.statusCode == 200, let _ = try? JSONDecoder().decode(Root.self, from: data) else {
 					return completion(.failure(Error.invalidData))
 				}
-
-				let error = NSError(domain: "Temporary Error", code: 0)
-				completion(.failure(error))
-
+				completion(.success([]))
 			case .failure(_):
 				completion(.failure(Error.connectivity))
 			}
