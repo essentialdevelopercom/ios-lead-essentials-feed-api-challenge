@@ -19,9 +19,15 @@ public final class RemoteFeedLoader: FeedLoader {
 	}
 
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
-		client.get(from: url) { _ in
-			let error = NSError(domain: "Temporary Error", code: 0)
-			completion(.failure(error))
+		client.get(from: url) { result in
+
+			switch result {
+			case .success(_):
+				let error = NSError(domain: "Temporary Error", code: 0)
+				completion(.failure(error))
+			case .failure(_):
+				completion(.failure(Error.connectivity))
+			}
 		}
 	}
 }
