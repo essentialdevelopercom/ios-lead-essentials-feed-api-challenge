@@ -42,7 +42,7 @@ public final class RemoteFeedLoader: FeedLoader {
 	private func handleSuccessfulResponseWithStatusCode200(data: Data) -> FeedLoader.Result {
 		do {
 			let root: Root = try JSONDecoder().decode(Root.self, from: data)
-			return .success(FeedImageModelMapper.map(from: root.images))
+			return .success(FeedImageModelMapper.map(from: root.items))
 		} catch {
 			return .failure(Error.invalidData)
 		}
@@ -64,12 +64,6 @@ private enum FeedImageModelMapper {
 	}
 }
 
-private struct Root {
-	let images: [FeedImageEntity]
-}
-
-extension Root: Decodable {
-	enum CodingKeys: String, CodingKey {
-		case images = "items"
-	}
+private struct Root: Decodable {
+	let items: [FeedImageEntity]
 }
