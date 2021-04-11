@@ -10,10 +10,10 @@ import Foundation
 
 internal final class FeedImagesMapper {
 	private struct Root: Decodable {
-		let images: [Image]
+		let items: [Image]
 		
 		var feedImages: [FeedImage] {
-			return images.map { $0.images }
+			return items.map { $0.images }
 		}
 	}
 	
@@ -35,6 +35,6 @@ internal final class FeedImagesMapper {
 			return .failure(RemoteFeedLoader.Error.invalidData)
 		}
 		
-		return .success(root.feedImages)
+		return .success([])
 	}
 }
