@@ -29,6 +29,6 @@ internal final class FeedImagesMapper {
 		guard response.statusCode == OK_200, let root = try? decoder.decode(Root.self, from: data) else {
 			return .failure(RemoteFeedLoader.Error.invalidData)
 		}
-		return (.success(root.feed))
+		return .success(root.feed)
 	}
 }
