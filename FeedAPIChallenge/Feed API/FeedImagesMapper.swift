@@ -26,6 +26,13 @@ internal final class FeedImagesMapper {
 		var images: FeedImage {
 			return FeedImage(id: id, description: description, location: location, url: url)
 		}
+		
+		enum CodingKeys: String, CodingKey {
+			case id = "image_id"
+			case description = "image_desc"
+			case location = "image_loc"
+			case url = "image_url"
+		}
 	}
 	
 	internal static func map(_ data: Data,
@@ -35,6 +42,6 @@ internal final class FeedImagesMapper {
 			return .failure(RemoteFeedLoader.Error.invalidData)
 		}
 		
-		return .success([])
+		return .success(root.feedImages)
 	}
 }
