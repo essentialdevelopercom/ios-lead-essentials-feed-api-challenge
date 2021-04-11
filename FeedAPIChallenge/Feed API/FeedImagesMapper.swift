@@ -1,10 +1,3 @@
-//
-//  FeedImagesMapper.swift
-//  FeedAPIChallenge
-//
-//  Created by Romeo Flauta on 4/10/21.
-//  Copyright © 2021 Essential Developer Ltd. All rights reserved.
-//
 
 import Foundation
 
