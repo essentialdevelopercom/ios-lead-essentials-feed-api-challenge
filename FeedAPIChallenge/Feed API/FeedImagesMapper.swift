@@ -16,7 +16,6 @@ internal final class FeedImagesMapper {
 		}
 	}
 
-	//internal representation of FeedImage but for the API module
 	private struct Item: Decodable {
 		let imageId: String
 		let imageDesc: String?
@@ -27,8 +26,6 @@ internal final class FeedImagesMapper {
 			return FeedImage(id: UUID(uuidString: imageId)!, description: imageDesc, location: imageLoc, url: imageUrl)
 		}
 	}
-
-	// MARK: - Helpers
 
 	private static var OK_200: Int { return 200 }
 
