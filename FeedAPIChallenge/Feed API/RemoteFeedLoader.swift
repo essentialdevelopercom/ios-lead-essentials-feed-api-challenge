@@ -27,41 +27,13 @@ public final class RemoteFeedLoader: FeedLoader {
 			case .failure:
 				completion(.failure(Error.connectivity))
 			case let .success((data, response)):
-				guard response.statusCode == 200, let root = try? JSONDecoder().decode(FeedImageMapper.Root.self, from: data) else {
-					completion(.failure(Error.invalidData))
-					return
+				do {
+					let images = try FeedImageMapper.map(data, response: response)
+					completion(.success(images))
+				} catch {
+					completion(.failure(error))
 				}
-				completion(.success(root.feed))
 			}
-		}
-	}
-}
-
-private struct FeedImageMapper {
-	
-	internal struct Root: Codable {
-		var items: [Item]
-		
-		var feed: [FeedImage] {
-			items.map { $0.item }
-		}
-	}
-	
-	internal struct Item: Codable {
-		internal let id: UUID
-		internal let description: String?
-		internal let location: String?
-		internal let url: URL
-		
-		internal var item: FeedImage {
-			FeedImage(id: id, description: description, location: location, url: url)
-		}
-		
-		private enum CodingKeys: String, CodingKey {
-			case id = "image_id"
-			case description = "image_desc"
-			case location = "image_loc"
-			case url = "image_url"
 		}
 	}
 }
