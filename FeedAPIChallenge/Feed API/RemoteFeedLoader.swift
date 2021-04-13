@@ -24,8 +24,8 @@ public final class RemoteFeedLoader: FeedLoader {
 			switch response {
 			case .failure:
 				completion(.failure(Error.connectivity))
-			default:
-				break
+			case let .success(result):
+				completion(FeedImageMapper.map(result.0, from: result.1))
 			}
 		}
 	}
