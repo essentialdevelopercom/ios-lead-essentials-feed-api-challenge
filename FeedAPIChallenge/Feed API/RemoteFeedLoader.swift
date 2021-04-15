@@ -20,7 +20,8 @@ public final class RemoteFeedLoader: FeedLoader {
 
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
 		client.get(from: url) { [weak self] result in
-			completion(self?.map(result) ?? .failure(Error.invalidData))
+			guard let self = self else { return }
+			completion(self.map(result))
 		}
 	}
 
