@@ -25,9 +25,15 @@ public final class RemoteFeedLoader: FeedLoader {
 		}
 	}
 
+	private static let successCode = 200
+
 	private func map(_ result: HTTPClient.Result) -> FeedLoader.Result {
-		if let _ = try? result.get() {
-			return .failure(Error.invalidData)
+		if let response = try? result.get() {
+			if response.1.statusCode == RemoteFeedLoader.successCode {
+				return .failure(Error.connectivity)
+			} else {
+				return .failure(Error.invalidData)
+			}
 		} else {
 			return .failure(Error.connectivity)
 		}
