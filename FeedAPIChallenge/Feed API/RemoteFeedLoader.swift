@@ -40,7 +40,6 @@ public final class RemoteFeedLoader: FeedLoader {
 }
 
 private final class FeedItemsMapper {
-	
 	private struct Root: Decodable {
 		let items: [FeedItem]
 	}
