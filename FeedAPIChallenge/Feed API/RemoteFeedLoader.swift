@@ -39,14 +39,15 @@ public final class RemoteFeedLoader: FeedLoader {
 	private static let successCode = 200
 
 	private func map(_ result: HTTPClient.Result) -> FeedLoader.Result {
-		if let response = try? result.get() {
+		switch result {
+		case .success(let response):
 			if response.1.statusCode == RemoteFeedLoader.successCode,
 			   let root = try? JSONDecoder().decode(Root.self, from: response.0) {
 				return .success(map(root.items))
 			} else {
 				return .failure(Error.invalidData)
 			}
-		} else {
+		case .failure:
 			return .failure(Error.connectivity)
 		}
 	}
