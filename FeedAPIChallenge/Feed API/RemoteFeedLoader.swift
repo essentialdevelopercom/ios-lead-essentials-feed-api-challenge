@@ -41,13 +41,19 @@ public final class RemoteFeedLoader: FeedLoader {
 	private func map(_ result: HTTPClient.Result) -> FeedLoader.Result {
 		if let response = try? result.get() {
 			if response.1.statusCode == RemoteFeedLoader.successCode,
-			   let _ = try? JSONDecoder().decode(Root.self, from: response.0) {
-				return .failure(Error.connectivity)
+			   let root = try? JSONDecoder().decode(Root.self, from: response.0) {
+				return .success(map(root.items))
 			} else {
 				return .failure(Error.invalidData)
 			}
 		} else {
 			return .failure(Error.connectivity)
+		}
+	}
+
+	private func map(_ items: [RemoteFeedLoader.FeedItem]) -> [FeedImage] {
+		return items.map { item -> FeedImage in
+			return FeedImage(id: item.image_id, description: item.image_desc, location: item.image_loc, url: item.image_url)
 		}
 	}
 }
