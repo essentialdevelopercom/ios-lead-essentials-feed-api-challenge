@@ -24,12 +24,13 @@ public final class RemoteFeedLoader: FeedLoader {
 			completion(self.map(result))
 		}
 	}
-
+	
 	private static let successCode = 200
 
 	private func map(_ result: HTTPClient.Result) -> FeedLoader.Result {
 		if let response = try? result.get() {
-			if response.1.statusCode == RemoteFeedLoader.successCode {
+			if response.1.statusCode == RemoteFeedLoader.successCode,
+			   let _ = try? JSONSerialization.jsonObject(with: response.0) {
 				return .failure(Error.connectivity)
 			} else {
 				return .failure(Error.invalidData)
