@@ -29,7 +29,7 @@ public final class RemoteFeedLoader: FeedLoader {
 		switch result {
 		case .success(let result):
 			if let items = try? FeedItemsMapper.map(result) {
-				return .success(FeedItemsMapper.map(items))
+				return .success(items)
 			} else {
 				return .failure(Error.invalidData)
 			}
@@ -40,29 +40,29 @@ public final class RemoteFeedLoader: FeedLoader {
 }
 
 private final class FeedItemsMapper {
-	struct Root: Decodable {
+	
+	private struct Root: Decodable {
 		let items: [FeedItem]
 	}
 
-	struct FeedItem: Decodable {
+	private struct FeedItem: Decodable {
 		let image_id: UUID
 		let image_desc: String?
 		let image_loc: String?
 		let image_url: URL
+
+		var feedImage: FeedImage {
+			return FeedImage(id: image_id, description: image_desc, location: image_loc, url: image_url)
+		}
 	}
 
 	static let successCode = 200
 
-	static func map(_ result: (data: Data, response: HTTPURLResponse)) throws -> [FeedItem] {
+	static func map(_ result: (data: Data, response: HTTPURLResponse)) throws -> [FeedImage] {
 		guard result.response.statusCode == successCode else {
 			throw RemoteFeedLoader.Error.invalidData
 		}
-		return try JSONDecoder().decode(Root.self, from: result.data).items
-	}
-
-	static func map(_ items: [FeedItem]) -> [FeedImage] {
-		return items.map { item -> FeedImage in
-			return FeedImage(id: item.image_id, description: item.image_desc, location: item.image_loc, url: item.image_url)
-		}
+		let root = try JSONDecoder().decode(Root.self, from: result.data)
+		return root.items.map { $0.feedImage }
 	}
 }
