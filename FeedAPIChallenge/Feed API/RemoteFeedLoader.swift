@@ -40,16 +40,22 @@ public final class RemoteFeedLoader: FeedLoader {
 
 	private func map(_ result: HTTPClient.Result) -> FeedLoader.Result {
 		switch result {
-		case .success(let response):
-			if response.1.statusCode == RemoteFeedLoader.successCode,
-			   let root = try? JSONDecoder().decode(Root.self, from: response.0) {
-				return .success(map(root.items))
+		case .success(let result):
+			if let items = try? map(result) {
+				return .success(map(items))
 			} else {
 				return .failure(Error.invalidData)
 			}
 		case .failure:
 			return .failure(Error.connectivity)
 		}
+	}
+
+	private func map(_ result: (data: Data, response: HTTPURLResponse)) throws -> [FeedItem] {
+		guard result.response.statusCode == RemoteFeedLoader.successCode else {
+			throw RemoteFeedLoader.Error.invalidData
+		}
+		return try JSONDecoder().decode(Root.self, from: result.data).items
 	}
 
 	private func map(_ items: [RemoteFeedLoader.FeedItem]) -> [FeedImage] {
