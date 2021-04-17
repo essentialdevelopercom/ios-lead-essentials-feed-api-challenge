@@ -26,11 +26,11 @@ public final class RemoteFeedLoader: FeedLoader {
 					completion(.failure(Error.invalidData))
 					return
 				}
-				guard let _ = try? JSONDecoder().decode(FeedImageMapper.Root.self, from: data) else {
+				guard let root = try? JSONDecoder().decode(FeedImageMapper.Root.self, from: data) else {
 					completion(.failure(Error.invalidData))
 					return
 				}
-				completion(.success([]))
+				completion(.success(root.feedImages))
 			case .failure:
 				completion(.failure(Error.connectivity))
 			}
@@ -55,6 +55,13 @@ internal class FeedImageMapper {
 
 		var feedImage: FeedImage {
 			return FeedImage(id: imageId, description: imageDesc, location: imageLocation, url: imageURL)
+		}
+
+		enum CodingKeys: String, CodingKey {
+			case imageId = "image_id"
+			case imageDesc = "image_desc"
+			case imageLocation = "image_loc"
+			case imageURL = "image_url"
 		}
 	}
 }
