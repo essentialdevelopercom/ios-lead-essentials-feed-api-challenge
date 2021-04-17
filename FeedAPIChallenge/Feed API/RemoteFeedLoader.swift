@@ -57,9 +57,11 @@ internal class FeedImageMapper {
 			case imageURL = "image_url"
 		}
 	}
+	
+	private static var OK_200: Int { return 200 }
 
 	static func map(_ data: Data, from response: HTTPURLResponse) -> FeedLoader.Result {
-		guard response.statusCode == 200 else {
+		guard response.statusCode == OK_200 else {
 			return .failure(RemoteFeedLoader.Error.invalidData)
 		}
 		guard let root = try? JSONDecoder().decode(FeedImageMapper.Root.self, from: data) else {
