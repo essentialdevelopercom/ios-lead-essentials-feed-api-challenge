@@ -34,11 +34,11 @@ public final class RemoteFeedLoader: FeedLoader {
 	}
 }
 
-struct Root: Decodable {
+private struct Root: Decodable {
 	let items: [Item]
 }
 
-struct Item: Decodable {
+private struct Item: Decodable {
 	let image_id: String
 	let image_desc: String?
 	let image_loc: String?
