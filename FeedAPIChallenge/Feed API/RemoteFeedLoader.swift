@@ -23,15 +23,7 @@ public final class RemoteFeedLoader: FeedLoader {
 			guard self != nil else { return }
 			switch result {
 			case .success((let data, let response)):
-				guard response.statusCode == 200 else {
-					completion(.failure(Error.invalidData))
-					return
-				}
-				guard let root = try? JSONDecoder().decode(FeedImageMapper.Root.self, from: data) else {
-					completion(.failure(Error.invalidData))
-					return
-				}
-				completion(.success(root.feedImages))
+				completion(FeedImageMapper.map(data, from: response))
 			case .failure:
 				completion(.failure(Error.connectivity))
 			}
@@ -64,5 +56,15 @@ internal class FeedImageMapper {
 			case imageLocation = "image_loc"
 			case imageURL = "image_url"
 		}
+	}
+
+	static func map(_ data: Data, from response: HTTPURLResponse) -> FeedLoader.Result {
+		guard response.statusCode == 200 else {
+			return .failure(RemoteFeedLoader.Error.invalidData)
+		}
+		guard let root = try? JSONDecoder().decode(FeedImageMapper.Root.self, from: data) else {
+			return (.failure(RemoteFeedLoader.Error.invalidData))
+		}
+		return (.success(root.feedImages))
 	}
 }
