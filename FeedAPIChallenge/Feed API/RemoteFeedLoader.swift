@@ -22,14 +22,39 @@ public final class RemoteFeedLoader: FeedLoader {
 		client.get(from: url, completion: { result in
 			switch result {
 			case .success((let data, let response)):
-				if response.statusCode != 200 {
+				guard response.statusCode == 200 else {
 					completion(.failure(Error.invalidData))
-				} else if !JSONSerialization.isValidJSONObject(data) {
-					completion(.failure(Error.invalidData))
+					return
 				}
+				guard let _ = try? JSONDecoder().decode(FeedImageMapper.Root.self, from: data) else {
+					completion(.failure(Error.invalidData))
+					return
+				}
+				completion(.success([]))
 			case .failure:
 				completion(.failure(Error.connectivity))
 			}
 		})
+	}
+}
+
+internal class FeedImageMapper {
+	struct Root: Decodable {
+		private let items: [FeedImageItem]
+
+		var feedImages: [FeedImage] {
+			items.map { $0.feedImage }
+		}
+	}
+
+	private struct FeedImageItem: Decodable {
+		let imageId: UUID
+		let imageDesc: String?
+		let imageLocation: String?
+		let imageURL: URL
+
+		var feedImage: FeedImage {
+			return FeedImage(id: imageId, description: imageDesc, location: imageLocation, url: imageURL)
+		}
 	}
 }
