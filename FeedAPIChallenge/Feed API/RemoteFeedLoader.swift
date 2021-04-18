@@ -19,6 +19,13 @@ public final class RemoteFeedLoader: FeedLoader {
 	}
 
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
-		fatalError("Must be implemented")
+		client.get(from: self.url) { (result) in
+			switch result {
+			case .failure(let error):
+				completion(.failure(error))
+			case .success(_):
+				completion(.success([]))
+			}
+		}
 	}
 }
