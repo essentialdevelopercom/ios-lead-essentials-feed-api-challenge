@@ -63,8 +63,8 @@ internal class FeedImageMapper {
 	static func map(_ data: Data, from response: HTTPURLResponse) -> FeedLoader.Result {
 		guard response.statusCode == OK_200,
 		      let root = try? JSONDecoder().decode(FeedImageMapper.Root.self, from: data) else {
-			return (.failure(RemoteFeedLoader.Error.invalidData))
+			return .failure(RemoteFeedLoader.Error.invalidData)
 		}
-		return (.success(root.feedImages))
+		return .success(root.feedImages)
 	}
 }
