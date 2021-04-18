@@ -19,7 +19,8 @@ public final class RemoteFeedLoader: FeedLoader {
 	}
 
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
-		client.get(from: self.url) { (result) in
+		client.get(from: self.url) { [weak self] (result) in
+			guard self != nil else { return }
 			switch result {
 			case .failure(_):
 				completion(.failure(Error.connectivity))
@@ -37,7 +38,7 @@ public final class RemoteFeedLoader: FeedLoader {
 
 private class FeedImageMapper {
 	static private var OK_200 = 200
-	
+
 	private struct Root: Decodable {
 		let items: [Items]
 	}
