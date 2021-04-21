@@ -23,24 +23,26 @@ public final class RemoteFeedLoader: FeedLoader {
 			guard self != nil else { return }
 			switch result {
 			case .success((let data, let response)):
-				if response.statusCode != 200 {
-					completion(.failure(Error.invalidData))
+				if response.statusCode == 200, let items = RemoteFeedImageMapper.map(data) {
+					completion(.success(items))
 				} else {
-					do {
-						let remoteItems = try JSONDecoder().decode(Items.self, from: data)
-						completion(.success(remoteItems.items.toFeedImage()))
-					} catch {
-						completion(.failure(Error.invalidData))
-					}
+					completion(.failure(Error.invalidData))
 				}
 			case .failure(_):
 				completion(.failure(Error.connectivity))
 			}
 		}
 	}
+}
 
+private struct RemoteFeedImageMapper {
 	private struct Items: Decodable {
 		var items: [RemoteFeedImage]
+	}
+
+	static func map(_ data: Data) -> [FeedImage]? {
+		let remoteItems = try? JSONDecoder().decode(Items.self, from: data)
+		return remoteItems?.items.toFeedImage()
 	}
 }
 
