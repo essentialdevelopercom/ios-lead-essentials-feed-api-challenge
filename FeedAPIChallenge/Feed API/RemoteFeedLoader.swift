@@ -27,6 +27,7 @@ public final class RemoteFeedLoader: FeedLoader {
 				} else {
 					do {
 						_ = try JSONDecoder().decode(Items.self, from: data)
+						completion(.success([]))
 					} catch {
 						completion(.failure(Error.invalidData))
 					}
