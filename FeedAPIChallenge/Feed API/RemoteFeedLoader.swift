@@ -26,8 +26,8 @@ public final class RemoteFeedLoader: FeedLoader {
 					completion(.failure(Error.invalidData))
 				} else {
 					do {
-						_ = try JSONDecoder().decode(Items.self, from: data)
-						completion(.success([]))
+						let remoteItems = try JSONDecoder().decode(Items.self, from: data)
+						completion(.success(remoteItems.items.toFeedImage()))
 					} catch {
 						completion(.failure(Error.invalidData))
 					}
@@ -41,18 +41,28 @@ public final class RemoteFeedLoader: FeedLoader {
 	private struct Items: Decodable {
 		var items: [RemoteFeedImage]
 	}
+}
 
-	private struct RemoteFeedImage: Decodable {
-		enum CodingKeys: String, CodingKey {
-			case id = "image_id"
-			case description = "image_desc"
-			case location = "image_loc"
-			case url = "image_url"
-		}
+private struct RemoteFeedImage: Decodable {
+	enum CodingKeys: String, CodingKey {
+		case id = "image_id"
+		case description = "image_desc"
+		case location = "image_loc"
+		case url = "image_url"
+	}
 
-		let id: UUID
-		let description: String?
-		let location: String?
-		let url: URL
+	let id: UUID
+	let description: String?
+	let location: String?
+	let url: URL
+
+	func toFeedImage() -> FeedImage {
+		return FeedImage(id: id, description: description, location: location, url: url)
+	}
+}
+
+private extension Array where Element == RemoteFeedImage {
+	func toFeedImage() -> [FeedImage] {
+		return map { $0.toFeedImage() }
 	}
 }
