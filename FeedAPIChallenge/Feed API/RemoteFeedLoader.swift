@@ -18,12 +18,14 @@ public final class RemoteFeedLoader: FeedLoader {
 		self.client = client
 	}
 
+	private static let successCode = 200
+
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
 		client.get(from: url) { [weak self] result in
 			guard self != nil else { return }
 			switch result {
 			case .success((let data, let response)):
-				if response.statusCode == 200, let items = RemoteFeedImageMapper.map(data) {
+				if response.statusCode == RemoteFeedLoader.successCode, let items = RemoteFeedImageMapper.map(data) {
 					completion(.success(items))
 				} else {
 					completion(.failure(Error.invalidData))
