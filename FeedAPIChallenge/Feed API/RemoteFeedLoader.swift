@@ -44,7 +44,7 @@ private struct RemoteFeedImageMapper {
 
 	static func map(_ data: Data) -> [FeedImage]? {
 		let remoteItems = try? JSONDecoder().decode(Items.self, from: data)
-		return remoteItems?.items.toFeedImage()
+		return remoteItems?.items.toFeedImages()
 	}
 }
 
@@ -60,7 +60,7 @@ private struct RemoteFeedImage: Decodable {
 }
 
 private extension Array where Element == RemoteFeedImage {
-	func toFeedImage() -> [FeedImage] {
+	func toFeedImages() -> [FeedImage] {
 		return map { $0.toFeedImage() }
 	}
 }
