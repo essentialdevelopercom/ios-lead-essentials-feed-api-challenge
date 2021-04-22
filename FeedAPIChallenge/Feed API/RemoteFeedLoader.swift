@@ -43,6 +43,7 @@ private class FeedImageMapper {
 	}
 
 	private struct Image: Decodable {
+		// these properties should match the JSON fields
 		let image_id: UUID
 		let image_desc: String?
 		let image_loc: String?
