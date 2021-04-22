@@ -24,7 +24,7 @@ public final class RemoteFeedLoader: FeedLoader {
 		client.get(from: url) { [weak self] result in
 			guard self != nil else { return }
 			switch result {
-			case .success((let data, let response)):
+			case let .success((data, response)):
 				if response.statusCode == RemoteFeedLoader.successCode, let items = RemoteFeedImageMapper.map(data) {
 					completion(.success(items))
 				} else {
