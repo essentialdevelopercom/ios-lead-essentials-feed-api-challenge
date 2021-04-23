@@ -28,8 +28,6 @@ public final class RemoteFeedLoader: FeedLoader {
                 
             case .success((let data, let urlResponse)):
                 completion(FeedItemMapper.map(data: data, response: urlResponse))
-                 
-                
             }
         }
     }
