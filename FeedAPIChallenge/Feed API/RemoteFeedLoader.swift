@@ -51,7 +51,7 @@ internal class FeedItemMapper {
     }
     
     static func map(data: Data, response: HTTPURLResponse) -> FeedLoader.Result {
-        if let root = try? JSONDecoder().decode(Root.self, from: data), response.statusCode == 200  {
+        if response.statusCode == 200, let root = try? JSONDecoder().decode(Root.self, from: data) {
             return .success(root.items.map { $0.item })
         }else {
             return .failure(RemoteFeedLoader.Error.invalidData)
