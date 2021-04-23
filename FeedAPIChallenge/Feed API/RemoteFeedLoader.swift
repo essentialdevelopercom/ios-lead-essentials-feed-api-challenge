@@ -45,7 +45,7 @@ internal class FeedItemMapper {
          let image_loc: String?
          let image_url: URL
         
-        var item : FeedImage {
+        var item: FeedImage {
             return FeedImage(id:image_id, description: image_desc, location: image_loc, url: image_url)
         }
     }
