@@ -25,7 +25,13 @@ public final class RemoteFeedLoader: FeedLoader {
             case .failure:
                 completion(.failure(RemoteFeedLoader.Error.connectivity))
             case .success(let data, let urlResponse):
-                completion(.failure(RemoteFeedLoader.Error.invalidData))
+                
+                if let _ = try? JSONSerialization.jsonObject(with: data), urlResponse.statusCode == 200 {
+                    completion(.success([]))
+                }else {
+                    completion(.failure(RemoteFeedLoader.Error.invalidData))
+                }
+                
                  
                 
             }
