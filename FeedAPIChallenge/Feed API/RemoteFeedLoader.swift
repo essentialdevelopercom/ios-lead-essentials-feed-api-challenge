@@ -51,7 +51,7 @@ private struct Item : Decodable {
     }
 }
 
-private class FeedItemMapper {
+internal class FeedItemMapper {
     
     static func map(data: Data, response: HTTPURLResponse) -> FeedLoader.Result {
         if let root = try? JSONDecoder().decode(Root.self, from: data), response.statusCode == 200  {
