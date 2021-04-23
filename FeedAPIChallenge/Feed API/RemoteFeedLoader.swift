@@ -24,10 +24,10 @@ public final class RemoteFeedLoader: FeedLoader {
             switch result {
             case .failure:
                 completion(.failure(RemoteFeedLoader.Error.connectivity))
-            case .success(let _, let urlResponse):
-                if urlResponse.statusCode != 200 {
-                    completion(.failure(RemoteFeedLoader.Error.invalidData))
-                }
+            case .success(let data, let urlResponse):
+                completion(.failure(RemoteFeedLoader.Error.invalidData))
+                 
+                
             }
         }
     }
