@@ -26,18 +26,18 @@ public final class RemoteFeedLoader: FeedLoader {
 			case let .success((data, httpURLResponse)):
 				let successStatusCode = 200
 				guard httpURLResponse.statusCode == successStatusCode,
-				      let _ = try? JSONDecoder().decode(FeedItemsResponseModel.self, from: data) else {
+				      let responseModel = try? JSONDecoder().decode(FeedItemsResponseModel.self, from: data) else {
 					completion(.failure(Error.invalidData))
 					return
 				}
 
-				completion(.success([]))
+				completion(.success(responseModel.items.map { $0.feedImage }))
 			}
 		}
 	}
 
 	private struct FeedItemsResponseModel: Decodable {
-		let items: [FeedItemsResponseModel]
+		let items: [FeedImageResponseModel]
 	}
 
 	private struct FeedImageResponseModel: Decodable {
@@ -51,6 +51,15 @@ public final class RemoteFeedLoader: FeedLoader {
 			case description = "image_desc"
 			case location = "image_loc"
 			case url = "image_url"
+		}
+
+		var feedImage: FeedImage {
+			FeedImage(
+				id: id,
+				description: description,
+				location: location,
+				url: url
+			)
 		}
 	}
 }
