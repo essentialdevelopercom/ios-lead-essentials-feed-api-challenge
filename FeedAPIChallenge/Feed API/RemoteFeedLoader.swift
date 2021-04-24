@@ -22,7 +22,9 @@ public final class RemoteFeedLoader: FeedLoader {
 		client.get(from: url) { result in
 			switch result {
 			case .success(let data, let response):
-				break
+				if response.statusCode != 200 {
+					completion(.failure(RemoteFeedLoader.Error.invalidData))
+				}
 			case .failure:
 				completion(.failure(RemoteFeedLoader.Error.connectivity))
 			}
