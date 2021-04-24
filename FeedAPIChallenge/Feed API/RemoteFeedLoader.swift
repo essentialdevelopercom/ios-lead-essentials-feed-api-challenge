@@ -26,11 +26,25 @@ public final class RemoteFeedLoader: FeedLoader {
 			case let .success((data, httpURLResponse)):
 				let successStatusCode = 200
 				guard httpURLResponse.statusCode == successStatusCode,
-				      let _ = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) else {
+				      let _ = try? JSONDecoder().decode([FeedImageResponseModel].self, from: data) else {
 					completion(.failure(Error.invalidData))
 					return
 				}
 			}
+		}
+	}
+
+	private struct FeedImageResponseModel: Decodable {
+		let id: UUID
+		let description: String?
+		let location: String?
+		let url: URL
+
+		enum CodingKeys: String, CodingKey {
+			case id = "image_id"
+			case description = "image_desc"
+			case location = "image_loc"
+			case url = "image_url"
 		}
 	}
 }
