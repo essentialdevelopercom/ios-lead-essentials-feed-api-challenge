@@ -5,6 +5,24 @@
 import Foundation
 
 public final class RemoteFeedLoader: FeedLoader {
+	private struct Root: Codable {
+		let items: [ImageItem]
+		var feed: [FeedImage] {
+			return items.map { $0.feedImage }
+		}
+	}
+
+	private struct ImageItem: Codable {
+		let image_id: UUID
+		let image_desc: String?
+		let image_loc: String?
+		let image_url: URL
+
+		var feedImage: FeedImage {
+			return FeedImage(id: image_id, description: image_desc, location: image_loc, url: image_url)
+		}
+	}
+
 	private let url: URL
 	private let client: HTTPClient
 
@@ -27,7 +45,7 @@ public final class RemoteFeedLoader: FeedLoader {
 				if response.statusCode != 200 {
 					completion(.failure(Error.invalidData))
 				} else {
-					guard let _ = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) else {
+					guard let _ = try? JSONDecoder().decode(Root.self, from: data) else {
 						return completion(.failure(Error.invalidData))
 					}
 				}
