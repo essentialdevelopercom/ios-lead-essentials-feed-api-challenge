@@ -13,6 +13,9 @@ final class FeedImageMapper {
 
 	private struct Root: Decodable {
 		let items: [Item]
+		public var feedImages: [FeedImage] {
+			return items.map({ $0.feed })
+		}
 	}
 
 	private struct Item: Decodable {
@@ -38,6 +41,6 @@ final class FeedImageMapper {
 		      let root = try? JSONDecoder().decode(Root.self, from: data) else {
 			return .failure(RemoteFeedLoader.Error.invalidData)
 		}
-		return .success(root.items.map({ $0.feed }))
+		return .success(root.feedImages)
 	}
 }
