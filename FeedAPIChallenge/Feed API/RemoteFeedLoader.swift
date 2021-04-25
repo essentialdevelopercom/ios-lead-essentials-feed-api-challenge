@@ -22,10 +22,7 @@ public final class RemoteFeedLoader: FeedLoader {
 		client.get(from: url) { result in
 			switch result {
 			case let .success((data, response)):
-				guard let _ = try? JSONSerialization.jsonObject(with: data), response.statusCode == 200 else {
-					completion(.failure(Error.invalidData))
-					return
-				}
+				completion(FeedImageMapper.map(data: data, from: response))
 			case .failure:
 				completion(.failure(Error.connectivity))
 			}
