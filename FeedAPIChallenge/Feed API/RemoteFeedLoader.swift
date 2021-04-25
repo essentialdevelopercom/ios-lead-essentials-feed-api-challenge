@@ -23,14 +23,43 @@ public final class RemoteFeedLoader: FeedLoader {
 			switch result {
 			case .failure(_):
 				completion(.failure(Error.connectivity))
-			case let .success((_, httpResponse)):
-				switch httpResponse.statusCode {
-				case 200:
-					completion(.success([]))
-				default:
+			case let .success((data, httpResponse)):
+				do {
+					let images = try RemoteData.map(data, from: httpResponse)
+					completion(.success(images))
+				} catch {
 					completion(.failure(Error.invalidData))
 				}
 			}
+		}
+	}
+
+	private final class RemoteData {
+		private struct Root: Decodable {
+			private let items: [RemoteFeedItem]
+
+			private struct RemoteFeedItem: Decodable {
+				let id: UUID
+				let description: String?
+				let location: String?
+				let image: URL
+			}
+
+			var images: [FeedImage] {
+				items.map { FeedImage(id: $0.id, description: $0.description, location: $0.location, url: $0.image) }
+			}
+		}
+
+		public enum Error: Swift.Error {
+			case invalidData
+		}
+
+		public static func map(_ data: Data, from response: HTTPURLResponse) throws -> [FeedImage] {
+			guard response.statusCode == 200, let root = try? JSONDecoder().decode(Root.self, from: data) else {
+				throw Error.invalidData
+			}
+
+			return root.images
 		}
 	}
 }
