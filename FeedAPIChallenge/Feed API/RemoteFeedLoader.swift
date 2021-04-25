@@ -5,6 +5,7 @@
 import Foundation
 
 public final class RemoteFeedLoader: FeedLoader {
+	
 	private struct Root: Codable {
 		let items: [ImageItem]
 		var feed: [FeedImage] {
@@ -23,6 +24,15 @@ public final class RemoteFeedLoader: FeedLoader {
 		}
 	}
 
+	private let kStatusCode_200 = 200
+
+	private func mapDataWith(_ data: Data, and response: HTTPURLResponse) -> FeedLoader.Result {
+		guard response.statusCode == kStatusCode_200, let root = try? JSONDecoder().decode(Root.self, from: data) else {
+			return .failure(Error.invalidData)
+		}
+		return .success(root.feed)
+	}
+
 	private let url: URL
 	private let client: HTTPClient
 
@@ -38,19 +48,12 @@ public final class RemoteFeedLoader: FeedLoader {
 
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
 		client.get(from: url) { [weak self] result in
-			guard let _ = self else { return }
+			guard let weakSelf = self else { return }
 			switch result {
 			case .failure:
 				completion(.failure(Error.connectivity))
 			case let .success((data, response)):
-				if response.statusCode != 200 {
-					completion(.failure(Error.invalidData))
-				} else {
-					guard let root = try? JSONDecoder().decode(Root.self, from: data) else {
-						return completion(.failure(Error.invalidData))
-					}
-					completion(.success(root.feed))
-				}
+				completion(weakSelf.mapDataWith(data, and: response))
 			}
 		}
 	}
