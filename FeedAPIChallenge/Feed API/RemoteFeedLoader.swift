@@ -25,9 +25,21 @@ public final class RemoteFeedLoader: FeedLoader {
                 completion(.failure(Error.connectivity))
             case .success((_, let response)) where response.statusCode != 200:
                 completion(.failure(Error.invalidData))
-            case .success:
-                completion(.failure(Error.invalidData))
+            case .success((let data, _)):
+                do {
+                    _ = try JSONDecoder().decode(RemoteFeed.self, from: data)
+
+                    completion(.success([]))
+                } catch {
+                    completion(.failure(Error.invalidData))
+                }
             }
         })
     }
+}
+
+private struct RemoteFeed: Decodable {
+    struct RemoteFeedImage: Decodable {}
+
+    let items: [RemoteFeedImage]
 }
