@@ -5,15 +5,14 @@
 import Foundation
 
 public final class RemoteFeedLoader: FeedLoader {
-	
-	private struct Root: Codable {
+	private struct Root: Decodable {
 		let items: [ImageItem]
 		var feed: [FeedImage] {
 			return items.map { $0.feedImage }
 		}
 	}
 
-	private struct ImageItem: Codable {
+	private struct ImageItem: Decodable {
 		let image_id: UUID
 		let image_desc: String?
 		let image_loc: String?
