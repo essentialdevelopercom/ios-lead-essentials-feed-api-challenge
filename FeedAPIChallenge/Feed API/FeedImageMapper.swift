@@ -9,11 +9,11 @@
 import Foundation
 
 final class FeedImageMapper {
-	static private var OK_200 = 200
+	private static var OK_200 = 200
 
 	private struct Root: Decodable {
 		let items: [Item]
-		public var feedImages: [FeedImage] {
+		var feedImages: [FeedImage] {
 			return items.map({ $0.feed })
 		}
 	}
