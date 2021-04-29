@@ -52,7 +52,9 @@ private func map(_ data: Data, _ response: HTTPURLResponse) throws -> [FeedImage
 		throw RemoteFeedLoader.Error.invalidData
 	}
 	do {
-		let root = try JSONDecoder().decode(Root.self, from: data)
+		let decoder = JSONDecoder()
+		decoder.keyDecodingStrategy = .convertFromSnakeCase
+		let root = try decoder.decode(Root.self, from: data)
 		return root.items.map(\.feedImage)
 	} catch {
 		throw RemoteFeedLoader.Error.invalidData
