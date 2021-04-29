@@ -4,21 +4,6 @@
 
 import Foundation
 
-private struct Root: Decodable {
-	let items: [DecodableFeedImgae]
-}
-
-private struct DecodableFeedImgae: Decodable {
-	let imageId: UUID
-	let imageLoc: String?
-	let imageDesc: String?
-	let imageUrl: URL
-
-	var feedImage: FeedImage {
-		FeedImage(id: imageId, description: imageDesc, location: imageLoc, url: imageUrl)
-	}
-}
-
 public final class RemoteFeedLoader: FeedLoader {
 	private let url: URL
 	private let client: HTTPClient
@@ -37,19 +22,39 @@ public final class RemoteFeedLoader: FeedLoader {
 		client.get(from: url) { result in
 			switch result {
 			case let .success((data, response)):
-				guard response.statusCode == 200 else {
-					completion(.failure(Error.invalidData))
-					return
-				}
-				do {
-					let root = try JSONDecoder().decode(Root.self, from: data)
-					completion(.success(root.items.map(\.feedImage)))
-				} catch {
-					completion(.failure(Error.invalidData))
-				}
-			case .failure(_):
+				completion(
+					Result { try map(data, response) }
+				)
+			case .failure:
 				completion(.failure(Error.connectivity))
 			}
 		}
+	}
+}
+
+private struct Root: Decodable {
+	let items: [DecodableFeedImgae]
+}
+
+private struct DecodableFeedImgae: Decodable {
+	let imageId: UUID
+	let imageLoc: String?
+	let imageDesc: String?
+	let imageUrl: URL
+
+	var feedImage: FeedImage {
+		FeedImage(id: imageId, description: imageDesc, location: imageLoc, url: imageUrl)
+	}
+}
+
+private func map(_ data: Data, _ response: HTTPURLResponse) throws -> [FeedImage] {
+	guard response.statusCode == 200 else {
+		throw RemoteFeedLoader.Error.invalidData
+	}
+	do {
+		let root = try JSONDecoder().decode(Root.self, from: data)
+		return root.items.map(\.feedImage)
+	} catch {
+		throw RemoteFeedLoader.Error.invalidData
 	}
 }
