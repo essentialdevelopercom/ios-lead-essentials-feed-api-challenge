@@ -23,7 +23,7 @@ public final class RemoteFeedLoader: FeedLoader {
 			switch result {
 			case let .success((data, response)):
 				if response.statusCode == 200,
-				   let _ = try? JSONSerialization.jsonObject(with: data) {
+				   let _ = try? JSONDecoder().decode(Root.self, from: data) {
 					completion(.success([]))
 				} else {
 					completion(.failure(Error.invalidData))
@@ -32,5 +32,25 @@ public final class RemoteFeedLoader: FeedLoader {
 				completion(.failure(Error.connectivity))
 			}
 		}
+	}
+}
+
+private struct Root: Decodable {
+	let items: [Item]
+}
+
+private struct Item {
+	let id: UUID
+	let description: String?
+	let location: String?
+	let url: URL
+}
+
+extension Item: Decodable {
+	enum CodingKeys: String, CodingKey {
+		case id = "image_id"
+		case description = "image_desc"
+		case location = "image_loc"
+		case url = "image_url"
 	}
 }
