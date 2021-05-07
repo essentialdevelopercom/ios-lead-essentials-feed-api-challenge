@@ -37,7 +37,7 @@ public final class RemoteFeedLoader: FeedLoader {
 	}
 }
 
-internal final class FeedImagesMapper {
+private final class FeedImagesMapper {
 	private struct Root: Decodable {
 		let items: [Image]
 
