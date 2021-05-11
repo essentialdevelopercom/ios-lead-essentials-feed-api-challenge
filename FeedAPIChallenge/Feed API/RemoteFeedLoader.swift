@@ -37,7 +37,7 @@ private final class FeedImagesMapper {
 		let items: [Image]
 
 		var feed: [FeedImage] {
-			return self.items.map { $0.image }
+			return items.map { $0.image }
 		}
 	}
 
