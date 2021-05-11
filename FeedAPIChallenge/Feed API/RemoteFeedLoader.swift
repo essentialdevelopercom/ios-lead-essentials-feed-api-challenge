@@ -27,13 +27,9 @@ public final class RemoteFeedLoader: FeedLoader {
 				completion(FeedImagesMapper.map(data, from: response))
 
 			default:
-				completion(self.failure(.connectivity))
+				completion(.failure(Error.connectivity))
 			}
 		}
-	}
-
-	private func failure(_ error: RemoteFeedLoader.Error) -> FeedLoader.Result {
-		return .failure(error)
 	}
 }
 
