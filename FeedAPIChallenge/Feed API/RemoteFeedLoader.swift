@@ -42,12 +42,23 @@ public final class RemoteFeedLoader: FeedLoader {
 								return
 							}
 
+							var result: [FeedImage] = []
 							for item in items {
-								guard let id = item["image_id"] as? String, let url = item["image_url"] as? String else {
+								guard let idString = item["image_id"] as? String,
+								      let uuid = UUID(uuidString: idString),
+								      let urlString = item["image_url"] as? String,
+								      let url = URL(string: urlString) else {
 									completion(.failure(Error.invalidData))
 									return
 								}
+
+								let description = item["image_desc"] as? String
+								let location = item["image_loc"] as? String
+
+								result.append(FeedImage(id: uuid, description: description, location: location, url: url))
 							}
+
+							completion(.success(result))
 						}
 					}
 				} catch {
