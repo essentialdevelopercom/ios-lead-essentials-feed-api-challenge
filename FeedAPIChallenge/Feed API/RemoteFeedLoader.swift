@@ -35,7 +35,16 @@ public final class RemoteFeedLoader: FeedLoader {
 				}
 
 				do {
-					let _ = try JSONSerialization.jsonObject(with: data, options: [])
+					if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
+						if let items = json["items"] as? [[String: Any]] {
+							for item in items {
+								guard let id = item["image_id"] as? String, let url = item["image_url"] as? String else {
+									completion(.failure(Error.invalidData))
+									return
+								}
+							}
+						}
+					}
 				} catch {
 					completion(.failure(Error.invalidData))
 				}
