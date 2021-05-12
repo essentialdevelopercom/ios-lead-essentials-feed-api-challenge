@@ -63,6 +63,6 @@ private final class FeedImageMapper {
 			return .failure(RemoteFeedLoader.Error.invalidData)
 		}
 
-		return .success(root.imageFeed)
+		return .success(root.feed)
 	}
 }
