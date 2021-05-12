@@ -43,7 +43,6 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
 		})
 	}
 
-//
 	func test_load_deliversInvalidDataErrorOnNon200HTTPResponse() {
 		let (sut, client) = makeSUT()
 
@@ -57,7 +56,6 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
 		}
 	}
 
-//
 	func test_load_deliversInvalidDataErrorOn200HTTPResponseWithInvalidJSON() {
 		let (sut, client) = makeSUT()
 
@@ -67,7 +65,6 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
 		})
 	}
 
-//
 	func test_load_deliversInvalidDataErrorOn200HTTPResponseWithPartiallyValidJSONItems() {
 		let (sut, client) = makeSUT()
 
@@ -86,7 +83,6 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
 		})
 	}
 
-//
 	func test_load_deliversSuccessWithNoItemsOn200HTTPResponseWithEmptyJSONList() {
 		let (sut, client) = makeSUT()
 
@@ -96,7 +92,6 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
 		})
 	}
 
-//
 	func test_load_deliversSuccessWithItemsOn200HTTPResponseWithJSONItems() {
 		let (sut, client) = makeSUT()
 
@@ -118,7 +113,6 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
 		})
 	}
 
-//
 	func test_load_doesNotDeliverResultAfterSUTInstanceHasBeenDeallocated() {
 		let url = URL(string: "http://any-url.com")!
 		let client = HTTPClientSpy()
