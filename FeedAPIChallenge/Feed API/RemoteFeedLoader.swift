@@ -23,51 +23,59 @@ public final class RemoteFeedLoader: FeedLoader {
 
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
 		client.get(from: url) { [weak self] result in
-			guard let self = self else {
+			guard let _ = self else {
 				return
 			}
 
 			switch result {
 			case .success((let data, let response)):
-				guard response.statusCode == self.OK_200 else {
-					completion(.failure(Error.invalidData))
-					return
-				}
-
-				do {
-					if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
-						if let items = json["items"] as? [[String: Any]] {
-							if items.isEmpty {
-								completion(.success([]))
-								return
-							}
-
-							var result: [FeedImage] = []
-							for item in items {
-								guard let idString = item["image_id"] as? String,
-								      let uuid = UUID(uuidString: idString),
-								      let urlString = item["image_url"] as? String,
-								      let url = URL(string: urlString) else {
-									completion(.failure(Error.invalidData))
-									return
-								}
-
-								let description = item["image_desc"] as? String
-								let location = item["image_loc"] as? String
-
-								result.append(FeedImage(id: uuid, description: description, location: location, url: url))
-							}
-
-							completion(.success(result))
-						}
-					}
-				} catch {
-					completion(.failure(Error.invalidData))
-				}
-
+				completion(FeedItemMapper.map(data, from: response))
 			case .failure:
 				completion(.failure(Error.connectivity))
 			}
 		}
+	}
+}
+
+final class FeedItemMapper {
+	private static var OK_200: Int {
+		return 200
+	}
+
+	static func map(_ data: Data, from response: HTTPURLResponse) -> FeedLoader.Result {
+		guard response.statusCode == self.OK_200 else {
+			return .failure(RemoteFeedLoader.Error.invalidData)
+		}
+
+		do {
+			if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
+				if let items = json["items"] as? [[String: Any]] {
+					if items.isEmpty {
+						return .success([])
+					}
+
+					var result: [FeedImage] = []
+					for item in items {
+						guard let idString = item["image_id"] as? String,
+						      let uuid = UUID(uuidString: idString),
+						      let urlString = item["image_url"] as? String,
+						      let url = URL(string: urlString) else {
+							return .failure(RemoteFeedLoader.Error.invalidData)
+						}
+
+						let description = item["image_desc"] as? String
+						let location = item["image_loc"] as? String
+
+						result.append(FeedImage(id: uuid, description: description, location: location, url: url))
+					}
+
+					return .success(result)
+				}
+			}
+		} catch {
+			return .failure(RemoteFeedLoader.Error.invalidData)
+		}
+
+		return .failure(RemoteFeedLoader.Error.connectivity)
 	}
 }
