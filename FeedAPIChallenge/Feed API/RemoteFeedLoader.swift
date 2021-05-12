@@ -49,10 +49,10 @@ private final class FeedImageMapper {
 
 		var item: FeedImage {
 			return FeedImage(
-				id: id,
-				description: description,
-				location: location,
-				url: imageURL)
+				id: image_id,
+				description: image_desc,
+				location: image_loc,
+				url: image_url)
 		}
 	}
 
