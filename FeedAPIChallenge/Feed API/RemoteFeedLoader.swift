@@ -28,13 +28,18 @@ public final class RemoteFeedLoader: FeedLoader {
 			}
 
 			switch result {
-			case .success(_, let response):
+			case .success((let data, let response)):
 				guard response.statusCode == self.OK_200 else {
 					completion(.failure(Error.invalidData))
 					return
 				}
 
-				completion(.failure(Error.connectivity))
+				do {
+					let _ = try JSONSerialization.jsonObject(with: data, options: [])
+				} catch {
+					completion(.failure(Error.invalidData))
+				}
+
 			case .failure:
 				completion(.failure(Error.connectivity))
 			}
