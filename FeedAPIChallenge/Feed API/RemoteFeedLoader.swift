@@ -34,7 +34,7 @@ public final class RemoteFeedLoader: FeedLoader {
 	}
 }
 
-final class FeedItemMapper {
+private final class FeedItemMapper {
 	private static var OK_200: Int {
 		return 200
 	}
