@@ -40,7 +40,7 @@ final class FeedItemMapper {
 	}
 
 	static func map(_ data: Data, from response: HTTPURLResponse) -> FeedLoader.Result {
-		guard response.statusCode == self.OK_200 else {
+		guard response.statusCode == OK_200 else {
 			return .failure(RemoteFeedLoader.Error.invalidData)
 		}
 
