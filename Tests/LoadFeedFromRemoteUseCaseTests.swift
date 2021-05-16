@@ -6,7 +6,6 @@ import XCTest
 import FeedAPIChallenge
 
 class LoadFeedFromRemoteUseCaseTests: XCTestCase {
-	
 	//  ***********************
 	//
 	//  Follow the TDD process:
@@ -18,13 +17,13 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
 	//  Repeat this process until all tests are passing.
 	//
 	//  ***********************
-	
+
 	func test_init_doesNotRequestDataFromURL() {
 		let (_, client) = makeSUT()
-		
+
 		XCTAssertTrue(client.requestedURLs.isEmpty)
 	}
-	
+
 	func test_loadTwice_requestsDataFromURLTwice() {
 		let url = URL(string: "https://a-given-url.com")!
 		let (sut, client) = makeSUT(url: url)
@@ -129,7 +128,7 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
 	}
 	
 	// MARK: - Helpers
-	
+
 	private func makeSUT(url: URL = URL(string: "https://a-url.com")!, file: StaticString = #filePath, line: UInt = #line) -> (sut: RemoteFeedLoader, client: HTTPClientSpy) {
 		let client = HTTPClientSpy()
 		let sut = RemoteFeedLoader(url: url, client: client)
@@ -137,23 +136,22 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
 		trackForMemoryLeaks(client, file: file, line: line)
 		return (sut, client)
 	}
-	
+
 	private func makeItem(id: UUID, description: String? = nil, location: String? = nil, imageURL: URL) -> (model: FeedImage, json: [String: Any]) {
 		let item = FeedImage(id: id, description: description, location: location, url: imageURL)
-		
+
 		let json = [
 			"image_id": id.uuidString,
 			"image_desc": description,
 			"image_loc": location,
 			"image_url": imageURL.absoluteString
 		].compactMapValues { $0 }
-		
+
 		return (item, json)
 	}
-	
+
 	private func makeItemsJSON(_ items: [[String: Any]]) -> Data {
 		let json = ["items": items]
 		return try! JSONSerialization.data(withJSONObject: json)
 	}
-	
 }

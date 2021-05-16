@@ -71,17 +71,19 @@ We've provided you with appropriate tests to guide and validate your solution. Y
 
 		- ⚠️ Important: ***You should only change the `RemoteFeedLoader.swift` file to implement the `load` method.***
 
-		- Do not change any other files in the target.
+		- Do not change any other files in the folder.
 	
 	- The `Tests` folder contains the test cases. 
 
 		- ⚠️ Important: ***You should only change the `LoadFeedFromRemoteUseCaseTests.swift` file to implement all test cases.***
 
-		- Do not change any other files in the test target.
+		- Do not change any other files in the test folder.
 
 	- Do not change the indentation in the project.
 
 	- Do not rename the existing classes and files.
+
+	- Important: Every time you build the project, it'll automatically reformat the modified files with SwiftFormat to maintain the code consistent.
 
 4) Use the `Tests/LoadFeedFromRemoteUseCaseTests.swift` to validate your implementation. 
 
