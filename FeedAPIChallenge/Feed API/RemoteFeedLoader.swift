@@ -35,44 +35,35 @@ public final class RemoteFeedLoader: FeedLoader {
 }
 
 private final class FeedItemMapper {
+	private struct Root: Decodable {
+		let items: [Item]
+
+		var feed: [FeedImage] {
+			return items.map { $0.item }
+		}
+	}
+
+	private struct Item: Decodable {
+		let image_id: UUID
+		let image_desc: String?
+		let image_loc: String?
+		let image_url: URL
+
+		var item: FeedImage {
+			return FeedImage(id: image_id, description: image_desc, location: image_loc, url: image_url)
+		}
+	}
+
 	private static var OK_200: Int {
 		return 200
 	}
 
 	static func map(_ data: Data, from response: HTTPURLResponse) -> FeedLoader.Result {
-		guard response.statusCode == OK_200 else {
+		guard response.statusCode == OK_200,
+		      let root = try? JSONDecoder().decode(Root.self, from: data) else {
 			return .failure(RemoteFeedLoader.Error.invalidData)
 		}
 
-		do {
-			if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
-				if let items = json["items"] as? [[String: Any]] {
-					if items.isEmpty {
-						return .success([])
-					}
-
-					var result: [FeedImage] = []
-					for item in items {
-						guard let idString = item["image_id"] as? String,
-						      let uuid = UUID(uuidString: idString),
-						      let urlString = item["image_url"] as? String,
-						      let url = URL(string: urlString) else {
-							return .failure(RemoteFeedLoader.Error.invalidData)
-						}
-
-						let description = item["image_desc"] as? String
-						let location = item["image_loc"] as? String
-
-						result.append(FeedImage(id: uuid, description: description, location: location, url: url))
-					}
-
-					return .success(result)
-				}
-			}
-		} catch {
-			return .failure(RemoteFeedLoader.Error.invalidData)
-		}
-
-		return .failure(RemoteFeedLoader.Error.connectivity)
+		return .success(root.feed)
 	}
 }
