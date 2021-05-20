@@ -25,15 +25,45 @@ public final class RemoteFeedLoader: FeedLoader {
 			guard let self = self else { return }
 
 			switch result {
-			case .success((_, let response)):
+			case .success((let data, let response)):
 
-				if response.statusCode != self.code_200 {
+				guard response.statusCode == self.code_200,
+				      let _ = try? JSONDecoder().decode(FeedImageMapper.self, from: data)
+				else {
 					completion(.failure(Error.invalidData))
+					return
 				}
 
 			case .failure(_):
 				completion(.failure(Error.connectivity))
 			}
+		}
+	}
+	
+	private struct FeedImageMapper: Decodable {
+		let items: [Item]
+
+		var feedImage: [FeedImage] {
+			return items.map {
+				FeedImage(id: $0.id,
+				          description: $0.description,
+				          location: $0.location,
+				          url: $0.imageURL)
+			}
+		}
+	}
+
+	private struct Item: Decodable {
+		let id: UUID
+		let description: String?
+		let location: String?
+		let imageURL: URL
+
+		enum CodingKeys: String, CodingKey {
+			case id = "image_id"
+			case description = "image_desc"
+			case location = "image_loc"
+			case imageURL = "image_url"
 		}
 	}
 }
