@@ -26,7 +26,7 @@ public final class RemoteFeedLoader: FeedLoader {
 				print("success")
 
 			case .failure(_):
-				print("Failure")
+				completion(.failure(Error.connectivity))
 			}
 		}
 	}
