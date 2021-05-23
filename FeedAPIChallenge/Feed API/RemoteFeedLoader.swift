@@ -31,7 +31,7 @@ public final class RemoteFeedLoader: FeedLoader {
 				}
 
 				do {
-					let feedLoaderResult = try JSONDecoder().decode(FeedImageAPI.self, from: response.0)
+					let feedLoaderResult = try JSONDecoder().decode([FeedImageAPI].self, from: response.0)
 				} catch {
 					completion(.failure(Error.invalidData))
 				}
