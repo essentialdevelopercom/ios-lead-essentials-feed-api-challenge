@@ -26,7 +26,7 @@ public final class RemoteFeedLoader: FeedLoader {
 					completion(.failure(Error.invalidData))
 				} else if httpURLResponse.statusCode == 200 {
 					do {
-						_ = try JSONSerialization.jsonObject(with: data, options: [])
+						_ = try JSONDecoder().decode(FeedImageRoot.self, from: data)
 					} catch {
 						completion(.failure(Error.invalidData))
 					}
