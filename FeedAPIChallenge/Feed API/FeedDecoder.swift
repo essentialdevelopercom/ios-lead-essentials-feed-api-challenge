@@ -8,20 +8,20 @@
 
 import Foundation
 
-struct FeedImageRoot: Decodable {
-	let items: [FeedImageItem]
-}
+internal struct FeedImageRoot: Decodable {
+	private let items: [FeedImageItem]
 
-struct FeedImageItem: Decodable {
-	let imageID: String
-	let imageDescription: String?
-	let imageLocation: String?
-	let imageURL: String
+	private struct FeedImageItem: Decodable {
+		private let imageID: String
+		private let imageDescription: String?
+		private let imageLocation: String?
+		private let imageURL: String
 
-	enum CodingKeys: String, CodingKey {
-		case imageID = "image_id"
-		case imageDescription = "image_desc"
-		case imageLocation = "image_loc"
-		case imageURL = "image_url"
+		enum CodingKeys: String, CodingKey {
+			case imageID = "image_id"
+			case imageDescription = "image_desc"
+			case imageLocation = "image_loc"
+			case imageURL = "image_url"
+		}
 	}
 }
