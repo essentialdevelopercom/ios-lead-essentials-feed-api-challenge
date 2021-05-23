@@ -9,12 +9,11 @@
 import Foundation
 
 struct FeedImageAPI: Decodable {
-	
 	let id: UUID
 	let description: String?
 	let location: String?
 	let url: URL
-	
+
 	enum CodingKeys: String, CodingKey {
 		case id = "image_id"
 		case description = "image_desc"
