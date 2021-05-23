@@ -10,7 +10,7 @@ import Foundation
 
 final class FeedImageMapper {
 	private struct Root: Decodable {
-		let items: [Item]
+		private let items: [Item]
 
 		var feedImages: [FeedImage] {
 			items.map { $0.item }
@@ -23,7 +23,7 @@ final class FeedImageMapper {
 		private let location: String?
 		private let image: URL
 
-		enum CodingKeys: String, CodingKey {
+		private enum CodingKeys: String, CodingKey {
 			case id = "image_id"
 			case description = "image_desc"
 			case location = "image_loc"
