@@ -9,9 +9,9 @@
 import Foundation
 
 internal struct FeedImageRoot: Decodable {
-	private let items: [FeedImageItem]
+	let items: [FeedImageItem]
 
-	private struct FeedImageItem: Decodable {
+	struct FeedImageItem: Decodable {
 		private let imageID: String
 		private let imageDescription: String?
 		private let imageLocation: String?
