@@ -37,20 +37,27 @@ public final class RemoteFeedLoader: FeedLoader {
 				}
 
 				do {
-					let feedLoaderResult = try JSONDecoder().decode(FeedItemAPI.self, from: response.0)
-					let feedImage = feedLoaderResult.items.map {
-						FeedImage(
-							id: $0.id,
-							description: $0.description,
-							location: $0.location,
-							url: $0.url
-						)
+					let feedLoaderItems = try JSONDecoder().decode(FeedItemAPI.self, from: response.0).items
+					guard let feedImage = self?.feedImagesFactory(feedLoaderItems) else {
+						completion(.success([]))
+						return
 					}
 					completion(.success(feedImage))
 				} catch {
 					completion(.failure(Error.invalidData))
 				}
 			}
+		}
+	}
+
+	private func feedImagesFactory(_ feedImageAPI: [FeedImageAPI]) -> [FeedImage] {
+		feedImageAPI.map {
+			FeedImage(
+				id: $0.id,
+				description: $0.description,
+				location: $0.location,
+				url: $0.url
+			)
 		}
 	}
 }
