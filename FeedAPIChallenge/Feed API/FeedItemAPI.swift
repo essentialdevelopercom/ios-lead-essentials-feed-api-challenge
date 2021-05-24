@@ -6,6 +6,6 @@
 //  Copyright © 2021 Essential Developer Ltd. All rights reserved.
 //
 
-internal struct FeedItemAPI: Decodable {
+struct FeedItemAPI: Decodable {
 	let items: [FeedImageAPI]
 }
