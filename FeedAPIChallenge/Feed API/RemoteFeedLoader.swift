@@ -20,32 +20,24 @@ public final class RemoteFeedLoader: FeedLoader {
 
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
 		client.get(from: url) { [weak self] result in
-			guard self != nil else { return }
+			guard let self = self else { return }
 			switch result {
 			case .failure:
 				completion(.failure(Error.connectivity))
-			case .success(let response):
+			case .success((let data, let response)):
 
-				guard response.1.statusCode == 200 else {
+				guard response.statusCode == 200 else {
 					completion(.failure(Error.invalidData))
 					return
 				}
 
-				guard !response.0.isEmpty else {
-					completion(.success([]))
+				guard let feedLoaderItems = try? JSONDecoder().decode(FeedItemAPI.self, from: data).items else {
+					completion(.failure(Error.invalidData))
 					return
 				}
 
-				do {
-					let feedLoaderItems = try JSONDecoder().decode(FeedItemAPI.self, from: response.0).items
-					guard let feedImage = self?.feedImagesFactory(feedLoaderItems) else {
-						completion(.success([]))
-						return
-					}
-					completion(.success(feedImage))
-				} catch {
-					completion(.failure(Error.invalidData))
-				}
+				let feedImage = self.feedImagesFactory(feedLoaderItems)
+				completion(.success(feedImage))
 			}
 		}
 	}
@@ -53,10 +45,10 @@ public final class RemoteFeedLoader: FeedLoader {
 	private func feedImagesFactory(_ feedImageAPI: [FeedImageAPI]) -> [FeedImage] {
 		feedImageAPI.map {
 			FeedImage(
-				id: $0.id,
-				description: $0.description,
-				location: $0.location,
-				url: $0.url
+				id: $0.image_id,
+				description: $0.image_desc,
+				location: $0.image_loc,
+				url: $0.image_url
 			)
 		}
 	}
