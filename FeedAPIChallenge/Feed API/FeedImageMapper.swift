@@ -33,7 +33,7 @@ class FeedImageMapper {
 
 	static func map(data: Data, response: HTTPURLResponse) throws -> [FeedImage] {
 		if response.statusCode == 200,
-			 let root = try? JSONDecoder().decode(Root.self, from: data) {
+		   let root = try? JSONDecoder().decode(Root.self, from: data) {
 			return root.items.map { $0.feedImage }
 		} else {
 			throw RemoteFeedLoader.Error.invalidData
