@@ -21,8 +21,8 @@ struct FeedImagesMapper {
 
 	private static func map(data: Data, response: HTTPURLResponse) -> FeedLoader.Result {
 		do {
-			let remoteFeeditems = try JSONDecoder().decode(GetRemoteFeedImageResponseBody.self, from: data)
-			let items = remoteFeeditems.items.map(FeedImage.init)
+			let remoteFeedImages = try JSONDecoder().decode(GetRemoteFeedImageResponseBody.self, from: data)
+			let items = remoteFeedImages.items.map(FeedImage.init)
 			return .success(items)
 		} catch {
 			return .failure(RemoteFeedLoader.Error.invalidData)
