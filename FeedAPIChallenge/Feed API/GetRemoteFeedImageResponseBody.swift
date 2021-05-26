@@ -1,5 +1,5 @@
 //
-//  Root.swift
+//  GetRemoteFeedImageResponseBody.swift
 //  FeedAPIChallenge
 //
 //  Created by Darren Findlay on 26/05/2021.
@@ -8,6 +8,6 @@
 
 import Foundation
 
-struct Root: Decodable {
+struct GetRemoteFeedImageResponseBody: Decodable {
 	let items: [RemoteFeedImage]
 }

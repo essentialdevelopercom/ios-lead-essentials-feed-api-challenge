@@ -22,7 +22,7 @@ public final class RemoteFeedLoader: FeedLoader {
 		client.get(from: url) { result in
 			if case let .success((data, response)) = result, response.statusCode == 200 {
 				do {
-					let _ = try JSONDecoder().decode(Root.self, from: data)
+					let _ = try JSONDecoder().decode(GetRemoteFeedImageResponseBody.self, from: data)
 					completion(.success([]))
 				} catch {
 					print(error)

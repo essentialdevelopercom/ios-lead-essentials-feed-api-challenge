@@ -17,7 +17,7 @@
 		08BBFF842492A5C100141A91 /* FeedImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08BBFF7F2492A5C100141A91 /* FeedImage.swift */; };
 		08BBFF882492A6A500141A91 /* XCTestCase+MemoryLeakTracking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08BBFF872492A6A500141A91 /* XCTestCase+MemoryLeakTracking.swift */; };
 		54412C0D265E810D00D14E22 /* RemoteFeedImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54412C0C265E810D00D14E22 /* RemoteFeedImage.swift */; };
-		54412C0F265E838300D14E22 /* Root.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54412C0E265E838300D14E22 /* Root.swift */; };
+		54412C0F265E838300D14E22 /* GetRemoteFeedImageResponseBody.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54412C0E265E838300D14E22 /* GetRemoteFeedImageResponseBody.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -44,7 +44,7 @@
 		08BBFF7F2492A5C100141A91 /* FeedImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FeedImage.swift; sourceTree = "<group>"; };
 		08BBFF872492A6A500141A91 /* XCTestCase+MemoryLeakTracking.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "XCTestCase+MemoryLeakTracking.swift"; sourceTree = "<group>"; };
 		54412C0C265E810D00D14E22 /* RemoteFeedImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteFeedImage.swift; sourceTree = "<group>"; };
-		54412C0E265E838300D14E22 /* Root.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Root.swift; sourceTree = "<group>"; };
+		54412C0E265E838300D14E22 /* GetRemoteFeedImageResponseBody.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetRemoteFeedImageResponseBody.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -121,7 +121,7 @@
 				08BBFF6F2492A4C700141A91 /* HTTPClient.swift */,
 				08BBFF6C2492A4C700141A91 /* RemoteFeedLoader.swift */,
 				54412C0C265E810D00D14E22 /* RemoteFeedImage.swift */,
-				54412C0E265E838300D14E22 /* Root.swift */,
+				54412C0E265E838300D14E22 /* GetRemoteFeedImageResponseBody.swift */,
 			);
 			path = "Feed API";
 			sourceTree = "<group>";
@@ -271,7 +271,7 @@
 				54412C0D265E810D00D14E22 /* RemoteFeedImage.swift in Sources */,
 				08BBFF822492A5C100141A91 /* FeedLoader.swift in Sources */,
 				08BBFF842492A5C100141A91 /* FeedImage.swift in Sources */,
-				54412C0F265E838300D14E22 /* Root.swift in Sources */,
+				54412C0F265E838300D14E22 /* GetRemoteFeedImageResponseBody.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
