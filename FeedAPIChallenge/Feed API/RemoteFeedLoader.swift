@@ -28,16 +28,20 @@ public final class RemoteFeedLoader: FeedLoader {
 struct FeedItemsMapper {
 	static func map(result: Result<(Data, HTTPURLResponse), Error>) -> FeedLoader.Result {
 		if case let .success((data, response)) = result, response.statusCode == 200 {
-			do {
-				let _ = try JSONDecoder().decode(GetRemoteFeedImageResponseBody.self, from: data)
-				return .success([])
-			} catch {
-				return .failure(RemoteFeedLoader.Error.invalidData)
-			}
+			return map(data: data, response: response)
 		} else if case .success = result {
 			return .failure(RemoteFeedLoader.Error.invalidData)
 		} else {
 			return .failure(RemoteFeedLoader.Error.connectivity)
+		}
+	}
+
+	private static func map(data: Data, response: HTTPURLResponse) -> FeedLoader.Result {
+		do {
+			let _ = try JSONDecoder().decode(GetRemoteFeedImageResponseBody.self, from: data)
+			return .success([])
+		} catch {
+			return .failure(RemoteFeedLoader.Error.invalidData)
 		}
 	}
 }
