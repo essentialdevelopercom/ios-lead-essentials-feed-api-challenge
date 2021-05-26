@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct FeedImageMapper {
+struct FeedImagesMapper {
 	static func map(result: Result<(Data, HTTPURLResponse), Error>) -> FeedLoader.Result {
 		if case let .success((data, response)) = result, response.statusCode == 200 {
 			return map(data: data, response: response)
