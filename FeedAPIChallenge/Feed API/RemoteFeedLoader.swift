@@ -38,8 +38,11 @@ struct FeedItemsMapper {
 
 	private static func map(data: Data, response: HTTPURLResponse) -> FeedLoader.Result {
 		do {
-			let _ = try JSONDecoder().decode(GetRemoteFeedImageResponseBody.self, from: data)
-			return .success([])
+			let remoteFeeditems = try JSONDecoder().decode(GetRemoteFeedImageResponseBody.self, from: data)
+			let items = remoteFeeditems.items.map {
+				FeedImage(id: $0.id, description: $0.description, location: $0.location, url: $0.imageUrl )
+			}
+			return .success(items)
 		} catch {
 			return .failure(RemoteFeedLoader.Error.invalidData)
 		}
