@@ -23,8 +23,8 @@ public final class RemoteFeedLoader: FeedLoader {
 			switch result {
 			case let .success((data, response)) where response.statusCode == 200:
 				let decoder = JSONDecoder()
-				if (try? decoder.decode(Items.self, from: data)) != nil {
-					completion(.success([]))
+				if let images = try? decoder.decode(Items.self, from: data) {
+					completion(.success(images.feedImages))
 				} else {
 					completion(.failure(RemoteFeedLoader.Error.invalidData))
 				}
@@ -37,13 +37,21 @@ public final class RemoteFeedLoader: FeedLoader {
 	}
 
 	private class Items: Codable {
-		var items: [FeedItem]
+		private var items: [FeedItem]
+
+		var feedImages: [FeedImage] {
+			return items.map { $0.feedImage }
+		}
 	}
 
 	private class FeedItem: Codable {
-		var image_id: String
-		var image_desc: String?
-		var image_loc: String?
-		var image_url: URL
+		private var image_id: UUID
+		private var image_desc: String?
+		private var image_loc: String?
+		private var image_url: URL
+
+		var feedImage: FeedImage {
+			return FeedImage(id: image_id, description: image_desc, location: image_loc, url: image_url)
+		}
 	}
 }
