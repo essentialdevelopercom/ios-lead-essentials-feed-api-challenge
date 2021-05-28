@@ -18,14 +18,57 @@ public final class RemoteFeedLoader: FeedLoader {
 		self.client = client
 	}
 
+	private static let OK_200 = 200
+
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
 		client.get(from: url) { result in
 			switch result {
-			case .success:
-				completion(.failure(Error.invalidData))
+			case let .success((data, response)):
+				guard response.statusCode == RemoteFeedLoader.OK_200,
+				      let feedImages = RemoteFeedLoader.map(data) else {
+					return completion(.failure(Error.invalidData))
+				}
+
+				completion(.success(feedImages))
 			default:
 				completion(.failure(Error.connectivity))
 			}
+		}
+	}
+
+	private static func map(_ data: Data) -> [FeedImage]? {
+		var feedImages: [FeedImage] = []
+		do {
+			let items = try JSONDecoder().decode(Items.self, from: data)
+			feedImages = items.map()
+		} catch {
+			return nil
+		}
+
+		return feedImages
+	}
+
+	private final class Items: Decodable {
+		fileprivate let items: [FeedAPIImage]
+
+		fileprivate func map() -> [FeedImage] {
+			return items.map {
+				FeedImage(id: $0.id, description: $0.description, location: $0.location, url: $0.url)
+			}
+		}
+	}
+
+	private final class FeedAPIImage: Decodable {
+		fileprivate let id: UUID
+		fileprivate let description: String?
+		fileprivate let location: String?
+		fileprivate let url: URL
+
+		enum CodingKeys: String, CodingKey {
+			case id = "image_id"
+			case description = "image_desc"
+			case location = "image_loc"
+			case url = "image_url"
 		}
 	}
 }
