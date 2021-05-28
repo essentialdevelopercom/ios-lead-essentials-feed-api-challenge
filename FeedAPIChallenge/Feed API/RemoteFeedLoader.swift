@@ -42,7 +42,7 @@ public final class RemoteFeedLoader: FeedLoader {
 	}
 
 	private struct Items: Decodable {
-		private var items: [FeedItem]
+		private let items: [FeedItem]
 
 		var feedImages: [FeedImage] {
 			return items.map { $0.feedImage }
@@ -50,10 +50,10 @@ public final class RemoteFeedLoader: FeedLoader {
 	}
 
 	private struct FeedItem: Decodable {
-		private var image_id: UUID
-		private var image_desc: String?
-		private var image_loc: String?
-		private var image_url: URL
+		private let image_id: UUID
+		private let image_desc: String?
+		private let image_loc: String?
+		private let image_url: URL
 
 		var feedImage: FeedImage {
 			return FeedImage(id: image_id, description: image_desc, location: image_loc, url: image_url)
