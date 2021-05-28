@@ -43,7 +43,7 @@ public final class RemoteFeedLoader: FeedLoader {
 		}
 	}
 
-	private struct Items: Codable {
+	private struct Items: Decodable {
 		private var items: [FeedItem]
 
 		var feedImages: [FeedImage] {
@@ -51,7 +51,7 @@ public final class RemoteFeedLoader: FeedLoader {
 		}
 	}
 
-	private struct FeedItem: Codable {
+	private struct FeedItem: Decodable {
 		private var image_id: UUID
 		private var image_desc: String?
 		private var image_loc: String?
