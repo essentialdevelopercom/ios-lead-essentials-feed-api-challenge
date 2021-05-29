@@ -42,27 +42,20 @@ public final class RemoteFeedLoader: FeedLoader {
 		return try? JSONDecoder().decode(Items.self, from: data).map()
 	}
 
-	private final class Items: Decodable {
-		fileprivate let items: [FeedAPIImage]
+	private struct Items: Decodable {
+		let items: [FeedAPIImage]
 
-		fileprivate func map() -> [FeedImage] {
+		func map() -> [FeedImage] {
 			return items.map {
-				FeedImage(id: $0.id, description: $0.description, location: $0.location, url: $0.url)
+				FeedImage(id: $0.image_id, description: $0.image_desc, location: $0.image_loc, url: $0.image_url)
 			}
 		}
 	}
 
-	private final class FeedAPIImage: Decodable {
-		fileprivate let id: UUID
-		fileprivate let description: String?
-		fileprivate let location: String?
-		fileprivate let url: URL
-
-		enum CodingKeys: String, CodingKey {
-			case id = "image_id"
-			case description = "image_desc"
-			case location = "image_loc"
-			case url = "image_url"
-		}
+	private struct FeedAPIImage: Decodable {
+		let image_id: UUID
+		let image_desc: String?
+		let image_loc: String?
+		let image_url: URL
 	}
 }
