@@ -4,25 +4,6 @@
 
 import Foundation
 
-struct Root: Decodable {
-	let items: [Image]
-
-	var collection: [FeedImage] {
-		return items.map { $0.image }
-	}
-}
-
-struct Image: Decodable {
-	let id: UUID
-	let description: String?
-	let location: String?
-	let url: URL
-
-	var image: FeedImage {
-		return FeedImage(id: id, description: description, location: location, url: url)
-	}
-}
-
 public final class RemoteFeedLoader: FeedLoader {
 	private let url: URL
 	private let client: HTTPClient
@@ -54,5 +35,25 @@ public final class RemoteFeedLoader: FeedLoader {
 				completion(.success([]))
 			}
 		}
+	}
+}
+
+// MARK: - Helpers
+struct Root: Decodable {
+	let items: [Image]
+
+	var collection: [FeedImage] {
+		return items.map { $0.image }
+	}
+}
+
+struct Image: Decodable {
+	let id: UUID
+	let description: String?
+	let location: String?
+	let url: URL
+
+	var image: FeedImage {
+		return FeedImage(id: id, description: description, location: location, url: url)
 	}
 }
