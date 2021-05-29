@@ -27,33 +27,38 @@ public final class RemoteFeedLoader: FeedLoader {
 			case .failure:
 				completion(.failure(Error.connectivity))
 			case let .success((data, response)):
-				guard response.statusCode == 200,
-				      let root = try? JSONDecoder().decode(Root.self, from: data) else {
-					completion(.failure(Error.invalidData))
-					return
-				}
-				completion(.success(root.collection))
+				completion(FeedItemsMapper.map(data: data, response: response))
 			}
 		}
 	}
 }
 
-// MARK: - Helpers
-struct Root: Decodable {
-	let items: [Image]
+// MARK: - FeedItemsMapper
+private final class FeedItemsMapper {
+	struct Root: Decodable {
+		let items: [Image]
 
-	var collection: [FeedImage] {
-		return items.map { $0.image }
+		var collection: [FeedImage] {
+			return items.map { $0.image }
+		}
 	}
-}
 
-struct Image: Decodable {
-	let image_id: UUID
-	let image_desc: String?
-	let image_loc: String?
-	let image_url: URL
+	struct Image: Decodable {
+		let image_id: UUID
+		let image_desc: String?
+		let image_loc: String?
+		let image_url: URL
 
-	var image: FeedImage {
-		return FeedImage(id: image_id, description: image_desc, location: image_loc, url: image_url)
+		var image: FeedImage {
+			return FeedImage(id: image_id, description: image_desc, location: image_loc, url: image_url)
+		}
+	}
+
+	static func map(data: Data, response: HTTPURLResponse) -> FeedLoader.Result {
+		guard response.statusCode == 200,
+		      let root = try? JSONDecoder().decode(Root.self, from: data) else {
+			return .failure(RemoteFeedLoader.Error.invalidData)
+		}
+		return .success(root.collection)
 	}
 }
