@@ -39,15 +39,7 @@ public final class RemoteFeedLoader: FeedLoader {
 	}
 
 	private static func map(_ data: Data) -> [FeedImage]? {
-		var feedImages: [FeedImage] = []
-		do {
-			let items = try JSONDecoder().decode(Items.self, from: data)
-			feedImages = items.map()
-		} catch {
-			return nil
-		}
-
-		return feedImages
+		return try? JSONDecoder().decode(Items.self, from: data).map()
 	}
 
 	private final class Items: Decodable {
