@@ -26,17 +26,30 @@ public final class RemoteFeedLoader: FeedLoader {
 		client.get(from: url) { result in
 			switch (result) {
 			case let .success((data, response)):
-				if response.statusCode != RemoteFeedLoader.httpStatusCode200 {
-					completion(.failure(Error.invalidData))
+				if response.statusCode == RemoteFeedLoader.httpStatusCode200, let root = try? JSONDecoder().decode(Root.self, from: data) {
+					completion(.success(root.items.map {
+						$0.item }))
 				} else {
-					let json = JSONSerialization.isValidJSONObject(data)
-					if (!json) {
-						completion(.failure(Error.invalidData))
-					}
+					completion(.failure(Error.invalidData))
 				}
 			case .failure:
 				completion(.failure(Error.connectivity))
 			}
 		}
+	}
+}
+
+private struct Root: Decodable {
+	let items: [Item]
+}
+
+private struct Item: Decodable {
+	let id: UUID
+	let description: String?
+	let location: String?
+	let image: URL
+
+	var item: FeedImage {
+		return FeedImage(id: id, description: description, location: location, url: image)
 	}
 }
