@@ -34,6 +34,20 @@ public final class RemoteFeedLoader: FeedLoader {
 	}
 
 	private struct Root: Decodable {
-		var items: [String]
+		let items: [FeedItem]
+	}
+
+	private struct FeedItem: Decodable {
+		let id: UUID
+		let description: String?
+		let location: String?
+		let url: URL
+
+		enum CodingKeys: String, CodingKey {
+			case id = "image_id"
+			case description = "image_description"
+			case location = "image_location"
+			case url = "image_url"
+		}
 	}
 }
