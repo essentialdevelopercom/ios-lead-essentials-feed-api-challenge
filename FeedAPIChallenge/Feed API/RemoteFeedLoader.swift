@@ -29,7 +29,7 @@ public final class RemoteFeedLoader: FeedLoader {
 					return
 				}
 
-				completion(.success(root.items))
+				completion(.success(root.feeds))
 			case .failure:
 				completion(.failure(Error.connectivity))
 			}
@@ -39,5 +39,24 @@ public final class RemoteFeedLoader: FeedLoader {
 }
 
 struct Root: Decodable {
-	var items: [FeedImage]
+	let items: [Item]
+
+	var feeds: [FeedImage] {
+		items.map({ $0.feed })
+	}
+
+	struct Item: Decodable {
+		let image_id: UUID
+		let image_desc: String?
+		let image_loc: String?
+		let image_url: URL
+
+		var feed: FeedImage {
+			return FeedImage(
+				id: image_id,
+				description: image_desc,
+				location: image_loc,
+				url: image_url)
+		}
+	}
 }
