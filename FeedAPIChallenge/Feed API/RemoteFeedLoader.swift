@@ -30,8 +30,8 @@ public final class RemoteFeedLoader: FeedLoader {
 				} else {
 					let decoder = JSONDecoder()
 					do {
-						let _ = try decoder.decode(Root.self, from: data)
-						completion(.success([FeedImage]()))
+						let root = try decoder.decode(Root.self, from: data)
+						completion(.success(root.items))
 					} catch  {
 						completion(.failure(Error.invalidData))
 					}
