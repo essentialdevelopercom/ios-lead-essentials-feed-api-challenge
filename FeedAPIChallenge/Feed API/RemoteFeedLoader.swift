@@ -34,7 +34,9 @@ public final class RemoteFeedLoader: FeedLoader {
 	}
 
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
-		client.get(from: url, completion: { result in
+		client.get(from: url, completion: { [weak self] result in
+			guard self != nil else { return }
+
 			switch result {
 			case .failure:
 				completion(.failure(Error.connectivity))
