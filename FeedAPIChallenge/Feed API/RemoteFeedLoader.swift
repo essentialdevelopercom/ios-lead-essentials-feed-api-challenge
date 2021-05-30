@@ -4,6 +4,10 @@
 
 import Foundation
 
+struct Root: Decodable {
+	let items: [FeedImage]
+}
+
 public final class RemoteFeedLoader: FeedLoader {
 	private let url: URL
 	private let client: HTTPClient
@@ -22,7 +26,7 @@ public final class RemoteFeedLoader: FeedLoader {
 		client.get(from: url) { result in
 			switch result {
 			case let .success((data, response)):
-				guard let _ = try? JSONDecoder().decode(FeedImage.self, from: data), response.statusCode == 200 else { completion(.failure(Error.invalidData)); return }
+				guard let _ = try? JSONDecoder().decode(Root.self, from: data), response.statusCode == 200 else { completion(.failure(Error.invalidData)); return }
 			case .failure: completion(.failure(Error.connectivity))
 			}
 		}
