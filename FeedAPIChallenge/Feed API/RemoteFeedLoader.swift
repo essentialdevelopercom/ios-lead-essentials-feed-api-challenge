@@ -4,8 +4,15 @@
 
 import Foundation
 
-struct Root: Decodable {
-	let items: [FeedImage]
+private struct Root: Decodable {
+	let items: [FeedItem]
+}
+
+private struct FeedItem: Decodable {
+	private let id: UUID
+	private let description: String?
+	private let location: String?
+	private let url: URL
 }
 
 public final class RemoteFeedLoader: FeedLoader {
