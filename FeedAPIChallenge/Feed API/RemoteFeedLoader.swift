@@ -23,8 +23,12 @@ public final class RemoteFeedLoader: FeedLoader {
 			switch result {
 			case .failure:
 				completion(.failure(Error.connectivity))
-			default:
-				completion(.success([FeedImage]()))
+			case .success((_, let response)):
+				if response.statusCode != 200 {
+					completion(.failure(Error.invalidData))
+				} else {
+					completion(.success([FeedImage]()))
+				}
 			}
 		})
 	}
