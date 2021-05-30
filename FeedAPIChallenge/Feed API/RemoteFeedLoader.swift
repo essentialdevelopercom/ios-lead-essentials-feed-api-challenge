@@ -34,6 +34,7 @@ public final class RemoteFeedLoader: FeedLoader {
 			switch result {
 			case let .success((data, response)):
 				guard let _ = try? JSONDecoder().decode(Root.self, from: data), response.statusCode == 200 else { completion(.failure(Error.invalidData)); return }
+				completion(.success([]))
 			case .failure: completion(.failure(Error.connectivity))
 			}
 		}
