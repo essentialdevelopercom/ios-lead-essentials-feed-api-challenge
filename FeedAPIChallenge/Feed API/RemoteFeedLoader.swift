@@ -13,6 +13,17 @@ private struct FeedItem: Decodable {
 	private let description: String?
 	private let location: String?
 	private let url: URL
+
+	var feedImage: FeedImage {
+		FeedImage(id: id, description: description, location: location, url: url)
+	}
+
+	enum CodingKeys: String, CodingKey {
+		case id = "image_id"
+		case description = "image_desc"
+		case location = "image_loc"
+		case url = "image_url"
+	}
 }
 
 public final class RemoteFeedLoader: FeedLoader {
@@ -33,8 +44,8 @@ public final class RemoteFeedLoader: FeedLoader {
 		client.get(from: url) { result in
 			switch result {
 			case let .success((data, response)):
-				guard let _ = try? JSONDecoder().decode(Root.self, from: data), response.statusCode == 200 else { completion(.failure(Error.invalidData)); return }
-				completion(.success([]))
+				guard let root = try? JSONDecoder().decode(Root.self, from: data), response.statusCode == 200 else { completion(.failure(Error.invalidData)); return }
+				completion(.success(root.items.map { $0.feedImage }))
 			case .failure: completion(.failure(Error.connectivity))
 			}
 		}
