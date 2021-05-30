@@ -23,7 +23,7 @@ public final class RemoteFeedLoader: FeedLoader {
 			switch result {
 			case let .success((data, response)):
 				guard response.statusCode == 200,
-				      let _ = try? JSONSerialization.jsonObject(with: data)
+				      let _ = try? JSONDecoder().decode(Root.self, from: data)
 				else {
 					completion(.failure(Error.invalidData))
 					return
@@ -34,4 +34,8 @@ public final class RemoteFeedLoader: FeedLoader {
 
 		})
 	}
+}
+
+struct Root: Decodable {
+	var items: [FeedImage]
 }
