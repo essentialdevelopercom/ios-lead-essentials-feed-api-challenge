@@ -19,6 +19,37 @@ public final class RemoteFeedLoader: FeedLoader {
 	}
 
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
-		fatalError("Must be implemented")
+		client.get(from: url) { [weak self] result in
+			guard let self = self else { return }
+			switch result {
+			case .failure:
+				completion(.failure(Error.connectivity))
+			case .success((let data, let response)):
+
+				guard response.statusCode == 200 else {
+					completion(.failure(Error.invalidData))
+					return
+				}
+
+				guard let feedLoaderItems = try? JSONDecoder().decode(FeedItemAPI.self, from: data).items else {
+					completion(.failure(Error.invalidData))
+					return
+				}
+
+				let feedImage = self.feedImagesFactory(feedLoaderItems)
+				completion(.success(feedImage))
+			}
+		}
+	}
+
+	private func feedImagesFactory(_ feedImageAPI: [FeedImageAPI]) -> [FeedImage] {
+		feedImageAPI.map {
+			FeedImage(
+				id: $0.image_id,
+				description: $0.image_desc,
+				location: $0.image_loc,
+				url: $0.image_url
+			)
+		}
 	}
 }
