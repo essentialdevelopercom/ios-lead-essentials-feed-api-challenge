@@ -4,13 +4,11 @@
 
 import Foundation
 
+let httpStatusCode200: Int = 200
+
 public final class RemoteFeedLoader: FeedLoader {
 	private let url: URL
 	private let client: HTTPClient
-
-	static var httpStatusCode200: Int {
-		return 200
-	}
 
 	public enum Error: Swift.Error {
 		case connectivity
@@ -55,7 +53,7 @@ private class FeedImageMapper {
 	}
 
 	static func map(_ data: Data, _ response: HTTPURLResponse) throws -> [FeedImage] {
-		guard response.statusCode == RemoteFeedLoader.httpStatusCode200 else {
+		guard response.statusCode == httpStatusCode200 else {
 			throw RemoteFeedLoader.Error.invalidData
 		}
 		let root = try JSONDecoder().decode(Root.self, from: data)
