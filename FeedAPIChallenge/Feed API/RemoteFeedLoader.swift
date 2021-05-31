@@ -40,12 +40,20 @@ struct FeedImageMapper {
 			public let image_loc: String?
 			public let image_url: URL
 		}
+
+		var feedImageItems: [FeedImage] {
+			return items.map({ result in
+				FeedImage(id: result.image_id, description: result.image_desc, location: result.image_loc, url: result.image_url)
+			})
+		}
 	}
 
 	static func map(data: Data, response: HTTPURLResponse) -> FeedLoader.Result {
-		guard response.statusCode == 200, let _ = try? JSONDecoder().decode(Root.self, from: data) else {
+		guard response.statusCode == 200, let root = try? JSONDecoder().decode(Root.self, from: data) else {
 			return .failure(RemoteFeedLoader.Error.invalidData)
 		}
-		return .success([])
+
+		let items = root.feedImageItems
+		return .success(items)
 	}
 }
