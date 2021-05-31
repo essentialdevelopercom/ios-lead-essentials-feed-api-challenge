@@ -31,20 +31,14 @@ public final class RemoteFeedLoader: FeedLoader {
 	}
 	
 	private class FeedImageMapper {
-		static let OK_200: Int = 200
+		private static let OK_200: Int = 200
 		
 		static func map(from data: Data, _ response: HTTPURLResponse) -> FeedLoader.Result {
-			if response.statusCode != OK_200 {
+			guard response.statusCode == OK_200, let root = try? JSONDecoder().decode(Root.self, from: data) else {
 				return .failure(Error.invalidData)
-			} else {
-				let decoder = JSONDecoder()
-				do {
-					let root = try decoder.decode(Root.self, from: data)
-					return .success(root.items.map { $0.feedImage })
-				} catch  {
-					return .failure(Error.invalidData)
-				}
 			}
+			
+			return .success(root.items.map { $0.feedImage })
 		}
 		
 		private struct Root : Decodable {
