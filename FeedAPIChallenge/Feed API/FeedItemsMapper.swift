@@ -18,20 +18,13 @@ internal final class FeedItemsMapper {
 	}
 
 	private struct FeedItem: Decodable {
-		private let id: UUID
-		private let description: String?
-		private let location: String?
-		private let url: URL
+		private let image_id: UUID
+		private let image_desc: String?
+		private let image_loc: String?
+		private let image_url: URL
 
 		var item: FeedImage {
-			FeedImage(id: id, description: description, location: location, url: url)
-		}
-
-		enum CodingKeys: String, CodingKey {
-			case id = "image_id"
-			case description = "image_desc"
-			case location = "image_loc"
-			case url = "image_url"
+			FeedImage(id: image_id, description: image_desc, location: image_loc, url: image_url)
 		}
 	}
 
