@@ -4,8 +4,6 @@
 
 import Foundation
 
-let httpStatusCode200: Int = 200
-
 public final class RemoteFeedLoader: FeedLoader {
 	private let url: URL
 	private let client: HTTPClient
@@ -60,6 +58,10 @@ private class FeedImageMapper: Decodable {
 			case location = "image_loc"
 			case image = "image_url"
 		}
+	}
+
+	private static var httpStatusCode200: Int {
+		return 200
 	}
 
 	static func map(_ data: Data, _ response: HTTPURLResponse) throws -> [FeedImage] {
