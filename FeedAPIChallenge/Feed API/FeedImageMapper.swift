@@ -9,14 +9,14 @@
 import Foundation
 
 struct FeedImageMapper {
-	struct Root: Decodable {
-		var items: [FeedImageResult] = []
+	private struct Root: Decodable {
+		private var items: [FeedImageResult] = []
 
-		struct FeedImageResult: Decodable {
-			public let image_id: UUID
-			public let image_desc: String?
-			public let image_loc: String?
-			public let image_url: URL
+		private struct FeedImageResult: Decodable {
+			let image_id: UUID
+			let image_desc: String?
+			let image_loc: String?
+			let image_url: URL
 		}
 
 		var feedImageItems: [FeedImage] {
