@@ -48,6 +48,13 @@ enum FeedImagesMapper {
 		var feedImage: FeedImage {
 			return FeedImage(id: id, description: description, location: location, url: url)
 		}
+
+		enum CodingKeys: String, CodingKey {
+			case id = "image_id"
+			case description = "image_desc"
+			case location = "image_loc"
+			case url = "image_url"
+		}
 	}
 
 	private static let okayResponseCode = 200
