@@ -21,11 +21,43 @@ public final class RemoteFeedLoader: FeedLoader {
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
 		client.get(from: url) { result in
 			switch result {
-			case .success(_):
-				completion(.failure(Error.invalidData))
+			case let .success((data, response)):
+				completion(FeedImagesMapper.map(data, response: response))
 			case .failure:
 				completion(.failure(Error.connectivity))
 			}
 		}
+	}
+}
+
+enum FeedImagesMapper {
+	private struct Root: Decodable {
+		let items: [Image]
+
+		var feed: [FeedImage] {
+			return items.map { $0.feedImage }
+		}
+	}
+
+	private struct Image: Decodable {
+		let id: UUID
+		let description: String?
+		let location: String?
+		let url: URL
+
+		var feedImage: FeedImage {
+			return FeedImage(id: id, description: description, location: location, url: url)
+		}
+	}
+
+	private static let okayResponseCode = 200
+
+	static func map(_ data: Data, response: HTTPURLResponse) -> FeedLoader.Result {
+		guard response.statusCode == okayResponseCode,
+		      let root = try? JSONDecoder().decode(Root.self, from: data) else {
+			return .failure(RemoteFeedLoader.Error.invalidData)
+		}
+
+		return .success(root.feed)
 	}
 }
