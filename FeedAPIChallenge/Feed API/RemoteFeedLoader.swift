@@ -24,7 +24,7 @@ public final class RemoteFeedLoader: FeedLoader {
 			switch result {
 			case let .success((data, httpResponse)):
 				if httpResponse.statusCode == 200,
-				   let _ = try? JSONDecoder().decode([APIFeedImage].self, from: data) {
+				   let _ = try? JSONDecoder().decode(Root.self, from: data) {
 					completion(.success([]))
 				} else {
 					completion(.failure(Error.invalidData))
@@ -35,13 +35,17 @@ public final class RemoteFeedLoader: FeedLoader {
 		})
 	}
 
+	private struct Root: Decodable {
+		let items: [APIFeedImage]
+	}
+
 	private struct APIFeedImage: Hashable, Decodable {
 		let id: UUID
 		let description: String?
 		let location: String?
 		let url: URL
 
-		public init(id: UUID, description: String?, location: String?, url: URL) {
+		init(id: UUID, description: String?, location: String?, url: URL) {
 			self.id = id
 			self.description = description
 			self.location = location
