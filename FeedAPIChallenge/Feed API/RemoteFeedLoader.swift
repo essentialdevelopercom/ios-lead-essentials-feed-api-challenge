@@ -33,8 +33,8 @@ public final class RemoteFeedLoader: FeedLoader {
 				throw Error.invalidData
 			}
 			do {
-				_ = try JSONDecoder().decode(Items.self, from: data)
-				return []
+				let remoteItems = try JSONDecoder().decode(Items.self, from: data)
+				return remoteItems.items.map { $0.makeEquivalentFeedImage() }
 			} catch {
 				throw Error.invalidData
 			}
@@ -55,6 +55,10 @@ public final class RemoteFeedLoader: FeedLoader {
 			case description = "image_desc"
 			case location = "image_loc"
 			case url = "image_url"
+		}
+
+		func makeEquivalentFeedImage() -> FeedImage {
+			FeedImage(id: id, description: description, location: location, url: url)
 		}
 	}
 }
