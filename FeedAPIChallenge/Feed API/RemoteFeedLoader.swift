@@ -38,7 +38,7 @@ public final class RemoteFeedLoader: FeedLoader {
 }
 
 private struct Root: Decodable {
-	let items: [FeedImageResponseItem]
+	private let items: [FeedImageResponseItem]
 
 	var feedImages: [FeedImage] {
 		items.map { FeedImage(id: $0.image_id, description: $0.image_desc, location: $0.image_loc, url: $0.image_url) }
