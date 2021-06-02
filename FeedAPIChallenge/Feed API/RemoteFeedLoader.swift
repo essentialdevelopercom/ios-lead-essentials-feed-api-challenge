@@ -33,7 +33,7 @@ public final class RemoteFeedLoader: FeedLoader {
 				throw Error.invalidData
 			}
 			do {
-				_ = try JSONDecoder().decode([RemoteImage].self, from: data)
+				_ = try JSONDecoder().decode(Items.self, from: data)
 				return []
 			} catch {
 				throw Error.invalidData
@@ -41,10 +41,20 @@ public final class RemoteFeedLoader: FeedLoader {
 		}
 	}
 
+	private struct Items: Decodable {
+		let items: [RemoteImage]
+	}
+
 	private struct RemoteImage: Decodable {
 		let id: UUID
 		let description: String?
 		let location: String?
 		let url: URL
+		enum CodingKeys: String, CodingKey {
+			case id = "image_id"
+			case description = "image_desc"
+			case location = "image_loc"
+			case url = "image_url"
+		}
 	}
 }
