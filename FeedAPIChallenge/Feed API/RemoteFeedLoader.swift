@@ -23,12 +23,24 @@ public final class RemoteFeedLoader: FeedLoader {
 			switch result {
 			case .failure:
 				completion(.failure(Error.connectivity))
-			case .success((_, let httpResponse)):
+			case .success((let data, let httpResponse)):
 				guard httpResponse.statusCode == 200 else {
 					completion(.failure(Error.invalidData))
 					return
 				}
+				do {
+					_ = try JSONDecoder().decode([RemoteImage].self, from: data)
+				} catch {
+					completion(.failure(Error.invalidData))
+				}
 			}
 		}
+	}
+
+	private struct RemoteImage: Decodable {
+		let id: UUID
+		let description: String?
+		let location: String?
+		let url: URL
 	}
 }
