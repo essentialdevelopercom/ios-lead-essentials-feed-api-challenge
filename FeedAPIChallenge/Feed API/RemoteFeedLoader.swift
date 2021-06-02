@@ -7,7 +7,7 @@ import Foundation
 public final class RemoteFeedLoader: FeedLoader {
 	private let url: URL
 	private let client: HTTPClient
-	private let OK_200 = 200
+	private static let OK_200 = 200
 
 	public enum Error: Swift.Error {
 		case connectivity
