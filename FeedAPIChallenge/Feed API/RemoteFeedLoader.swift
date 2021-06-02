@@ -23,7 +23,7 @@ public final class RemoteFeedLoader: FeedLoader {
 		client.get(from: url) { [weak self] result in
 			guard let self = self else { return }
 			switch result {
-			case .success((let data, let response)):
+			case let .success((data, response)):
 				guard response.statusCode == self.OK_200,
 				      let responseItems = try? JSONDecoder().decode(Root.self, from: data) else {
 					completion(.failure(Error.invalidData))
