@@ -22,13 +22,30 @@ public final class RemoteFeedLoader: FeedLoader {
 		client.get(from: url, completion: { result in
 
 			switch result {
-			case let .success((_, httpResponse)):
-				if httpResponse.statusCode != 200 {
+			case let .success((data, httpResponse)):
+				if httpResponse.statusCode == 200,
+				   let _ = try? JSONDecoder().decode([APIFeedImage].self, from: data) {
+					completion(.success([]))
+				} else {
 					completion(.failure(Error.invalidData))
 				}
 			case .failure:
 				completion(.failure(Error.connectivity))
 			}
 		})
+	}
+
+	private struct APIFeedImage: Hashable, Decodable {
+		let id: UUID
+		let description: String?
+		let location: String?
+		let url: URL
+
+		public init(id: UUID, description: String?, location: String?, url: URL) {
+			self.id = id
+			self.description = description
+			self.location = location
+			self.url = url
+		}
 	}
 }
