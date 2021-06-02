@@ -18,10 +18,10 @@ enum FeedImagesMapper {
 	}
 
 	private struct Image: Decodable {
-		let id: UUID
-		let description: String?
-		let location: String?
-		let url: URL
+		private let id: UUID
+		private let description: String?
+		private let location: String?
+		private let url: URL
 
 		var feedImage: FeedImage {
 			return FeedImage(id: id, description: description, location: location, url: url)
