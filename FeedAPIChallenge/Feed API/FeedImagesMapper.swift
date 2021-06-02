@@ -10,7 +10,7 @@ import Foundation
 
 enum FeedImagesMapper {
 	private struct Root: Decodable {
-		let items: [Image]
+		private let items: [Image]
 
 		var feed: [FeedImage] {
 			return items.map { $0.feedImage }
