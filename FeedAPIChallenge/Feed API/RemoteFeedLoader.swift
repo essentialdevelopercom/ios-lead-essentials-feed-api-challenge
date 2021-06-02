@@ -24,7 +24,8 @@ public final class RemoteFeedLoader: FeedLoader {
 			
 			switch result {
 			case let .success((data, response)):
-				if response.statusCode == 200, let root = try? JSONDecoder().decode(Root.self, from: data) {
+				if response.statusCode == 200,
+				   let root = try? JSONDecoder().decode(Root.self, from: data) {
 					completion(.success(root.mapToFeedImages()))
 				} else {
 					completion(.failure(Error.invalidData))
@@ -48,7 +49,12 @@ public final class RemoteFeedLoader: FeedLoader {
 		func mapToFeedImages() -> [FeedImage] {
 			var result = [FeedImage]()
 			for item in items {
-				let feedImage = FeedImage(id: item.image_id, description: item.image_desc, location: item.image_loc, url: item.image_url)
+				let feedImage = FeedImage(
+					id: item.image_id,
+					description: item.image_desc,
+					location: item.image_loc,
+					url: item.image_url
+				)
 				result.append(feedImage)
 			}
 			return result
