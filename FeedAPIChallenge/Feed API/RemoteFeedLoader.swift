@@ -24,14 +24,10 @@ public final class RemoteFeedLoader: FeedLoader {
 			case .failure(_):
 				completion(.failure(Error.connectivity))
 			case .success((let data, let response)):
-				guard response.statusCode == 200 else {
+				guard response.statusCode == 200,
+				      let _ = try? JSONSerialization.jsonObject(with: data) else {
 					completion(.failure(Error.invalidData))
 					return
-				}
-				do {
-					try JSONSerialization.jsonObject(with: data)
-				} catch {
-					completion(.failure(Error.invalidData))
 				}
 			}
 		}
