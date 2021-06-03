@@ -8,9 +8,12 @@
 
 import Foundation
 
-class ImageFeedMapper {
+final class ImageFeedMapper {
 	private struct Root: Decodable {
 		let items: [Item]
+		var imageFeed: [FeedImage] {
+			items.map { $0.item }
+		}
 	}
 
 	private struct Item: Decodable {
@@ -32,6 +35,6 @@ class ImageFeedMapper {
 		      let root = try? JSONDecoder().decode(Root.self, from: data) else {
 			return .failure(RemoteFeedLoader.Error.invalidData)
 		}
-		return .success(root.items.map { $0.item })
+		return .success(root.imageFeed)
 	}
 }
