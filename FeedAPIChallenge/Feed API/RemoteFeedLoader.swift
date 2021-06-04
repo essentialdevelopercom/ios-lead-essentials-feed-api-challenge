@@ -27,8 +27,8 @@ public final class RemoteFeedLoader: FeedLoader {
 			switch result {
 			case .success((let data, let response)):
 				if response.statusCode == 200,
-				   let _ = try? self.mapper.map(data: data) {
-					return
+				   let images = try? self.mapper.map(data: data) {
+					return completion(.success(images))
 				}
 				completion(.failure(Error.invalidData))
 			case .failure:
