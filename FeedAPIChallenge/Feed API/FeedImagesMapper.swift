@@ -10,10 +10,10 @@ import Foundation
 
 final class FeedImagesMapper {
 	private struct Root: Decodable {
-		private let images: [Image]
+		private let items: [Image]
 
 		var feed: [FeedImage] {
-			images.map { $0.image }
+			items.map { $0.image }
 		}
 	}
 
