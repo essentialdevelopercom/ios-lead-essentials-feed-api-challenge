@@ -46,7 +46,7 @@ private struct Item: Decodable {
 	let image_url: URL
 }
 
-private class FeedImageMapper {
+private final class FeedImageMapper {
 	static func map(_ items: [Item]) -> [FeedImage] {
 		items.map { FeedImage(id: $0.image_id, description: $0.image_desc, location: $0.image_loc, url: $0.image_url) }
 	}
