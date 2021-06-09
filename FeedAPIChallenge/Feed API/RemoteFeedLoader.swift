@@ -21,7 +21,7 @@ public final class RemoteFeedLoader: FeedLoader {
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
 		client.get(from: url) { [weak self] result in
 			guard let self = self else { return }
-			
+
 			switch result {
 			case .failure:
 				completion(.failure(Error.connectivity))
@@ -33,7 +33,7 @@ public final class RemoteFeedLoader: FeedLoader {
 			}
 		}
 	}
-	
+
 	private func mapped(data: Data, response: HTTPURLResponse) -> [FeedImage]? {
 		guard response.statusCode == 200, let root = try? JSONDecoder().decode(Root.self, from: data) else {
 			return nil
