@@ -9,11 +9,21 @@
 import Foundation
 
 struct FeedImageMapper {
+	private static let OK_200 = 200
+
 	private struct GroupItem: Decodable {
 		let items: [RemoteImage]
 	}
 
-	static func decode(from data: Data) -> [FeedImage]? {
+	static func getResult(from data: Data, response: HTTPURLResponse) -> FeedLoader.Result {
+		guard response.statusCode == OK_200,
+		      let items = FeedImageMapper.decode(from: data) else {
+			return .failure(RemoteFeedLoader.Error.invalidData)
+		}
+		return .success(items)
+	}
+
+	static private func decode(from data: Data) -> [FeedImage]? {
 		guard let groupItem = try? JSONDecoder().decode(GroupItem.self, from: data) else {
 			return nil
 		}
