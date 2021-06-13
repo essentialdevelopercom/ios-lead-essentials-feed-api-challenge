@@ -4,6 +4,13 @@
 
 import Foundation
 
+private struct RemoteImage: Decodable {
+	let image_id: UUID
+	let image_desc: String?
+	let image_loc: String?
+	let image_url: URL
+}
+
 public final class RemoteFeedLoader: FeedLoader {
 	private let url: URL
 	private let client: HTTPClient
@@ -21,8 +28,18 @@ public final class RemoteFeedLoader: FeedLoader {
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
 		client.get(from: url) { result in
 			switch result {
-			case .success((_, _)):
-				completion(.failure(Error.invalidData))
+			case let .success((data, response)):
+				guard response.statusCode == 200 else {
+					completion(.failure(Error.invalidData))
+					return
+				}
+
+				do {
+					let _ = try JSONDecoder().decode([RemoteImage].self, from: data)
+				} catch {
+					completion(.failure(Error.invalidData))
+				}
+
 			case .failure(_):
 				completion(.failure(Error.connectivity))
 			}
