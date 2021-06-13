@@ -4,6 +4,10 @@
 
 import Foundation
 
+private struct GroupItem: Decodable {
+	let items: [RemoteImage]
+}
+
 private struct RemoteImage: Decodable {
 	let image_id: UUID
 	let image_desc: String?
@@ -35,7 +39,8 @@ public final class RemoteFeedLoader: FeedLoader {
 				}
 
 				do {
-					let _ = try JSONDecoder().decode([RemoteImage].self, from: data)
+					let _ = try JSONDecoder().decode(GroupItem.self, from: data)
+					completion(.success([]))
 				} catch {
 					completion(.failure(Error.invalidData))
 				}
