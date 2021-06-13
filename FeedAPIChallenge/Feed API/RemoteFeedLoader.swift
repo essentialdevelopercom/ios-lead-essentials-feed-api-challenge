@@ -4,10 +4,6 @@
 
 import Foundation
 
-private struct GroupItem: Decodable {
-	let items: [RemoteImage]
-}
-
 private struct RemoteImage: Decodable {
 	let image_id: UUID
 	let image_desc: String?
@@ -33,18 +29,15 @@ public final class RemoteFeedLoader: FeedLoader {
 		client.get(from: url) { [weak self] result in
 			switch result {
 			case let .success((data, response)):
-
 				guard response.statusCode == 200,
-				      let groupItem = try? JSONDecoder().decode(GroupItem.self, from: data) else {
+				      let items = FeedImageMapper.decode(from: data) else {
 					completion(.failure(Error.invalidData))
 					return
 				}
 
-				let items = FeedImageMapper.mapRemoteImages(groupItem.items)
 				if self != nil {
 					completion(.success(items))
 				}
-
 			case .failure(_):
 				completion(.failure(Error.connectivity))
 			}
@@ -53,7 +46,20 @@ public final class RemoteFeedLoader: FeedLoader {
 }
 
 private struct FeedImageMapper {
-	static func mapRemoteImages(_ items: [RemoteImage]) -> [FeedImage] {
+	
+	private struct GroupItem: Decodable {
+		let items: [RemoteImage]
+	}
+
+	static func decode(from data: Data) -> [FeedImage]? {
+		guard let groupItem = try? JSONDecoder().decode(GroupItem.self, from: data) else {
+			return nil
+		}
+
+		return mapRemoteImages(groupItem.items)
+	}
+
+	static private func mapRemoteImages(_ items: [RemoteImage]) -> [FeedImage] {
 		return items.map { remoteImage in
 			return FeedImage(
 				id: remoteImage.image_id,
