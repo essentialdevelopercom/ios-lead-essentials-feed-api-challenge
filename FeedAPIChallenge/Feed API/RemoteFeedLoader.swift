@@ -4,13 +4,6 @@
 
 import Foundation
 
-private struct RemoteImage: Decodable {
-	let image_id: UUID
-	let image_desc: String?
-	let image_loc: String?
-	let image_url: URL
-}
-
 public final class RemoteFeedLoader: FeedLoader {
 	private let url: URL
 	private let client: HTTPClient
@@ -41,31 +34,6 @@ public final class RemoteFeedLoader: FeedLoader {
 			case .failure(_):
 				completion(.failure(Error.connectivity))
 			}
-		}
-	}
-}
-
-private struct FeedImageMapper {
-	
-	private struct GroupItem: Decodable {
-		let items: [RemoteImage]
-	}
-
-	static func decode(from data: Data) -> [FeedImage]? {
-		guard let groupItem = try? JSONDecoder().decode(GroupItem.self, from: data) else {
-			return nil
-		}
-
-		return mapRemoteImages(groupItem.items)
-	}
-
-	static private func mapRemoteImages(_ items: [RemoteImage]) -> [FeedImage] {
-		return items.map { remoteImage in
-			return FeedImage(
-				id: remoteImage.image_id,
-				description: remoteImage.image_desc,
-				location: remoteImage.image_loc,
-				url: remoteImage.image_url)
 		}
 	}
 }
