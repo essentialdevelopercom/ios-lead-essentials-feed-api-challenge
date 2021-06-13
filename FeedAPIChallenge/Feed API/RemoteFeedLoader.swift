@@ -35,12 +35,19 @@ public final class RemoteFeedLoader: FeedLoader {
 			case let .success((data, response)):
 
 				guard response.statusCode == 200,
-				      let _ = try? JSONDecoder().decode(GroupItem.self, from: data) else {
+				      let groupItem = try? JSONDecoder().decode(GroupItem.self, from: data) else {
 					completion(.failure(Error.invalidData))
 					return
 				}
 
-				completion(.success([]))
+				let items = groupItem.items.map { remoteImage in
+					return FeedImage(
+						id: remoteImage.image_id,
+						description: remoteImage.image_desc,
+						location: remoteImage.image_loc,
+						url: remoteImage.image_url)
+				}
+				completion(.success(items))
 			case .failure(_):
 				completion(.failure(Error.connectivity))
 			}
