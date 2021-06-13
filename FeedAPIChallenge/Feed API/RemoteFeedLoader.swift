@@ -19,15 +19,32 @@ public final class RemoteFeedLoader: FeedLoader {
 	}
 
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
-		client.get(from: url) { result in
+		client.get(from: url) { [weak self] result in
 			switch result {
-			case let .success((_, response)):
-				if response.statusCode != 200 {
+			case let .success((receivedData, response)):
+
+				if response.statusCode == 200 {
+					if let _ = self?.mapping(receivedData) {
+					} else {
+						completion(.failure(Error.invalidData))
+					}
+				} else {
 					completion(.failure(Error.invalidData))
 				}
 			case .failure(_):
 				completion(.failure(Error.connectivity))
 			}
+		}
+	}
+
+	//MARK: - HELPER
+
+	private func mapping(_ data: Data) -> [Item]? {
+		do {
+			let root = try JSONDecoder().decode(Root.self, from: data)
+			return root.items
+		} catch {
+			return nil
 		}
 	}
 }
