@@ -40,17 +40,24 @@ public final class RemoteFeedLoader: FeedLoader {
 					return
 				}
 
-				let items = groupItem.items.map { remoteImage in
-					return FeedImage(
-						id: remoteImage.image_id,
-						description: remoteImage.image_desc,
-						location: remoteImage.image_loc,
-						url: remoteImage.image_url)
-				}
+				let items = FeedImageMapper.mapRemoteImages(groupItem.items)
 				completion(.success(items))
 			case .failure(_):
 				completion(.failure(Error.connectivity))
 			}
+		}
+	}
+}
+
+private struct FeedImageMapper {
+	
+	static func mapRemoteImages(_ items: [RemoteImage]) -> [FeedImage] {
+		return items.map { remoteImage in
+			return FeedImage(
+				id: remoteImage.image_id,
+				description: remoteImage.image_desc,
+				location: remoteImage.image_loc,
+				url: remoteImage.image_url)
 		}
 	}
 }
