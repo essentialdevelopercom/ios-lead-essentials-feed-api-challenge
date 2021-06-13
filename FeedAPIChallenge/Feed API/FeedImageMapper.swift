@@ -24,10 +24,10 @@ struct FeedImageMapper {
 	static private func mapRemoteImages(_ items: [RemoteImage]) -> [FeedImage] {
 		return items.map { remoteImage in
 			return FeedImage(
-				id: remoteImage.image_id,
-				description: remoteImage.image_desc,
-				location: remoteImage.image_loc,
-				url: remoteImage.image_url)
+				id: remoteImage.id,
+				description: remoteImage.description,
+				location: remoteImage.location,
+				url: remoteImage.url)
 		}
 	}
 }
