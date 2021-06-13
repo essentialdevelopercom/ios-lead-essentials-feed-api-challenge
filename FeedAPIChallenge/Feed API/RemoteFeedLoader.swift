@@ -30,7 +30,7 @@ public final class RemoteFeedLoader: FeedLoader {
 	}
 
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
-		client.get(from: url) { result in
+		client.get(from: url) { [weak self] result in
 			switch result {
 			case let .success((data, response)):
 
@@ -41,7 +41,10 @@ public final class RemoteFeedLoader: FeedLoader {
 				}
 
 				let items = FeedImageMapper.mapRemoteImages(groupItem.items)
-				completion(.success(items))
+				if self != nil {
+					completion(.success(items))
+				}
+
 			case .failure(_):
 				completion(.failure(Error.connectivity))
 			}
@@ -50,7 +53,6 @@ public final class RemoteFeedLoader: FeedLoader {
 }
 
 private struct FeedImageMapper {
-	
 	static func mapRemoteImages(_ items: [RemoteImage]) -> [FeedImage] {
 		return items.map { remoteImage in
 			return FeedImage(
