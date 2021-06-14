@@ -8,11 +8,11 @@
 
 import Foundation
 
-public struct ImageList: Decodable {
+internal struct ImageList: Decodable {
 	let items: [Images]
 }
 
-public struct Images: Decodable {
+internal struct Images: Decodable {
 	let image_id: UUID
 	let image_desc: String?
 	let image_loc: String?
