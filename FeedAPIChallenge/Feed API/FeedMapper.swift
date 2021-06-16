@@ -8,7 +8,7 @@
 
 import Foundation
 
-internal final class FeedImageList {
+final class FeedMapper {
 	private struct ImageList: Decodable {
 		let items: [Images]
 	}
