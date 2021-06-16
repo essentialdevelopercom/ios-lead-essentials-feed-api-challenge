@@ -25,11 +25,10 @@ internal final class FeedImageList {
 	}
 
 	static func map(_ data: Data, with response: HTTPURLResponse) throws -> [FeedImage] {
-		guard response.statusCode == 200 else {
+		guard response.statusCode == 200,
+		      let list = try? JSONDecoder().decode(ImageList.self, from: data) else {
 			throw RemoteFeedLoader.Error.invalidData
 		}
-
-		let list = try JSONDecoder().decode(ImageList.self, from: data)
 		return list.items.map { $0.image }
 	}
 }
