@@ -24,6 +24,8 @@ public final class RemoteFeedLoader: FeedLoader {
 			case .success((_, let httpURLResponse)):
 				if httpURLResponse.statusCode != 200 {
 					completion(.failure(RemoteFeedLoader.Error.invalidData))
+				} else {
+					completion(.failure(RemoteFeedLoader.Error.invalidData))
 				}
 			case .failure(_):
 				completion(.failure(RemoteFeedLoader.Error.connectivity))
