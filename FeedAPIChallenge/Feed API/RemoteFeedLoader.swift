@@ -24,8 +24,8 @@ public final class RemoteFeedLoader: FeedLoader {
 			case .success((let data, let httpURLResponse)):
 				if httpURLResponse.statusCode != 200 {
 					completion(.failure(RemoteFeedLoader.Error.invalidData))
-				} else if let _ = try? JSONDecoder().decode(RemoteFeedImageResponse.self, from: data) {
-					completion(.success([]))
+				} else if let remoteFeedImages = RemoteFeedLoader.parse(data: data) {
+					completion(.success(RemoteFeedLoader.map(remoteFeedImages)))
 				} else {
 					completion(.failure(RemoteFeedLoader.Error.invalidData))
 				}
@@ -40,5 +40,21 @@ public final class RemoteFeedLoader: FeedLoader {
 			return nil
 		}
 		return parsedResponse.items
+	}
+
+	private static func map(_ remoteFeedImages: [RemoteFeedImage]) -> [FeedImage] {
+		return remoteFeedImages.compactMap({ remoteFeedImage in
+			guard let url = URL(string: remoteFeedImage.imageURL),
+			      let uuid = UUID(uuidString: remoteFeedImage.imageID) else {
+				return nil
+			}
+
+			return FeedImage(
+				id: uuid,
+				description: remoteFeedImage.imageDesc,
+				location: remoteFeedImage.imageLOC,
+				url: url
+			)
+		})
 	}
 }
