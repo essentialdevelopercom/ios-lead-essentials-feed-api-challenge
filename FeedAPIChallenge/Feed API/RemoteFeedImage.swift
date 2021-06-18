@@ -9,7 +9,7 @@
 import Foundation
 
 internal struct RemoteFeedImageResponse: Codable {
-	let feedImages: [RemoteFeedImage]?
+	let items: [RemoteFeedImage]?
 }
 
 internal struct RemoteFeedImage: Codable {

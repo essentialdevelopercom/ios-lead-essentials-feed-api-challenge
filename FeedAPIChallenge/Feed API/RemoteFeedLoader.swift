@@ -37,6 +37,6 @@ public final class RemoteFeedLoader: FeedLoader {
 		guard let parsedResponse = try? JSONDecoder().decode(RemoteFeedImageResponse.self, from: data) else {
 			return nil
 		}
-		return parsedResponse.feedImages
+		return parsedResponse.items
 	}
 }
