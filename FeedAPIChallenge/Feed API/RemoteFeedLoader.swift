@@ -24,13 +24,19 @@ public final class RemoteFeedLoader: FeedLoader {
 			case .success((let data, let httpURLResponse)):
 				if httpURLResponse.statusCode != 200 {
 					completion(.failure(RemoteFeedLoader.Error.invalidData))
-				} else if let _ = try? JSONDecoder().decode(RemoteFeedImageResponse.self, from: data) {
-				} else {
+				} else if RemoteFeedLoader.parse(data: data) == nil {
 					completion(.failure(RemoteFeedLoader.Error.invalidData))
 				}
 			case .failure(_):
 				completion(.failure(RemoteFeedLoader.Error.connectivity))
 			}
 		}
+	}
+
+	private static func parse(data: Data) -> [RemoteFeedImage]? {
+		guard let parsedResponse = try? JSONDecoder().decode(RemoteFeedImageResponse.self, from: data) else {
+			return nil
+		}
+		return parsedResponse.feedImages
 	}
 }
