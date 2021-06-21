@@ -25,10 +25,7 @@ public final class RemoteFeedLoader: FeedLoader {
 			case .failure:
 				completion(.failure(Error.connectivity))
 			case let .success((data, response)):
-				guard response.statusCode == 200 else {
-					return completion(.failure(Error.invalidData))
-				}
-				completion(FeedImagesMapper.map(data))
+				completion(FeedImagesMapper.map(data, from: response))
 			}
 		}
 	}
