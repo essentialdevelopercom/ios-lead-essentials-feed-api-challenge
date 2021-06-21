@@ -47,10 +47,10 @@ public final class RemoteFeedLoader: FeedLoader {
 	private static func map(_ remoteFeedImages: [RemoteFeedImage]) -> [FeedImage] {
 		return remoteFeedImages.map({
 			return FeedImage(
-				id: $0.imageID,
-				description: $0.imageDesc,
-				location: $0.imageLOC,
-				url: $0.imageURL
+				id: $0.image_id,
+				description: $0.image_desc,
+				location: $0.image_loc,
+				url: $0.image_url
 			)
 		})
 	}
