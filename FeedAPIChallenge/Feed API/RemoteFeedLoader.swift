@@ -23,7 +23,7 @@ public final class RemoteFeedLoader: FeedLoader {
 			guard self != nil else { return }
 
 			switch result {
-			case .success((let data, let httpURLResponse)):
+			case let .success((data, httpURLResponse)):
 				if httpURLResponse.statusCode == 200,
 				   let remoteFeedImages = RemoteFeedLoader.parse(data: data) {
 					completion(.success(RemoteFeedLoader.map(remoteFeedImages)))
