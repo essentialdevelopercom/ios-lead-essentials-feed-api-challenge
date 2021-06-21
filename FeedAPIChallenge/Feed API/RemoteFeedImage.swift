@@ -8,11 +8,11 @@
 
 import Foundation
 
-internal struct RemoteFeedImageResponse: Codable {
+internal struct RemoteFeedImageResponse: Decodable {
 	let items: [RemoteFeedImage]?
 }
 
-internal struct RemoteFeedImage: Codable {
+internal struct RemoteFeedImage: Decodable {
 	let image_id: UUID
 	let image_desc: String?
 	let image_loc: String?
