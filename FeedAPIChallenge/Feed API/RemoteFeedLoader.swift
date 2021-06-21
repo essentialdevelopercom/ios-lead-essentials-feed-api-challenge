@@ -38,10 +38,7 @@ public final class RemoteFeedLoader: FeedLoader {
 	}
 
 	private static func parse(data: Data) -> [RemoteFeedImage]? {
-		guard let parsedResponse = try? JSONDecoder().decode(RemoteFeedImageResponse.self, from: data) else {
-			return nil
-		}
-		return parsedResponse.items
+		return try? JSONDecoder().decode(RemoteFeedImageResponse.self, from: data).items
 	}
 
 	private static func map(_ remoteFeedImages: [RemoteFeedImage]) -> [FeedImage] {
