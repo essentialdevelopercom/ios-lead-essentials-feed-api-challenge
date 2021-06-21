@@ -45,17 +45,12 @@ public final class RemoteFeedLoader: FeedLoader {
 	}
 
 	private static func map(_ remoteFeedImages: [RemoteFeedImage]) -> [FeedImage] {
-		return remoteFeedImages.compactMap({ remoteFeedImage in
-			guard let url = URL(string: remoteFeedImage.imageURL),
-			      let uuid = UUID(uuidString: remoteFeedImage.imageID) else {
-				return nil
-			}
-
+		return remoteFeedImages.map({
 			return FeedImage(
-				id: uuid,
-				description: remoteFeedImage.imageDesc,
-				location: remoteFeedImage.imageLOC,
-				url: url
+				id: $0.imageID,
+				description: $0.imageDesc,
+				location: $0.imageLOC,
+				url: $0.imageURL
 			)
 		})
 	}

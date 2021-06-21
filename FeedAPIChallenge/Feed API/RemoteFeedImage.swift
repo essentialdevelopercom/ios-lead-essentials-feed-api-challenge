@@ -13,9 +13,9 @@ internal struct RemoteFeedImageResponse: Codable {
 }
 
 internal struct RemoteFeedImage: Codable {
-	let imageID: String
+	let imageID: UUID
 	let imageDesc, imageLOC: String?
-	let imageURL: String
+	let imageURL: URL
 
 	enum CodingKeys: String, CodingKey {
 		case imageID = "image_id"
