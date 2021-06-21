@@ -28,10 +28,10 @@ public final class RemoteFeedLoader: FeedLoader {
 				   let remoteFeedImages = RemoteFeedLoader.parse(data: data) {
 					completion(.success(RemoteFeedLoader.map(remoteFeedImages)))
 				} else {
-					completion(.failure(RemoteFeedLoader.Error.invalidData))
+					completion(.failure(Error.invalidData))
 				}
-			case .failure(_):
-				completion(.failure(RemoteFeedLoader.Error.connectivity))
+			case .failure:
+				completion(.failure(Error.connectivity))
 			}
 		}
 	}
