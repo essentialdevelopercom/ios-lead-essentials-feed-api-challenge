@@ -19,6 +19,19 @@ public final class RemoteFeedLoader: FeedLoader {
 	}
 
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
-		fatalError("Must be implemented")
+		client.get(from: url) { [weak self] result in
+			guard self != nil else { return }
+			switch result {
+			case let .success((data, response)):
+				do {
+					let feedImages = try FeedMapper.map(data, with: response)
+					completion(.success(feedImages))
+				} catch {
+					completion(.failure(error))
+				}
+			case .failure:
+				completion(.failure(Error.connectivity))
+			}
+		}
 	}
 }
