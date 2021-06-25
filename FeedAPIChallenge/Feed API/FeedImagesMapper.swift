@@ -11,18 +11,21 @@ import Foundation
 final class FeedImagesMapper {
 	private struct Root: Decodable {
 		let items: [Image]
+		var feedImages: [FeedImage] {
+			items.map({ $0.item })
+		}
 	}
-	
+
 	private struct Image: Decodable {
 		let id: UUID
 		let description: String?
 		let location: String?
 		let url: URL
-		
+
 		var item: FeedImage {
 			return FeedImage(id: id, description: description, location: location, url: url)
 		}
-		
+
 		enum CodingKeys: String, CodingKey {
 			case id = "image_id"
 			case description = "image_desc"
@@ -30,15 +33,14 @@ final class FeedImagesMapper {
 			case url = "image_url"
 		}
 	}
-	
+
 	private static var ok_200: Int { return 200 }
-	
-	static func map(_ data: Data, _ response: HTTPURLResponse) throws -> [FeedImage] {
-		
-		guard response.statusCode == ok_200 else {
-			throw RemoteFeedLoader.Error.invalidData
+
+	static func map(_ data: Data, _ response: HTTPURLResponse) -> FeedLoader.Result {
+		guard response.statusCode == ok_200,
+			  let items = try? JSONDecoder().decode(Root.self, from: data) else {
+			return .failure(RemoteFeedLoader.Error.invalidData)
 		}
-		let root = try JSONDecoder().decode(Root.self, from: data)
-		return root.items.map({ $0.item })
+		return .success(items.feedImages)
 	}
 }
