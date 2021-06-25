@@ -24,46 +24,42 @@ public final class RemoteFeedLoader: FeedLoader {
 			switch result {
 			case .failure:
 				completion(.failure(Error.connectivity))
-			case .success(let response):
-				if response.1.statusCode != 200 {
-					completion(.failure(Error.invalidData))
-				} else {
-					completion(FeedLoaderDecoder.feedLoaderItemsDecoder(with: response.0))
-				}
+			case .success((let data, let httpResponse)):
+				completion(FeedLoaderDecoder.decode(with: data, httpResponse: httpResponse))
 			}
 		}
 	}
 }
 
-fileprivate struct FeedLoaderDecoder {
-	private struct FeedLoaderResult: Decodable {
-		let items: [FeedImageItem]
-	}
-
-	private struct FeedImageItem: Decodable {
-		let image_id: String
-		let image_desc: String?
-		let image_loc: String?
-		let image_url: String
-
-		var item: FeedImage? {
-			guard let url = URL(string: image_url), let uuid = UUID(uuidString: image_id) else {
-				return nil
-			}
-			return FeedImage(id: uuid, description: image_desc, location: image_loc, url: url)
+private extension RemoteFeedLoader {
+	private struct FeedLoaderDecoder {
+		private static let OK_200 = 200
+		private struct RootRemoteResponse: Decodable {
+			let items: [FeedImageItem]
 		}
-	}
 
-	static func feedLoaderItemsDecoder(with data: Data) -> Swift.Result<[FeedImage], Error> {
-		do {
-			let decoder = JSONDecoder()
-			let feedLoader = try decoder.decode(FeedLoaderResult.self, from: data)
-			return Swift.Result.success(feedLoader.items.compactMap {
-				$0.item
+		private struct FeedImageItem: Decodable {
+			private let image_id: UUID
+			private let image_desc: String?
+			private let image_loc: String?
+			private let image_url: URL
+
+			var item: FeedImage {
+				FeedImage(id: image_id, description: image_desc, location: image_loc, url: image_url)
 			}
-			)
-		} catch {
-			return Swift.Result.failure(RemoteFeedLoader.Error.invalidData)
+		}
+
+		static func decode(with data: Data, httpResponse: HTTPURLResponse) -> FeedLoader.Result {
+			if httpResponse.statusCode != FeedLoaderDecoder.OK_200 {
+				return FeedLoader.Result.failure(Error.invalidData)
+			}
+			let decoder = JSONDecoder()
+			if let feedLoader = try? decoder.decode(RootRemoteResponse.self, from: data) {
+				return FeedLoader.Result.success(feedLoader.items.map {
+					$0.item
+				})
+			}
+			return FeedLoader.Result.failure(RemoteFeedLoader.Error.invalidData)
 		}
 	}
 }
