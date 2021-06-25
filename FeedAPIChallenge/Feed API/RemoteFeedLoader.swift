@@ -27,9 +27,41 @@ public final class RemoteFeedLoader: FeedLoader {
 				if response.1.statusCode != 200 {
 					completion(.failure(Error.invalidData))
 				} else {
-					fatalError()
+					completion(FeedLoaderDecoder.feedLoaderItemsDecoder(with: response.0))
 				}
 			}
+		}
+	}
+}
+
+fileprivate struct FeedLoaderDecoder {
+	private struct FeedLoaderResult: Decodable {
+		let items: [FeedImageItem]
+	}
+
+	private struct FeedImageItem: Decodable {
+		let image_id: String
+		let image_desc: String?
+		let image_loc: String?
+		let image_url: String
+		var item: FeedImage? {
+			guard let url = URL(string: image_url) else {
+				return nil
+			}
+			return FeedImage(id: (UUID(uuidString: image_id) ?? UUID()), description: image_desc, location: image_loc, url: url)
+		}
+	}
+
+	static func feedLoaderItemsDecoder(with data: Data) -> Swift.Result<[FeedImage], Error> {
+		do {
+			let decoder = JSONDecoder()
+			let feedLoader = try decoder.decode(FeedLoaderResult.self, from: data)
+			return Swift.Result.success(feedLoader.items.compactMap {
+				$0.item
+			}
+			)
+		} catch {
+			return Swift.Result.failure(RemoteFeedLoader.Error.invalidData)
 		}
 	}
 }
