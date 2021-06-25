@@ -34,7 +34,6 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
 		XCTAssertEqual(client.requestedURLs, [url, url])
 	}
 
-//
 	func test_load_deliversConnectivityErrorOnClientError() {
 		let (sut, client) = makeSUT()
 
@@ -44,7 +43,6 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
 		})
 	}
 
-//
 	func test_load_deliversInvalidDataErrorOnNon200HTTPResponse() {
 		let (sut, client) = makeSUT()
 
