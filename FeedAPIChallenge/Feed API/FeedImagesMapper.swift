@@ -9,6 +9,7 @@
 import Foundation
 
 final class FeedImagesMapper {
+	
 	private struct Root: Decodable {
 		let items: [Image]
 		var feedImages: [FeedImage] {
@@ -33,6 +34,8 @@ final class FeedImagesMapper {
 			case url = "image_url"
 		}
 	}
+	
+	private init() {  }
 
 	private static var ok_200: Int { return 200 }
 
