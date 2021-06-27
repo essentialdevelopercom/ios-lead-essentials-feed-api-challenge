@@ -29,7 +29,7 @@ public final class RemoteFeedLoader: FeedLoader {
 				} catch {
 					completion(.failure(Error.invalidData))
 				}
-			case .failure(_):
+			case .failure:
 				completion(.failure(Error.connectivity))
 			}
 		})
@@ -47,7 +47,7 @@ private enum FeedImageMapper {
 		let location: String?
 		let url: URL
 
-		var item: FeedImage {
+		var image: FeedImage {
 			return FeedImage(id: id, description: description, location: location, url: url)
 		}
 
@@ -71,6 +71,6 @@ private enum FeedImageMapper {
 			throw RemoteFeedLoader.Error.invalidData
 		}
 		let root = try JSONDecoder().decode(Root.self, from: data)
-		return root.items.map { $0.item }
+		return root.items.map { $0.image }
 	}
 }
