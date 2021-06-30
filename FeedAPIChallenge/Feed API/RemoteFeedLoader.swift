@@ -32,13 +32,18 @@ public final class RemoteFeedLoader: FeedLoader {
 				}
 
 				do {
-					let _ = try JSONDecoder().decode(RemoteFeedItem.self, from: data)
+					let value = try JSONDecoder().decode(RemoteFeedItem.self, from: data)
+					var feedImageList: [FeedImage] = []
+					value.items.forEach { item in
+						feedImageList.append(FeedImage(id: item.id, description: item.description, location: item.location, url: item.url))
+					}
+					completion(.success(feedImageList))
+
 				} catch {
 					completion(.failure(Error.invalidData))
 					return
 				}
 
-				completion(.success([]))
 			case .failure(_):
 				completion(.failure(Error.connectivity))
 			}
@@ -63,6 +68,13 @@ public final class RemoteFeedLoader: FeedLoader {
 			self.description = description
 			self.location = location
 			self.url = url
+		}
+
+		enum CodingKeys: String, CodingKey {
+			case id = "image_id"
+			case description = "image_desc"
+			case location = "image_loc"
+			case url = "image_url"
 		}
 	}
 }
