@@ -32,7 +32,7 @@ public final class RemoteFeedLoader: FeedLoader {
 				}
 
 				do {
-					let _ = try JSONDecoder().decode([RemoteFeedImage].self, from: data)
+					let _ = try JSONDecoder().decode(RemoteFeedItem.self, from: data)
 				} catch {
 					completion(.failure(Error.invalidData))
 					return
@@ -42,6 +42,13 @@ public final class RemoteFeedLoader: FeedLoader {
 			case .failure(_):
 				completion(.failure(Error.connectivity))
 			}
+		}
+	}
+
+	private class RemoteFeedItem: Decodable {
+		let items: [RemoteFeedImage]
+		init(items: [RemoteFeedImage]) {
+			self.items = items
 		}
 	}
 
