@@ -50,14 +50,14 @@ public final class RemoteFeedLoader: FeedLoader {
 		}
 	}
 
-	private class RemoteFeedItem: Decodable {
+	private struct RemoteFeedItem: Decodable {
 		let items: [RemoteFeedImage]
 		init(items: [RemoteFeedImage]) {
 			self.items = items
 		}
 	}
 
-	private class RemoteFeedImage: Decodable {
+	private struct RemoteFeedImage: Decodable {
 		let image_id: UUID
 		let image_desc: String?
 		let image_loc: String?
