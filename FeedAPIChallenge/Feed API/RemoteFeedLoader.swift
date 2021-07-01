@@ -33,9 +33,8 @@ public final class RemoteFeedLoader: FeedLoader {
 
 				do {
 					let value = try JSONDecoder().decode(RemoteFeedItem.self, from: data)
-					var feedImageList: [FeedImage] = []
-					value.items.forEach { item in
-						feedImageList.append(FeedImage(id: item.image_id, description: item.image_desc, location: item.image_loc, url: item.image_url))
+					let feedImageList = value.items.map { item in
+						return FeedImage(id: item.image_id, description: item.image_desc, location: item.image_loc, url: item.image_url)
 					}
 					completion(.success(feedImageList))
 
