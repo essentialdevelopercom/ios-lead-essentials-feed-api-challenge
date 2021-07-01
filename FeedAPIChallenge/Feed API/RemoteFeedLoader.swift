@@ -18,15 +18,14 @@ public final class RemoteFeedLoader: FeedLoader {
 		self.client = client
 	}
 
-	private var OK_200: Int { return 200 }
+	private static var OK_200: Int { return 200 }
 
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
-		client.get(from: url) { [weak self] result in
-			guard let self = self else { return }
+		client.get(from: url) { result in
 			switch result {
 			case let .success((data, httpURLResponse)):
 
-				if httpURLResponse.statusCode != self.OK_200 {
+				if httpURLResponse.statusCode != RemoteFeedLoader.OK_200 {
 					completion(.failure(Error.invalidData))
 					return
 				}
