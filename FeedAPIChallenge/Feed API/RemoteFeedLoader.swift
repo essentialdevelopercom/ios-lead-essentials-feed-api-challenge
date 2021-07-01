@@ -31,17 +31,14 @@ public final class RemoteFeedLoader: FeedLoader {
 					return
 				}
 
-				do {
-					let value = try JSONDecoder().decode(RemoteFeedItem.self, from: data)
-					let feedImageList = value.items.map { item in
-						return FeedImage(id: item.image_id, description: item.image_desc, location: item.image_loc, url: item.image_url)
-					}
-					completion(.success(feedImageList))
-
-				} catch {
+				guard let value = try? JSONDecoder().decode(RemoteFeedItem.self, from: data) else {
 					completion(.failure(Error.invalidData))
 					return
 				}
+				let feedImageList = value.items.map { item in
+					return FeedImage(id: item.image_id, description: item.image_desc, location: item.image_loc, url: item.image_url)
+				}
+				completion(.success(feedImageList))
 
 			case .failure(_):
 				completion(.failure(Error.connectivity))
