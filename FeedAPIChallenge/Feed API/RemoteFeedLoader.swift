@@ -35,7 +35,7 @@ public final class RemoteFeedLoader: FeedLoader {
 					let value = try JSONDecoder().decode(RemoteFeedItem.self, from: data)
 					var feedImageList: [FeedImage] = []
 					value.items.forEach { item in
-						feedImageList.append(FeedImage(id: item.id, description: item.description, location: item.location, url: item.url))
+						feedImageList.append(FeedImage(id: item.image_id, description: item.image_desc, location: item.image_loc, url: item.image_url))
 					}
 					completion(.success(feedImageList))
 
@@ -58,23 +58,9 @@ public final class RemoteFeedLoader: FeedLoader {
 	}
 
 	private class RemoteFeedImage: Decodable {
-		let id: UUID
-		let description: String?
-		let location: String?
-		let url: URL
-
-		init(id: UUID, description: String?, location: String?, url: URL) {
-			self.id = id
-			self.description = description
-			self.location = location
-			self.url = url
-		}
-
-		enum CodingKeys: String, CodingKey {
-			case id = "image_id"
-			case description = "image_desc"
-			case location = "image_loc"
-			case url = "image_url"
-		}
+		let image_id: UUID
+		let image_desc: String?
+		let image_loc: String?
+		let image_url: URL
 	}
 }
