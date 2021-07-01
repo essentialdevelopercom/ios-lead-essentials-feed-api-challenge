@@ -39,7 +39,7 @@ public final class RemoteFeedLoader: FeedLoader {
 				}
 				completion(.success(feedImageList))
 
-			case .failure(_):
+			case .failure:
 				completion(.failure(Error.connectivity))
 			}
 		}
