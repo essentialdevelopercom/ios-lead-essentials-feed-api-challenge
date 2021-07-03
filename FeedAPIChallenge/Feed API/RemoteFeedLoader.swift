@@ -23,11 +23,7 @@ public final class RemoteFeedLoader: FeedLoader {
 			guard self != nil else { return }
 			switch result {
 			case let .success((data, httpURLResponse)):
-				if let items = try? RemoteFeedImage.map(data, httpURLResponse) {
-					completion(.success(items))
-				} else {
-					completion(.failure(Error.invalidData))
-				}
+				completion(RemoteFeedImage.map(data, httpURLResponse))
 			case .failure:
 				completion(.failure(Error.connectivity))
 			}
@@ -36,9 +32,6 @@ public final class RemoteFeedLoader: FeedLoader {
 
 	private struct RemoteFeedItem: Decodable {
 		let items: [RemoteFeedImage]
-		init(items: [RemoteFeedImage]) {
-			self.items = items
-		}
 	}
 
 	private struct RemoteFeedImage: Decodable {
@@ -51,12 +44,12 @@ public final class RemoteFeedLoader: FeedLoader {
 			return FeedImage(id: image_id, description: image_desc, location: image_loc, url: image_url)
 		}
 
-		static func map(_ data: Data, _ response: HTTPURLResponse) throws -> [FeedImage] {
-			guard response.statusCode == 200 else {
-				throw RemoteFeedLoader.Error.invalidData
+		static func map(_ data: Data, _ response: HTTPURLResponse) -> RemoteFeedLoader.Result {
+			guard response.statusCode == 200, let root = try? JSONDecoder().decode(RemoteFeedItem.self, from: data) else {
+				return .failure(RemoteFeedLoader.Error.invalidData)
 			}
-			let root = try JSONDecoder().decode(RemoteFeedItem.self, from: data)
-			return root.items.map({ $0.feedImageItem })
+
+			return .success(root.items.map({ $0.feedImageItem }))
 		}
 	}
 }
