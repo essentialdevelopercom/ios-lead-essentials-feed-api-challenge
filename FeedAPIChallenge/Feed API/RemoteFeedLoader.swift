@@ -16,6 +16,17 @@ public final class RemoteFeedLoader: FeedLoader {
 		let description: String?
 		let location: String?
 		let url: URL
+
+		var feedImage: FeedImage {
+			return .init(id: id, description: description, location: location, url: url)
+		}
+
+		enum CodingKeys: String, CodingKey {
+			case id = "image_id"
+			case description = "image_desc"
+			case location = "image_loc"
+			case url = "image_url"
+		}
 	}
 
 	private let url: URL
@@ -59,8 +70,9 @@ public final class RemoteFeedLoader: FeedLoader {
 	private static func responseData2FeedLoaderResult(responseData: Data) -> FeedLoader.Result {
 		var result: FeedLoader.Result
 		do {
-			let _ = try JSONDecoder().decode(ResponseRootEntity.self, from: responseData)
-			result = .success([])
+			let remoteFeedImages = try JSONDecoder().decode(ResponseRootEntity.self, from: responseData)
+			let feedImages = remoteFeedImages.items.map { $0.feedImage }
+			result = .success(feedImages)
 		} catch {
 			result = .failure(Error.invalidData)
 		}
