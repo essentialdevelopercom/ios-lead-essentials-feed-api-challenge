@@ -5,6 +5,8 @@
 import Foundation
 
 public final class RemoteFeedLoader: FeedLoader {
+	typealias Result = Swift.Result<Data, Error>
+
 	private struct ResponseRootEntity: Decodable {
 		let items: [RemoteFeedImage]
 	}
@@ -31,24 +33,31 @@ public final class RemoteFeedLoader: FeedLoader {
 
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
 		client.get(from: url) { httpClientResult in
-			switch httpClientResult
+			let result = Self.httpClientResult2FeedLoaderResult(httpClientResult)
+			switch result
 			{
-			case .success((let responseData, let httpResponse)):
-
-				guard httpResponse.isStatusOK else {
-					return completion(.failure(Error.invalidData))
-				}
-
+			case .success(let responseData):
 				do {
 					let _ = try JSONDecoder().decode(ResponseRootEntity.self, from: responseData)
 					completion(.success([]))
 				} catch {
 					completion(.failure(Error.invalidData))
 				}
-			case .failure:
-				completion(.failure(Error.connectivity))
+			case .failure(let error):
+				completion(.failure(error))
 			}
 		}
+	}
+
+	private static func httpClientResult2FeedLoaderResult(_ httpClientResult: HTTPClient.Result) -> Result {
+		let feedLoaderResult = httpClientResult.mapError { _ in Error.connectivity }
+			.flatMap { (responseData, httpResponse) -> Swift.Result<Data, Error> in
+				guard httpResponse.isStatusOK else {
+					return .failure(Error.invalidData)
+				}
+				return .success(responseData)
+			}
+		return feedLoaderResult
 	}
 }
 
