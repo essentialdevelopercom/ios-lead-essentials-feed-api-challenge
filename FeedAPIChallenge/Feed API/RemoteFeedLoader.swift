@@ -47,7 +47,7 @@ public final class RemoteFeedLoader: FeedLoader {
 
 	private static func httpClientResult2RemoteFeedLoaderResult(_ httpClientResult: HTTPClient.Result) -> RemoteFeedLoaderResult {
 		let feedLoaderResult = httpClientResult.mapError { _ in Error.connectivity }
-			.flatMap { (responseData, httpResponse) -> Swift.Result<Data, Error> in
+			.flatMap { (responseData, httpResponse) -> RemoteFeedLoaderResult in
 				guard httpResponse.isStatusOK else {
 					return .failure(Error.invalidData)
 				}
