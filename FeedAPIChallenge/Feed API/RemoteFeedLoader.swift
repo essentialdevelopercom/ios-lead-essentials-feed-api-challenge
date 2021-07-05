@@ -5,7 +5,6 @@
 import Foundation
 
 public final class RemoteFeedLoader: FeedLoader {
-
 	private struct ResponseRootEntity: Decodable {
 		let items: [RemoteFeedImage]
 	}
@@ -36,7 +35,7 @@ public final class RemoteFeedLoader: FeedLoader {
 			{
 			case .success((let responseData, let httpResponse)):
 
-				guard httpResponse.statusCode == 200 else {
+				guard httpResponse.isStatusOK else {
 					return completion(.failure(Error.invalidData))
 				}
 
@@ -50,5 +49,13 @@ public final class RemoteFeedLoader: FeedLoader {
 				completion(.failure(Error.connectivity))
 			}
 		}
+	}
+}
+
+extension HTTPURLResponse {
+	private static var OK_200: Int { return 200 }
+
+	var isStatusOK: Bool {
+		return statusCode == HTTPURLResponse.OK_200
 	}
 }
