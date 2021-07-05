@@ -43,7 +43,10 @@ public final class RemoteFeedLoader: FeedLoader {
 	}
 
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
-		client.get(from: url) { httpClientResult in
+		client.get(from: url) { [weak self] httpClientResult in
+
+			guard self != nil else { return }
+
 			let feedLoaderResult = Self.httpClientResult2RemoteFeedLoaderResult(httpClientResult)
 			switch feedLoaderResult
 			{
