@@ -47,15 +47,18 @@ public final class RemoteFeedLoader: FeedLoader {
 
 			guard self != nil else { return }
 
+			var result: FeedLoader.Result
+
 			let feedLoaderResult = Self.httpClientResult2RemoteFeedLoaderResult(httpClientResult)
-			switch feedLoaderResult
-			{
+			switch feedLoaderResult {
 			case .success(let responseData):
-				let result = Self.responseData2FeedLoaderResult(responseData: responseData)
-				completion(result)
+				result = Self.responseData2FeedLoaderResult(responseData)
+
 			case .failure(let error):
-				completion(.failure(error))
+				result = .failure(error)
 			}
+
+			completion(result)
 		}
 	}
 
@@ -70,7 +73,7 @@ public final class RemoteFeedLoader: FeedLoader {
 		return feedLoaderResult
 	}
 
-	private static func responseData2FeedLoaderResult(responseData: Data) -> FeedLoader.Result {
+	private static func responseData2FeedLoaderResult(_ responseData: Data) -> FeedLoader.Result {
 		var result: FeedLoader.Result
 		do {
 			let remoteFeedImages = try JSONDecoder().decode(ResponseRootEntity.self, from: responseData)
