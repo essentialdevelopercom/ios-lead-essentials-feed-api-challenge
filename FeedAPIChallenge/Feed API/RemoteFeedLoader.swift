@@ -13,12 +13,21 @@ public final class RemoteFeedLoader: FeedLoader {
 		case invalidData
 	}
 
-	public init(url: URL, client: HTTPClient) {
+	public init(url: URL,
+	            client: HTTPClient) {
 		self.url = url
 		self.client = client
 	}
 
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
-		fatalError("Must be implemented")
+		client.get(from: url) { [weak self] result in
+			guard self != nil else { return }
+			switch result {
+			case .success((let data, let response)):
+				completion(FeedImageJSONMapper.map(data: data, from: response))
+			case .failure:
+				completion(.failure(Error.connectivity))
+			}
+		}
 	}
 }
