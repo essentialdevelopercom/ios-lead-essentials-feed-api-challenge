@@ -3,7 +3,6 @@
 //
 
 import XCTest
-import Foundation
 import FeedAPIChallenge
 
 class HTTPClientSpy: HTTPClient {
