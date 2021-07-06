@@ -17,5 +17,3 @@ public struct FeedImage: Hashable {
 		self.url = url
 	}
 }
-
-extension FeedImage: Decodable {}
