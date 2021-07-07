@@ -7,27 +7,25 @@ import Foundation
 public final class RemoteFeedLoader: FeedLoader {
 	private let url: URL
 	private let client: HTTPClient
-	private let mapper: FeedImageMapper
 
 	public enum Error: Swift.Error {
 		case connectivity
 		case invalidData
 	}
 
-	public init(url: URL, client: HTTPClient, mapper: FeedImageMapper = RemoteFeedImageMapper.default) {
+	public init(url: URL, client: HTTPClient) {
 		self.url = url
 		self.client = client
-		self.mapper = mapper
 	}
 
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
 		client.get(from: url) { [weak self] result in
-			guard let self = self else { return }
+			guard self != nil else { return }
 			switch result {
-			case .success((let data, let response)):
-				completion(self.mapper.map(data, response: response))
+			case let .success((data, response)):
+				completion(FeedImageMapper.map(data, response: response))
 			case .failure:
-				completion(.failure(RemoteFeedLoader.Error.connectivity))
+				completion(.failure(Error.connectivity))
 			}
 		}
 	}

@@ -8,17 +8,11 @@
 
 import Foundation
 
-public protocol FeedImageMapper {
-	func map(_ data: Data, response: HTTPURLResponse) -> FeedLoader.Result
-}
-
-public final class RemoteFeedImageMapper: FeedImageMapper {
-	public static let `default` = RemoteFeedImageMapper()
-
+final class FeedImageMapper {
 	private static let OK_STATUS_CODE = 200
 
-	public func map(_ data: Data, response: HTTPURLResponse) -> FeedLoader.Result {
-		guard response.statusCode == Self.OK_STATUS_CODE,
+	static func map(_ data: Data, response: HTTPURLResponse) -> FeedLoader.Result {
+		guard response.statusCode == OK_STATUS_CODE,
 		      let root = try? JSONDecoder().decode(Root.self, from: data)
 		else {
 			return .failure(RemoteFeedLoader.Error.invalidData)
@@ -27,7 +21,7 @@ public final class RemoteFeedImageMapper: FeedImageMapper {
 	}
 }
 
-struct Root: Decodable {
+private struct Root: Decodable {
 	struct APIFeedImage: Decodable {
 		let image_id: UUID
 		let image_desc: String?
@@ -35,11 +29,10 @@ struct Root: Decodable {
 		let image_url: URL
 	}
 
-	var items: [APIFeedImage]?
+	let items: [APIFeedImage]
 
 	var images: [FeedImage] {
-		guard let items = items else { return [] }
-		return items.map(FeedImage.init)
+		items.map(FeedImage.init)
 	}
 }
 
