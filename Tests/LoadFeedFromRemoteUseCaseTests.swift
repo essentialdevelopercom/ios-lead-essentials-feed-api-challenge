@@ -69,23 +69,24 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
 	}
 
 //
-//	func test_load_deliversInvalidDataErrorOn200HTTPResponseWithPartiallyValidJSONItems() {
-//		let (sut, client) = makeSUT()
-//
-//		let validItem = makeItem(
-//			id: UUID(),
-//			imageURL: URL(string: "http://another-url.com")!
-//		).json
-//
-//		let invalidItem = ["invalid": "item"]
-//
-//		let items = [validItem, invalidItem]
-//
-//		expect(sut, toCompleteWith: .failure(.invalidData), when: {
-//			let json = makeItemsJSON(items)
-//			client.complete(withStatusCode: 200, data: json)
-//		})
-//	}
+	func test_load_deliversInvalidDataErrorOn200HTTPResponseWithPartiallyValidJSONItems() {
+		let (sut, client) = makeSUT()
+
+		let validItem = makeItem(
+			id: UUID(),
+			imageURL: URL(string: "http://another-url.com")!
+		).json
+
+		let invalidItem = ["invalid": "item"]
+
+		let items = [validItem, invalidItem]
+
+		expect(sut, toCompleteWith: .failure(.invalidData), when: {
+			let json = makeItemsJSON(items)
+			client.complete(withStatusCode: 200, data: json)
+		})
+	}
+
 //
 	func test_load_deliversSuccessWithNoItemsOn200HTTPResponseWithEmptyJSONList() {
 		let (sut, client) = makeSUT()
@@ -119,19 +120,19 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
 	}
 
 //
-//	func test_load_doesNotDeliverResultAfterSUTInstanceHasBeenDeallocated() {
-//		let url = URL(string: "http://any-url.com")!
-//		let client = HTTPClientSpy()
-//		var sut: RemoteFeedLoader? = RemoteFeedLoader(url: url, client: client)
-//
-//		var capturedResults = [RemoteFeedLoader.Result]()
-//		sut?.load { capturedResults.append($0) }
-//
-//		sut = nil
-//		client.complete(withStatusCode: 200, data: makeItemsJSON([]))
-//
-//		XCTAssertTrue(capturedResults.isEmpty)
-//	}
+	func test_load_doesNotDeliverResultAfterSUTInstanceHasBeenDeallocated() {
+		let url = URL(string: "http://any-url.com")!
+		let client = HTTPClientSpy()
+		var sut: RemoteFeedLoader? = RemoteFeedLoader(url: url, client: client)
+
+		var capturedResults = [RemoteFeedLoader.Result]()
+		sut?.load { capturedResults.append($0) }
+
+		sut = nil
+		client.complete(withStatusCode: 200, data: makeItemsJSON([]))
+
+		XCTAssertTrue(capturedResults.isEmpty)
+	}
 
 	// MARK: - Helpers
 
