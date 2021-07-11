@@ -21,8 +21,20 @@ public final class RemoteFeedLoader: FeedLoader {
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
 		client.get(from: self.url) { result in
 			switch result {
-			case .success:
-				completion(.failure(Error.invalidData))
+			case let .success((data, response)):
+				guard response.statusCode == 200 else {
+					completion(.failure(Error.invalidData))
+					return
+				}
+				guard let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] else {
+					completion(.failure(Error.invalidData))
+					return
+				}
+				guard let images = json["items"] as? [FeedImage] else {
+					completion(.failure(Error.invalidData))
+					return
+				}
+				completion(.success(images))
 			default:
 				completion(.failure(Error.connectivity))
 			}
