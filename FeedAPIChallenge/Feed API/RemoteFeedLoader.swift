@@ -53,6 +53,13 @@ public final class RemoteFeedLoader: FeedLoader {
 		let location: String?
 		let url: URL
 
+		enum CodingKeys: String, CodingKey {
+			case id = "image_id"
+			case description = "image_desc"
+			case location = "image_loc"
+			case url = "image_url"
+		}
+
 		var image: FeedImage {
 			return FeedImage(id: id, description: description, location: location, url: url)
 		}
