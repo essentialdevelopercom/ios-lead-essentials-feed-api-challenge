@@ -17,7 +17,7 @@ final class FeedImagesMapper {
 		let items: [Item]
 
 		var feed: [FeedImage] {
-			return items.map({ $0.item })
+			return items.map({ $0.image })
 		}
 	}
 
@@ -27,7 +27,7 @@ final class FeedImagesMapper {
 		let image_loc: String?
 		let image_url: URL
 
-		var item: FeedImage {
+		var image: FeedImage {
 			return FeedImage(id: image_id, description: image_desc, location: image_loc, url: image_url)
 		}
 	}
