@@ -31,7 +31,6 @@ public final class RemoteFeedLoader: FeedLoader {
 }
 
 internal struct FeedImageMapper {
-	
 	private struct Root: Decodable {
 		let items: [Item]
 
@@ -44,16 +43,23 @@ internal struct FeedImageMapper {
 		let id: UUID
 		let description: String?
 		let location: String?
-		let image: URL
+		let imageURL: URL
+
+		enum CodingKeys: String, CodingKey {
+			case id = "image_id"
+			case description = "image_desc"
+			case location = "image_loc"
+			case imageURL = "image_url"
+		}
 
 		var feedImage: FeedImage {
-			return FeedImage(id: id, description: description, location: location, url: image)
+			return FeedImage(id: id, description: description, location: location, url: imageURL)
 		}
 	}
-	
+
 	static func map(_ data: Data, from response: HTTPURLResponse) -> FeedLoader.Result {
 		guard response.statusCode == 200,
-			  let root = try? JSONDecoder().decode(Root.self, from: data)
+		      let root = try? JSONDecoder().decode(Root.self, from: data)
 		else {
 			return .failure(RemoteFeedLoader.Error.invalidData)
 		}
